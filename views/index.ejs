@@ -1,1 +1,49 @@
-<h1>Hello MMDA!</h1>
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>MMDA</title>
+
+ 		<link rel="stylesheet" href="/scripts/lib/angular-material/angular-material.min.css">
+ 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+		<!-- Third Party Scripts -->
+		<script src="/scripts/lib/spark-md5.min.js"></script>
+
+		<!-- Angular Scripts -->
+		<script src="/scripts/lib/angular/angular.min.js"></script>
+		<script src="/scripts/lib/angular-animate/angular-animate.min.js"></script>
+  		<script src="/scripts/lib/angular-aria/angular-aria.min.js"></script>
+  		<script src="/scripts/lib/angular-messages/angular-messages.min.js"></script>
+  		<script src="/scripts/lib/angular-material/angular-material.min.js"></script>
+		<!-- <script src="/scripts/lib/angular-md5/angular-md5.js"></script> -->
+		<!-- <script src="/scripts/lib/angular-file-upload.min.js"></script> -->
+
+
+		<!-- Custom Scripts -->
+		<script src="/scripts/app.js"></script>
+		<script src="/scripts/services.js"></script>
+		<script src="/scripts/controllers.js"></script>
+	</head>
+	<body ng-app="mmda" ng-controller="mainCtrl">
+		<md-toolbar>
+			<h1>MMDA</h1>
+		</md-toolbar>
+		
+ 		<md-content>
+ 			<div ng-repeat="m in media" flex layout="row" layout-align="center center">
+				<md-select ng-model="m.type" md-no-underline>
+		            <md-option value="link">http://</md-option>
+		            <!-- <md-option value="file">file://</md-option>     -->
+		            <!-- <md-option value="folder">folder://</md-option> -->
+		        </md-select>
+		        <md-input-container md-no-float style="height:40px;">
+		            <input ng-model="m.uri" type="text" placeholder="example.com" />
+		        </md-input-container>
+		        <md-button ng-if="$last" style="position:relative; margin-right:-46px; min-width:0;" ng-click="media.push({'type':'link'})"><md-icon>control_point</md-icon></md-button>
+		    </div>
+	    	
+	        <br>
+			<md-button ng-click="addMedia()" class="md-raised md-primary">Add Media</md-button>
+		</md-content>
+	</body>
+</html>
