@@ -3,10 +3,7 @@
 ## Purpose
 The MMDA allows the users to name, annotate, store, and organize collections of data files into data
 aggregates called Data-Aggregates (DAGR for short). A DAGR may contain an arbitrary number of multimedia
-files, e.g. text documents, images, audio, video, and other previously created DAGRs. The system
-should provide functionality for storing, searching and retrieving the DAGR database using the DAGR’s
-name, or keywords in their annotation, and other metadata (see below) that is automatically generated
-at the time of its creation.
+files, e.g. text documents, images, audio, video, and other previously created DAGRs.
 
 ## Installation
 *First, make sure you have both [nodejs](https://nodejs.org/en/download/package-manager/) and the [node-oracledb](https://github.com/oracle/node-oracledb/blob/master/INSTALL.md) driver installed* 
