@@ -33,10 +33,10 @@
  			<div ng-repeat="m in media" flex layout="row" layout-align="center center">
 				<md-select ng-model="m.type" md-no-underline>
 		            <md-option value="link">http://</md-option>
-		            <!-- <md-option value="file">file://</md-option>     -->
+		            <md-option value="file">file://</md-option>    
 		            <!-- <md-option value="folder">folder://</md-option> -->
 		        </md-select>
-		        <md-input-container md-no-float style="height:40px;">
+		        <md-input-container md-no-float style="height:40px; width:300px;">
 		            <input ng-model="m.uri" type="text" placeholder="example.com" />
 		        </md-input-container>
 		        <md-button ng-if="$last" style="position:relative; margin-right:-46px; min-width:0;" ng-click="media.push({'type':'link'})"><md-icon>control_point</md-icon></md-button>

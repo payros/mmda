@@ -3,6 +3,7 @@ var router = express.Router();
 var Guid = require('guid');
 var db   = require('../db');
 var util = require('../util');
+var $q = require('q');
 
 /* Root GET handler */
 router.get('/', function(req, res, next) {
@@ -14,6 +15,7 @@ router.post('/add_media', function(req, res, next) {
   var dagrID = req.body.dagrID || Guid.raw();
   var mediaList = req.body.media;
   var sqlQuery = "INSERT ALL\n";
+  var promises = [];
 
   //Create DAGR
   if(!req.body.dagrID) {
@@ -31,7 +33,9 @@ router.post('/add_media', function(req, res, next) {
   			break;
 
   		case 'file':
-  			sqlQuery += util.generateFileSQL(media, dagrID);
+  			promises.push(util.generateFileSQL(media, dagrID).then(function(sql){
+          sqlQuery += sql;
+        }));
   			break;
 
   		case 'folder':
@@ -40,30 +44,34 @@ router.post('/add_media', function(req, res, next) {
   	}
   });
 
-  //Finish the query with this - PL requires it
-  sqlQuery += "SELECT * FROM dual"
+  //Wait until all files have been read to submit the query
+  $q.all(promises).then(function(){
+    //Finish the query with this - PL requires it
+    sqlQuery += "SELECT * FROM dual"
 
-  console.log("QUERY: ", sqlQuery);
+    console.log("QUERY: ", sqlQuery);
 
-  //Write to DB
-  db.doConnect(function(err, connection){
-    console.log("INFO: Database Connected");
-    if (err) {
-      res.send("ERROR: Unable to get a connection ");
-    } else {
-      db.doExecute(connection, sqlQuery, {}, function(err, result) {
-          if (err) {
-            res.send('Failed to Execute');
-            db.doRelease(connection);
-          } else {
-            db.doCommit(connection, function(err, connection) {
-                res.send(err ? 'Failed to Execute' : 'Success');
-                db.doRelease(connection);
-            });
-          }
-      });
-    }
+    // Write to DB
+    db.doConnect(function(err, connection){
+      console.log("INFO: Database Connected");
+      if (err) {
+        res.send("ERROR: Unable to get a connection ");
+      } else {
+        db.doExecute(connection, sqlQuery, {}, function(err, result) {
+            if (err) {
+              res.send('Failed to Execute');
+              db.doRelease(connection);
+            } else {
+              db.doCommit(connection, function(err, connection) {
+                  res.send(err ? 'Failed to Execute' : 'Success');
+                  db.doRelease(connection);
+              });
+            }
+        });
+      }
+    });    
   });
+
 
 });
 
