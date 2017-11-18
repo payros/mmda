@@ -16,7 +16,7 @@ files, e.g. text documents, images, audio, video, and other previously created D
 - Navigate to `localhost:3000` or `127.0.0.1:3000` from your preferred browser
 
 
-## Evironment Variables
+## Environment Variables
 To setup the evironment variables for the DB connection you will have to create a `.env` file in the root directory using the following template:
 
 ```
