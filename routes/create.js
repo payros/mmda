@@ -39,7 +39,9 @@ router.post('/add_media', function(req, res, next) {
   			break;
 
   		case 'folder':
-  			sqlQuery += util.generateFolderSQL(media, dagrID);
+        promises.push(util.generateFolderSQL(media, dagrID).then(function(sql){
+          sqlQuery += sql;
+        }));
   			break;
   	}
   });
@@ -51,7 +53,7 @@ router.post('/add_media', function(req, res, next) {
 
     console.log("QUERY: ", sqlQuery);
 
-    // Write to DB
+    //Write to DB
     db.doConnect(function(err, connection){
       console.log("INFO: Database Connected");
       if (err) {

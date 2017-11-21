@@ -2,7 +2,7 @@ angular.module("mmda")
 
 .controller("mainCtrl", function($scope, $http, $q, Create) {
 	var proxy = "https://cors-anywhere.herokuapp.com/";
-	$scope.media = [{"uri":"/Users/user1/SIMEX10.sql", "type":"file"}];
+	$scope.media = [{"uri":"/Users/user1/Movies", "type":"folder"}];
 	$scope.links = [];
 
 	function addMetadata(media) {
