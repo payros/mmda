@@ -6,12 +6,12 @@ aggregates called Data-Aggregates (DAGR for short). A DAGR may contain an arbitr
 files, e.g. text documents, images, audio, video, and other previously created DAGRs.
 
 ## Installation
-*First, make sure you have both [nodejs](https://nodejs.org/en/download/package-manager/) and the [node-oracledb](https://github.com/oracle/node-oracledb/blob/master/INSTALL.md) driver installed* 
+*First, make sure you have both [nodejs](https://nodejs.org/en/download/package-manager/) and the [node-oracledb](https://github.com/oracle/node-oracledb/blob/master/INSTALL.md) driver installed, then:* 
 
 
 - Clone or download the project
 - Run `npm install` from the project's root directory
-- Add a `.env` file with DB credentials to the project's root directory (see below)
+- Add an `.env` file with DB credentials to the project's root directory (see below)
 - Run `npm start`
 - Navigate to `localhost:3000` or `127.0.0.1:3000` from your preferred browser
 
