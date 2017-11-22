@@ -1,9 +1,51 @@
 angular.module("mmda")
 
-.controller("mainCtrl", function($scope, $http, $q, Create) {
+.controller("mainCtrl", function($scope) {
+	$scope.dagrs = [
+		{'guid':123, 'title':'Rome', 'files':10, 'parents':5, 'children':10, 'created':'10-05-2017', 'category':'travel'},
+		{'guid':124, 'title':'Japan', 'files':2, 'parents':0, 'children':0, 'created':'11-05-2017', 'category':'travel'},
+		{'guid':125, 'title':'Rio de Janeiro', 'files':98, 'parents':6, 'children':5, 'created':'13-05-2017', 'category':'travel'},
+		{'guid':126, 'title':'Australia', 'files':1, 'parents':0, 'children':12, 'created':'06-02-2017', 'category':'travel'},
+		{'guid':127, 'title':'Olympics', 'files':103, 'parents':0, 'children':12, 'created':'10-04-2017', 'category':'sports'},
+		{'guid':128, 'title':'NFL', 'files':13, 'parents':0, 'children':0, 'created':'09-05-2017', 'category':'sports'},
+		{'guid':129, 'title':'World Cup', 'files':45, 'parents':0, 'children':6, 'created':'05-05-2014', 'category':'sports'},
+		{'guid':130, 'title':'My music', 'files':103, 'parents':0, 'children':12, 'created':'10-04-2017', 'category':'music'},
+		{'guid':131, 'title':'Other files', 'files':13, 'parents':0, 'children':0, 'created':'09-05-2017'},
+		{'guid':132, 'title':'School work', 'files':45, 'parents':0, 'children':6, 'created':'05-05-2014'}
+	];
+	$scope.categories = [];
+	angular.forEach($scope.dagrs, function(dagr){
+		if(dagr.category && $scope.categories.indexOf(dagr.category) === -1)  $scope.categories.push(dagr.category);
+	});
+	$scope.categories.push('!');
+})
+
+.controller("headerCtrl", function($scope, $mdDialog) {
+	  $scope.newDagr = function(ev) {
+	    $mdDialog.show({
+	      controller: 'newDagrCtrl',
+	      templateUrl: 'templates/new-dagr-dialog.html',
+	      clickOutsideToClose:true
+	    });
+	  };
+})
+
+.controller("searchCtrl", function($scope) {
+	$scope.clearSearch = function(){
+		$scope.searchInput = '';
+	};
+})
+
+.controller("newDagrCtrl", function($scope, $http, $q, $mdDialog, Create) {
 	var proxy = "https://cors-anywhere.herokuapp.com/";
-	$scope.media = [{"uri":"/Users/user1/Movies", "type":"folder"}];
+	$scope.media = [{"type":"link"}];
 	$scope.links = [];
+	$scope.placeholders = {
+		'link':'example.com',
+		'file':'/path/to/file.eg',
+		'folder':'/path/to/folder',
+		'dagr':'DAGR title'
+	};
 
 	function addMetadata(media) {
 
@@ -56,7 +98,9 @@ angular.module("mmda")
 	function addPath(media) {
 	}
 
-	$scope.addMedia = function(){
+	$scope.cancel = $mdDialog.hide;
+
+	$scope.create = function(){
 		var promises = [];
 		$scope.links = [];
 

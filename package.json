@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www mmda",
+    "build-css": "node-sass --include-path scss scss/style.scss   public/stylesheets/style.css",
+    "start": "node ./bin/www mmda; npm run build-css",
     "stop": "killall -SIGINT mmda"
   },
   "dependencies": {
@@ -26,5 +27,17 @@
     "q": "^1.5.1",
     "serve-favicon": "~2.4.5",
     "userid": "^0.3.1"
+  },
+  "devDependencies": {
+    "node-sass": "^4.7.2",
+    "nodemon": "^1.12.1"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      ".git",
+      "node_modules/**/node_modules",
+      "public/"
+    ],
+    "ext":"js json scss"
   }
 }

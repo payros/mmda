@@ -1,8 +1,108 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
+/****** GENERAL USE VARIABLES ******/
+/****** ANGULAR MATERIAL COMPONENTS ******/
+/*** ICONS ***/
+.sm {
+  font-size: 12px;
+  width: 12px;
+  height: 12px; }
 
-a {
-  color: #00B7FF;
-}
+.md {
+  font-size: 36px;
+  width: 36px;
+  height: 36px; }
+
+/*** BUTTONS ***/
+.icon-btn {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0; }
+  .icon-btn:hover {
+    background-color: transparent !important; }
+    .icon-btn:hover md-icon {
+      color: #795548; }
+
+/*** TOOLBAR ***/
+md-toolbar {
+  padding: 0 15px; }
+
+/*** DIALOG ***/
+md-dialog md-dialog-content {
+  padding: 0 15px; }
+
+md-dialog md-dialog-actions {
+  padding: 0 15px; }
+
+/****** APP COMPONENTS ******/
+.header {
+  height: 60px; }
+  .header h2 {
+    margin-top: 12px; }
+  .header .md-button {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 400;
+    transition: transform .2s; }
+    .header .md-button:hover {
+      background-color: transparent;
+      transform: scale(1.2, 1.2); }
+
+md-toolbar.search {
+  background-color: #fff;
+  height: 64px; }
+  md-toolbar.search input {
+    font-size: 24px;
+    padding: 0 15px;
+    height: 100%;
+    border: none;
+    outline: none !important; }
+  md-toolbar.search .md-button {
+    height: 100%; }
+  md-toolbar.search md-icon {
+    color: #444; }
+
+.results {
+  padding: 0 15px; }
+  .results md-grid-tile {
+    color: #795548;
+    box-shadow: 0px 1px 8px 0px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 3px 3px -2px rgba(0, 0, 0, 0.12);
+    background: #decec8;
+    border-radius: 5px;
+    transition: box-shadow .4s;
+    cursor: pointer; }
+    .results md-grid-tile:hover {
+      box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12); }
+    .results md-grid-tile figure {
+      display: block;
+      padding: 10px 15px; }
+      .results md-grid-tile figure > div {
+        margin-top: 10px; }
+    .results md-grid-tile h3 {
+      margin: 0;
+      font-size: 18px; }
+      .results md-grid-tile h3 span {
+        font-size: 12px;
+        float: right;
+        font-weight: 400;
+        margin-top: 5px;
+        font-style: italic; }
+    .results md-grid-tile p {
+      margin: 0;
+      font-size: 14px; }
+      .results md-grid-tile p:first-child md-icon {
+        line-height: 30px;
+        height: 36px; }
+      .results md-grid-tile p md-icon, .results md-grid-tile p strong {
+        color: #896052; }
+      .results md-grid-tile p strong {
+        font-size: 15px;
+        padding-left: 2px; }
+
+.results-category {
+  margin: 30px 0 60px; }
+  .results-category > h3 {
+    font-size: 28px;
+    color: #af8778;
+    margin-bottom: 10px; }
