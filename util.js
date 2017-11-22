@@ -3,42 +3,63 @@ var fsm = require('fs-meta');
 var hashFiles = require('hash-files');
 var userid = require('userid');
 var Guid = require('guid');
+var db   = require('./db');
+var $q = require('q');
 var util = {};
 
-function metaToSQL(meta, dagrID) {
-	SQL = "";
+//TO DO file hashing is yielding a different hash for identical files in different directories. Figure out why...
+function isDuplicate(val) {	
+    return db.doConnect().then(function(connection){
+    	var isLink = val.indexOf('.') > -1;
+		var sqlQuery = "SELECT guid FROM media WHERE " + (isLink ? 'uri' : 'hash') + " = :val";
+		val = isLink ? 'http://' + val : val;
 
-	mSecs = Math.floor(new Date(meta.mtime).getTime()/1000);
-	mTimestamp = "(timestamp'1970-01-01 00:00:00' + numtodsinterval(" + mSecs + ",'SECOND'))";
-	bSecs = Math.floor(new Date(meta.birthtime).getTime()/1000);
-	birthTimestamp = "(timestamp'1970-01-01 00:00:00' + numtodsinterval(" + bSecs + ",'SECOND'))";
-
-	//INSERT INTO MEDIA TABLE
-	var columns = "GUID,TYPE,URI,NAME";
-	var values = "'" + meta.guid + "','" + util.getType(meta.extension) + "','" + meta.path + "','" + meta.basename + "'";
-
-	//TO DO write function get author that will look for author based on file type
-	if(meta.uid) {
-		columns += ",AUTHOR";
-		values += ",'" + userid.username(meta.uid) + "'";
-	}
-
-	SQL += "INTO MEDIA (" + columns + ") VALUES (" + values + ")\n"
-
-	//INSERT INTO FILE_METADATA TABLE
-	SQL += "INTO FILE_METADATA (MEDIA_GUID,HASH,\"SIZE\",CREATE_DATE,MODIFY_DATE) VALUES ('" + meta.guid + "','" + meta.hash + "'," + meta.size + "," + birthTimestamp  + "," + mTimestamp + ")\n"
-
-	//INSERT INTO DAGR_MEDIA TABLE
-	SQL += "INTO DAGR_MEDIA (DAGR_GUID,MEDIA_GUID) VALUES ('" + dagrID + "','" + meta.guid + "')\n"
-
-	return SQL;
+        return db.doExecute(connection, sqlQuery, [val]).then(function(result) {
+          db.doRelease(connection);
+          return result.rows.length ? result.rows[0]['GUID'] : '';
+        });
+    });
 }
 
+function metaToSQL(meta, dagrID) {
+	//Check for duplicates
+	return isDuplicate(meta.path).then(function(duplicate) {
+		var SQL = "";
 
-util.isDuplicate = function(hash) {
-	//TO DO check hash against the db
-	return false;
-};
+		//If it's a new file
+		if(duplicate === '') {
+			mSecs = Math.floor(new Date(meta.mtime).getTime()/1000);
+			mTimestamp = "(timestamp'1970-01-01 00:00:00' + numtodsinterval(" + mSecs + ",'SECOND'))";
+			bSecs = Math.floor(new Date(meta.birthtime).getTime()/1000);
+			birthTimestamp = "(timestamp'1970-01-01 00:00:00' + numtodsinterval(" + bSecs + ",'SECOND'))";
+
+			//INSERT INTO MEDIA TABLE
+			var columns = "GUID,TYPE,URI,NAME";
+			var values = "'" + meta.guid + "','" + util.getType(meta.extension) + "','" + meta.path + "','" + meta.basename + "'";
+
+			//TO DO write function get author that will look for author based on file type
+			if(meta.uid) {
+				columns += ",AUTHOR";
+				values += ",'" + userid.username(meta.uid) + "'";
+			}
+
+			SQL += "INTO MEDIA (" + columns + ") VALUES (" + values + ")\n"
+
+			//INSERT INTO FILE_METADATA TABLE
+			SQL += "INTO FILE_METADATA (MEDIA_GUID,HASH,\"SIZE\",CREATE_DATE,MODIFY_DATE) VALUES ('" + meta.guid + "','" + meta.hash + "'," + meta.size + "," + birthTimestamp  + "," + mTimestamp + ")\n"
+
+			//INSERT INTO DAGR_MEDIA TABLE
+			SQL += "INTO DAGR_MEDIA (DAGR_GUID,MEDIA_GUID) VALUES ('" + dagrID + "','" + meta.guid + "')\n"	
+		} else {
+			//TO DO, check if the the media is already referencing this dagrID so we don't insert it twice (which violates the PK for the table)
+
+			//INSERT INTO DAGR_MEDIA TABLE
+			SQL += "INTO DAGR_MEDIA (DAGR_GUID,MEDIA_GUID) VALUES ('" + dagrID + "','" + meta.guid + "')\n"
+		}
+		return SQL;			
+	});
+}
+
 
 util.getName = function(media) {
 	switch(media.type) {
@@ -63,58 +84,62 @@ util.getType = function(extension) {
 }
 
 util.generateLinkSQL = function(media, dagrID){
-	var query = "";
-	media.guid = Guid.raw();
+	
+	//Check for duplicates
+	return isDuplicate(media.uri).then(function(duplicate) {
+		var query = "";
 
-	//TO DO Check for duplicate URI
+		if(duplicate === '') {
+			media.guid = Guid.raw();
 
-	//INSERT INTO MEDIA TABLE
-	var columns = "GUID,TYPE,URI,NAME";
-	var values = "'" + media.guid + "','" + media.type + "','http://" + media.uri + "','" + (media.title || media.uri) + "'";
+			//INSERT INTO MEDIA TABLE
+			var columns = "GUID,TYPE,URI,NAME";
+			var values = "'" + media.guid + "','" + media.type + "','http://" + media.uri + "','" + (media.title || media.uri) + "'";
 
-	if(media.author) {
-		columns += ",AUTHOR";
-		values += ",'" + media.author + "'";
-	}
+			if(media.author) {
+				columns += ",AUTHOR";
+				values += ",'" + media.author + "'";
+			}
 
-	query += "INTO MEDIA (" + columns + ") VALUES (" + values + ")\n"
+			query += "INTO MEDIA (" + columns + ") VALUES (" + values + ")\n"
 
-	//INSERT INTO LINK_METADATA TABLE
-	if(media.description) {
-		query += "INTO LINK_METADATA (MEDIA_GUID,DESCRIPTION) VALUES ('" + media.guid + "','" + media.description + "')\n"			
-	}
+			//INSERT INTO LINK_METADATA TABLE
+			if(media.description) {
+				query += "INTO LINK_METADATA (MEDIA_GUID,DESCRIPTION) VALUES ('" + media.guid + "','" + media.description + "')\n"			
+			}
 
-	//INSERT INTO MEDIA_KEYWORDS TABLE
-	if(media.keywords) {
-		for(var i=0; i<media.keywords.length; i++) {
-			query += "INTO MEDIA_KEYWORD (MEDIA_GUID,KEYWORD) VALUES ('" + media.guid + "','" + media.keywords[i] + "')\n"		
-		}			
-	}
+			//INSERT INTO MEDIA_KEYWORDS TABLE
+			if(media.keywords) {
+				for(var i=0; i<media.keywords.length; i++) {
+					query += "INTO MEDIA_KEYWORD (MEDIA_GUID,KEYWORD) VALUES ('" + media.guid + "','" + media.keywords[i] + "')\n"		
+				}			
+			}
+			
+			//INSERT INTO DAGR_MEDIA TABLE
+			query += "INTO DAGR_MEDIA (DAGR_GUID,MEDIA_GUID) VALUES ('" + dagrID + "','" + media.guid + "')\n"		
+		} else {
+			console.log('INFO: ' + media.uri + ' already exists in the DB. Skipping.')
+		}
 
-	//INSERT INTO DAGR_MEDIA TABLE
-	query += "INTO DAGR_MEDIA (DAGR_GUID,MEDIA_GUID) VALUES ('" + dagrID + "','" + media.guid + "')\n"
-
-	return query;	
+		return query;			
+		
+	});
 };
 
 util.generateFileSQL = function(media, dagrID){
-	var query = "";
-
 	// TO DO Handle exceptions (NO File found, permission errors, etc)
-
 	return fsm.getMeta(media.uri).then(function (meta) {
 		meta.guid = Guid.raw();
 		meta.hash = hashFiles.sync({"files":media.uri});
-		console.log(meta.hash);
-		//TO DO, check hash for duplicates
-		query += metaToSQL(meta, dagrID);
-
-	    return query;
+		return metaToSQL(meta, dagrID).then(function(SQL){
+			return SQL;
+		});
 	});
 };
 
 util.generateFolderSQL = function(media, dagrID){
 	var query = "";
+	var promises = [];
 
 	// TO DO Handle exceptions (NO Folder found, permission errors, etc)
 
@@ -129,12 +154,18 @@ util.generateFolderSQL = function(media, dagrID){
 				fm.guid = Guid.raw();
 				//TO DO Make this async for performance. Right now it's sync for simplicity
 				fm.hash = hashFiles.sync({"files":fm.path});
-				//TO DO, check hash for duplicate
-				query += metaToSQL(fm, dagrID);
+
+				//Check for Duplicates then add
+				promises.push(metaToSQL(fm, dagrID).then(function(SQL){
+		          query += SQL;
+		        }));
 			}
 		}
 
-	    return query;
+  		//Wait until all files have been checked for duplicates and all queries generated, then return
+  		return $q.all(promises).then(function(){
+	    	return query;
+		});
 	});
 };
 

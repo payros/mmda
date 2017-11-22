@@ -29,11 +29,15 @@ router.post('/add_media', function(req, res, next) {
   mediaList.forEach(function(media, i){
   	switch(media.type) {
   		case 'link':
-  			sqlQuery += util.generateLinkSQL(media, dagrID);
+        promises.push(util.generateLinkSQL(media, dagrID).then(function(sql){
+          
+          sqlQuery += sql;
+        }));
   			break;
 
   		case 'file':
   			promises.push(util.generateFileSQL(media, dagrID).then(function(sql){
+          console.log(sql);
           sqlQuery += sql;
         }));
   			break;
@@ -46,32 +50,31 @@ router.post('/add_media', function(req, res, next) {
   	}
   });
 
+  console.log('query received');
+
   //Wait until all files have been read to submit the query
   $q.all(promises).then(function(){
-    //Finish the query with this - PL requires it
-    sqlQuery += "SELECT * FROM dual"
 
-    console.log("QUERY: ", sqlQuery);
+    //Make sure there is new media being referenced to be insterted on the query
+    if(sqlQuery.indexOf('INTO DAGR_MEDIA') > -1) {
+        //Finish the query with this - PL requires it
+        sqlQuery += "SELECT * FROM dual"
 
-    //Write to DB
-    db.doConnect(function(err, connection){
-      console.log("INFO: Database Connected");
-      if (err) {
-        res.send("ERROR: Unable to get a connection ");
-      } else {
-        db.doExecute(connection, sqlQuery, {}, function(err, result) {
-            if (err) {
-              res.send('Failed to Execute');
-              db.doRelease(connection);
-            } else {
-              db.doCommit(connection, function(err, connection) {
-                  res.send(err ? 'Failed to Execute' : 'Success');
-                  db.doRelease(connection);
-              });
-            }
-        });
-      }
-    });    
+        console.log("QUERY: ", sqlQuery);
+        //Write to DB
+        db.doConnect().then(function(connection){
+          db.doExecute(connection, sqlQuery, {}).then(function(result) {
+            db.doCommit(connection).then(function(connection) {
+                res.send('Success');
+                db.doRelease(connection);
+            });
+          });
+        });  
+    } else {
+      res.send('Nothing to update');
+      console.log("INFO: No new media references")
+    }
+  
   });
 
 

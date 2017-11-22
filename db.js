@@ -28,22 +28,24 @@ oracledb.createPool({
 });
 
 
+//TO DO Catch all the errors outside of the success functions
+
 module.exports = function(pool) {
 
     //////////////////////
     // GET A CONNECTION //
     //////////////////////
-    var doConnect = function(callback) {
+    var doConnect = function() {
 
       console.log("INFO: Module getConnection() called - attempting to retrieve a connection using the node-oracledb driver");
 
-      pool.getConnection(function(err, connection) {
+      return pool.getConnection().then(function(connection) {
 
         // UNABLE TO GET CONNECTION - CALLBACK WITH ERROR
-        if (err) { 
-          console.log("ERROR: Cannot get a connection: ", err);
-          return callback(err);
-        }
+        // if (err) { 
+        //   console.log("ERROR: Cannot get a connection: ", err);
+        //   return callback(err);
+        // }
 
         // If pool is defined - show connectionsOpen and connectionsInUse
         if (typeof pool !== "undefined") {
@@ -53,71 +55,67 @@ module.exports = function(pool) {
 
         // Else everything looks good
         // Obtain the Oracle Session ID, then return the connection
-        doExecute(connection, "SELECT SYS_CONTEXT('userenv', 'sid') AS session_id FROM DUAL", {}, function(err, result) {
-
-          // Something went wrong, releae the connection and return the error
-          if (err) {
-            console.log("ERROR: Unable to determine Oracle SESSION ID for this transaction: ", err);
-            releaseConnection(connection);
-            return callback(err);
-          }
+        return doExecute(connection, "SELECT SYS_CONTEXT('userenv', 'sid') AS session_id FROM DUAL", {}).then(function(result) {
 
           // Log the connection ID (we do this to ensure the conncetions are being pooled correctly)
           console.log("INFO: Connection retrieved from the database, SESSION ID: ", result.rows[0]['SESSION_ID']);
 
           // Return the connection for use in model
-          return callback(err, connection);
-
+          return connection;
+        }).catch(function(err){
+          // Something went wrong, releae the connection and return the error
+          console.log("ERROR: Unable to determine Oracle SESSION ID for this transaction: ", err);
+          releaseConnection(connection);
+          return err;
         });
 
       });
 
-    }
+    };
 
     /////////////
     // EXECUTE //
     /////////////
-    var doExecute = function(connection, sql, params, callback) {
+    var doExecute = function(connection, sql, params) {
 
-      connection.execute(sql, params, { autoCommit: false, outFormat: oracledb.OBJECT, maxRows:1000 }, function(err, result) {
+      return connection.execute(sql, params, { autoCommit: false, outFormat: oracledb.OBJECT, maxRows:1000 }).then(function(result) {
 
         // Something went wrong - handle the data and release the connection
-        if (err) {
-          console.log("ERROR: Unable to execute the SQL: ", err);
-          //releaseConnection(connection);
-          return callback(err);
-        }
+        // if (err) {
+        //   console.log("ERROR: Unable to execute the SQL: ", err);
+        //   //releaseConnection(connection);
+        //   return callback(err);
+        // }
 
-        console.log(callback);
         // Return the result to the request initiator
         // console.log("INFO: Result from Database: ", result)
-        return callback(err, result);
+        return result;
 
       });
 
-    }  
+    };  
 
     ////////////
     // COMMIT //
     ////////////
-    var doCommit = function(connection, callback) {
-      connection.commit(function(err) {
-        if (err) {
-          console.log("ERROR: Unable to COMMIT transaction: ", err);
-        }
-        return callback(err, connection);
+    var doCommit = function(connection) {
+      return connection.commit().then(function() {
+        // if (err) {
+        //   console.log("ERROR: Unable to COMMIT transaction: ", err);
+        // }
+        return connection;
       });
     }
 
     //////////////
     // ROLLBACK //
     //////////////
-    var doRollback = function(connection, callback) {
-      connection.rollback(function(err) {
-        if (err) {
-          console.log("ERROR: Unable to ROLLBACK transaction: ", err);
-        }
-        return callback(err, connection);
+    var doRollback = function(connection) {
+      return connection.rollback().then(function() {
+        // if (err) {
+        //   console.log("ERROR: Unable to ROLLBACK transaction: ", err);
+        // }
+        return connection;
       });
     }
 
@@ -125,14 +123,7 @@ module.exports = function(pool) {
     // RELEASE A CONNECTION //
     //////////////////////////
     var doRelease = function(connection) {
-
-      connection.release(function(err) {
-        if (err) {
-          console.log("ERROR: Unable to RELEASE the connection: ", err);
-        }
-        return;
-      });
-
+      return connection.release();
     }
 
 
