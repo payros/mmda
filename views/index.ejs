@@ -16,20 +16,22 @@
   		<script src="/scripts/lib/angular-aria/angular-aria.min.js"></script>
   		<script src="/scripts/lib/angular-messages/angular-messages.min.js"></script>
   		<script src="/scripts/lib/angular-material/angular-material.min.js"></script>
+  		<script src="/scripts/lib/angular-ui-router/release/angular-ui-router.min.js"></script>
 		<!-- <script src="/scripts/lib/angular-md5/angular-md5.js"></script> -->
 		<!-- <script src="/scripts/lib/angular-file-upload.min.js"></script> -->
 
 		<!-- Custom Scripts -->
 		<script src="/scripts/app.js"></script>
 		<script src="/scripts/filters.js"></script>
+		<script src="/scripts/routes.js"></script>
 		<script src="/scripts/services.js"></script>
 		<script src="/scripts/controllers.js"></script>
 	</head>
-	<body ng-app="mmda" ng-controller="mainCtrl">
+	<body ng-app="mmda" ng-controller="mainCtrl" layout="column">
 		<md-toolbar class="header" ng-controller="headerCtrl" layout="row">
 			<h2>Multi-Media Data Aggregator</h2>
 			<span flex></span>
-			<md-button ng-click="newDagr()" aria-label="New DAGR">NEW DAGR</md-button>
+			<md-button ng-click="newDagr()" aria-label="New DAGR">NEW DAGR <md-icon style="line-height: 20px;">device_hub</md-icon></md-button>
 		</md-toolbar>
 
 		<md-toolbar class="search md-whiteframe-5dp" ng-controller="searchCtrl" layout="row">
@@ -42,23 +44,14 @@
 	          <md-icon class="md">more_vert</md-icon>
 	        </md-button>
 		</md-toolbar>
+		
+		<div class="wrapper" layout="row" flex>
+			<md-sidenav ui-view="sidenav" class="md-whiteframe-1dp" md-is-locked-open="true" flex="20">
+			</md-sidenav>
 
- 		<md-content class="results">
- 			<div ng-repeat="cat in categories" class="results-category">
-	 		 	<h3>{{cat === '!' ? 'uncategorized' : cat | capitalize}}</h3>
-	 			<md-divider></md-divider><br>
-				<md-grid-list md-cols="5" md-gutter="1em" md-row-height="5:2">
-				  	<md-grid-tile ng-repeat="d in dagrs | filter : {category:cat}" class="md-whiteframe-2dp">
-				  		<h3>{{d.title}}<span>{{d.created}}</span></h3>
-				  		<div layout="row">
-				  			<p flex><md-icon>perm_media</md-icon> <strong>{{d.files}}</strong></p>
-				  			<p flex><md-icon class="md">keyboard_arrow_up</md-icon> <strong>{{d.parents}}</strong></p>
-				  			<p flex><md-icon class="md">keyboard_arrow_down</md-icon> <strong>{{d.children}}</strong></p>
-				  		</div>
-					
-					</md-grid-tile>
-				</md-grid-list>
-			</div>
-		</md-content>
+			<md-content ui-view="content" class="results" flex>
+			</md-content>
+		</div>
+
 	</body>
 </html>

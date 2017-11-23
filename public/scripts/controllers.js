@@ -1,6 +1,24 @@
 angular.module("mmda")
 
-.controller("mainCtrl", function($scope) {
+.controller("mainCtrl", function() {})
+
+.controller("headerCtrl", function($scope, $mdDialog) {
+	  $scope.newDagr = function(ev) {
+	    $mdDialog.show({
+	      controller: 'newDagrCtrl',
+	      templateUrl: 'templates/new-dagr-dialog.html',
+	      clickOutsideToClose:true
+	    });
+	  };
+})
+
+.controller("searchCtrl", function($scope) {
+	$scope.clearSearch = function(){
+		$scope.searchInput = '';
+	};
+})
+
+.controller("dagrCtrl", function($scope) {
 	$scope.dagrs = [
 		{'guid':123, 'title':'Rome', 'files':10, 'parents':5, 'children':10, 'created':'10-05-2017', 'category':'travel'},
 		{'guid':124, 'title':'Japan', 'files':2, 'parents':0, 'children':0, 'created':'11-05-2017', 'category':'travel'},
@@ -20,20 +38,21 @@ angular.module("mmda")
 	$scope.categories.push('!');
 })
 
-.controller("headerCtrl", function($scope, $mdDialog) {
-	  $scope.newDagr = function(ev) {
-	    $mdDialog.show({
-	      controller: 'newDagrCtrl',
-	      templateUrl: 'templates/new-dagr-dialog.html',
-	      clickOutsideToClose:true
-	    });
-	  };
-})
-
-.controller("searchCtrl", function($scope) {
-	$scope.clearSearch = function(){
-		$scope.searchInput = '';
-	};
+.controller("mediaCtrl", function($scope, Categories) {
+	$scope.catIcons = Categories;
+	$scope.media = [
+		{'guid':456, 'name':'The_Matrix', 'type':'video', 'uri':'/user/movies/The_Matrix.avi', 'author':'User1', 'created':'10-05-2017', 'size':'1.2 GB'},
+		{'guid':457, 'name':'Inception', 'type':'video', 'uri':'/user/movies/Inception.mp4', 'author':'User1', 'created':'10-06-2017', 'size':'800 MB'},
+		{'guid':458, 'name':'SQL_A', 'type':'text', 'uri':'/user/homework/SQL_A.sql', 'author':'User1', 'created':'09-05-2017', 'size':'30 KB'},
+		{'guid':459, 'name':'ABC.com', 'type':'link', 'uri':'http://abc.com', 'inserted':'10-05-2017', 'description':'Watch the ABC Shows online at abc.com. Get exclusive videos and free episodes.'},
+		{'guid':460, 'name':'617A1781', 'type':'image', 'uri':'/Users/user1/Downloads/617A1781.jpg', 'author':'User1', 'created':'10-05-2017', 'size':'3.4 MB'},
+		{'guid':460, 'name':'something.pdf', 'type':'pdf', 'uri':'/user/Documents/something.pdf', 'author':'User1', 'created':'10-05-2017', 'size':'3.4 MB'},
+		{'guid':461, 'name':'something.pptx', 'type':'other', 'uri':'/user/Documents/something.pptx', 'author':'User1', 'created':'10-05-2017', 'size':'23 MB'}
+	];
+	$scope.types = [];
+	angular.forEach($scope.media, function(media){
+		if($scope.types.indexOf(media.type) === -1)  $scope.types.push(media.type);
+	});
 })
 
 .controller("newDagrCtrl", function($scope, $http, $q, $mdDialog, Create) {

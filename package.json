@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build-css": "node-sass --include-path scss scss/style.scss   public/stylesheets/style.css",
-    "start": "node ./bin/www mmda; npm run build-css",
+    "start": "npm run build-css; node ./bin/www mmda",
     "stop": "killall -SIGINT mmda"
   },
   "dependencies": {
@@ -13,6 +13,7 @@
     "angular-aria": "^1.6.6",
     "angular-material": "^1.1.5",
     "angular-messages": "^1.6.6",
+    "angular-ui-router": "^0.4.3",
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
@@ -38,6 +39,6 @@
       "node_modules/**/node_modules",
       "public/"
     ],
-    "ext":"js json scss"
+    "ext": "js json scss"
   }
 }

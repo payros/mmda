@@ -1,4 +1,5 @@
 /****** GENERAL USE VARIABLES ******/
+/*** WHITEFRAMES ***/
 /****** ANGULAR MATERIAL COMPONENTS ******/
 /*** ICONS ***/
 .sm {
@@ -36,9 +37,13 @@ md-dialog md-dialog-actions {
   padding: 0 15px; }
 
 /****** APP COMPONENTS ******/
+* {
+  color: #444; }
+
 .header {
   height: 60px; }
   .header h2 {
+    color: #fff;
     margin-top: 12px; }
   .header .md-button {
     color: #fff;
@@ -63,46 +68,88 @@ md-toolbar.search {
   md-toolbar.search md-icon {
     color: #444; }
 
-.results {
-  padding: 0 15px; }
-  .results md-grid-tile {
-    color: #795548;
+.wrapper h1 {
+  color: #666;
+  font-size: 36px; }
+
+md-sidenav {
+  padding: 0 10px;
+  background: transparent; }
+
+.dagr-category, .media-category {
+  margin: 5px 0 30px; }
+  .dagr-category > h3, .media-category > h3 {
+    font-size: 22px;
+    margin-bottom: 10px; }
+  .dagr-category md-grid-tile, .media-category md-grid-tile {
     box-shadow: 0px 1px 8px 0px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 3px 3px -2px rgba(0, 0, 0, 0.12);
-    background: #decec8;
     border-radius: 5px;
     transition: box-shadow .4s;
     cursor: pointer; }
-    .results md-grid-tile:hover {
+    .dagr-category md-grid-tile:hover, .media-category md-grid-tile:hover {
       box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12); }
-    .results md-grid-tile figure {
-      display: block;
-      padding: 10px 15px; }
-      .results md-grid-tile figure > div {
-        margin-top: 10px; }
-    .results md-grid-tile h3 {
+    .dagr-category md-grid-tile figure, .media-category md-grid-tile figure {
+      display: block; }
+    .dagr-category md-grid-tile h3.tile-title, .media-category md-grid-tile h3.tile-title {
       margin: 0;
-      font-size: 18px; }
-      .results md-grid-tile h3 span {
+      font-size: 16px; }
+      .dagr-category md-grid-tile h3.tile-title span, .media-category md-grid-tile h3.tile-title span {
         font-size: 12px;
         float: right;
         font-weight: 400;
         margin-top: 5px;
         font-style: italic; }
-    .results md-grid-tile p {
+    .dagr-category md-grid-tile p, .media-category md-grid-tile p {
       margin: 0;
       font-size: 14px; }
-      .results md-grid-tile p:first-child md-icon {
+      .dagr-category md-grid-tile p:first-child md-icon, .media-category md-grid-tile p:first-child md-icon {
         line-height: 30px;
         height: 36px; }
-      .results md-grid-tile p md-icon, .results md-grid-tile p strong {
-        color: #896052; }
-      .results md-grid-tile p strong {
-        font-size: 15px;
-        padding-left: 2px; }
+      .dagr-category md-grid-tile p strong, .media-category md-grid-tile p strong {
+        font-size: 14px;
+        padding-left: 1px; }
 
-.results-category {
-  margin: 30px 0 60px; }
-  .results-category > h3 {
-    font-size: 28px;
-    color: #af8778;
-    margin-bottom: 10px; }
+.dagr-category > h3 {
+  color: #af8778; }
+
+.dagr-category md-grid-tile {
+  color: #795548;
+  background: #decec8; }
+  .dagr-category md-grid-tile figure {
+    padding: 10px 15px; }
+    .dagr-category md-grid-tile figure > div {
+      margin-top: 10px; }
+  .dagr-category md-grid-tile p md-icon, .dagr-category md-grid-tile p strong {
+    color: #896052; }
+
+.media-category > h3 {
+  color: #5e9aff; }
+
+.media-category md-grid-tile {
+  color: #448AFF;
+  background-color: #91baff; }
+  .media-category md-grid-tile .tile-content {
+    height: 100%; }
+  .media-category md-grid-tile .tile-thumb {
+    position: relative;
+    border-radius: 5px 0 0 5px;
+    background-color: #b3ccf7;
+    overflow: hidden; }
+    .media-category md-grid-tile .tile-thumb md-icon {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%); }
+    .media-category md-grid-tile .tile-thumb img {
+      object-fit: cover;
+      width: 100%;
+      height: 100%; }
+  .media-category md-grid-tile .tile-info {
+    padding: 10px; }
+    .media-category md-grid-tile .tile-info p {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; }
+
+md-content {
+  padding: 0 15px; }
