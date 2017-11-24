@@ -78,6 +78,10 @@ util.getName = function(media) {
 util.getType = function(extension) {
 	//TO DO Add types as we figure out how to handle them differently on the UI
 	switch(extension) {
+		case 'jpg':
+		case 'jpeg':
+		case 'png':
+			return 'image';
 		default:
 			return 'other';
 	}

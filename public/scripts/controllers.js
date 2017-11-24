@@ -18,40 +18,32 @@ angular.module("mmda")
 	};
 })
 
-.controller("dagrCtrl", function($scope) {
-	$scope.dagrs = [
-		{'guid':123, 'title':'Rome', 'files':10, 'parents':5, 'children':10, 'created':'10-05-2017', 'category':'travel'},
-		{'guid':124, 'title':'Japan', 'files':2, 'parents':0, 'children':0, 'created':'11-05-2017', 'category':'travel'},
-		{'guid':125, 'title':'Rio de Janeiro', 'files':98, 'parents':6, 'children':5, 'created':'13-05-2017', 'category':'travel'},
-		{'guid':126, 'title':'Australia', 'files':1, 'parents':0, 'children':12, 'created':'06-02-2017', 'category':'travel'},
-		{'guid':127, 'title':'Olympics', 'files':103, 'parents':0, 'children':12, 'created':'10-04-2017', 'category':'sports'},
-		{'guid':128, 'title':'NFL', 'files':13, 'parents':0, 'children':0, 'created':'09-05-2017', 'category':'sports'},
-		{'guid':129, 'title':'World Cup', 'files':45, 'parents':0, 'children':6, 'created':'05-05-2014', 'category':'sports'},
-		{'guid':130, 'title':'My music', 'files':103, 'parents':0, 'children':12, 'created':'10-04-2017', 'category':'music'},
-		{'guid':131, 'title':'Other files', 'files':13, 'parents':0, 'children':0, 'created':'09-05-2017'},
-		{'guid':132, 'title':'School work', 'files':45, 'parents':0, 'children':6, 'created':'05-05-2014'}
-	];
-	$scope.categories = [];
-	angular.forEach($scope.dagrs, function(dagr){
-		if(dagr.category && $scope.categories.indexOf(dagr.category) === -1)  $scope.categories.push(dagr.category);
+.controller("dagrCtrl", function($scope, Search) {
+	Search.allDagrs().then(function(dagrs){
+		$scope.dagrs = dagrs;
+		$scope.categories = [];
+		angular.forEach(dagrs, function(dagr){
+			if(dagr.CATEGORY && $scope.categories.indexOf(dagr.CATEGORY) === -1)  $scope.categories.push(dagr.CATEGORY);
+		});
+		//'!' stands for uncategorized DAGRS
+		$scope.categories.push('!');
 	});
-	$scope.categories.push('!');
 })
 
-.controller("mediaCtrl", function($scope, Categories) {
+.controller("mediaCtrl", function($scope, Categories, Search) {
 	$scope.catIcons = Categories;
-	$scope.media = [
-		{'guid':456, 'name':'The_Matrix', 'type':'video', 'uri':'/user/movies/The_Matrix.avi', 'author':'User1', 'created':'10-05-2017', 'size':'1.2 GB'},
-		{'guid':457, 'name':'Inception', 'type':'video', 'uri':'/user/movies/Inception.mp4', 'author':'User1', 'created':'10-06-2017', 'size':'800 MB'},
-		{'guid':458, 'name':'SQL_A', 'type':'text', 'uri':'/user/homework/SQL_A.sql', 'author':'User1', 'created':'09-05-2017', 'size':'30 KB'},
-		{'guid':459, 'name':'ABC.com', 'type':'link', 'uri':'http://abc.com', 'inserted':'10-05-2017', 'description':'Watch the ABC Shows online at abc.com. Get exclusive videos and free episodes.'},
-		{'guid':460, 'name':'617A1781', 'type':'image', 'uri':'/Users/user1/Downloads/617A1781.jpg', 'author':'User1', 'created':'10-05-2017', 'size':'3.4 MB'},
-		{'guid':460, 'name':'something.pdf', 'type':'pdf', 'uri':'/user/Documents/something.pdf', 'author':'User1', 'created':'10-05-2017', 'size':'3.4 MB'},
-		{'guid':461, 'name':'something.pptx', 'type':'other', 'uri':'/user/Documents/something.pptx', 'author':'User1', 'created':'10-05-2017', 'size':'23 MB'}
-	];
-	$scope.types = [];
-	angular.forEach($scope.media, function(media){
-		if($scope.types.indexOf(media.type) === -1)  $scope.types.push(media.type);
+	Search.allMedia().then(function(media){
+		$scope.media = media;
+		$scope.types = [];
+		angular.forEach($scope.media, function(m){
+			if($scope.types.indexOf(m.TYPE) === -1)  $scope.types.push(m.TYPE);
+		});
+		var otherIdx = $scope.types.indexOf('other');
+		//Put the 'Other' type at the end
+		if(otherIdx > -1) {
+			$scope.types.splice(otherIdx, 1);
+			$scope.types.push('other');
+		}
 	});
 })
 
@@ -136,7 +128,10 @@ angular.module("mmda")
 			//TO DO Prompt the user to add all extra links to the DAGR
 			console.log($scope.links);
 
-			Create.addMedia($scope.media);
+			Create.addMedia($scope.media).then(function(){
+				//TO DO show error or refresh page
+				$mdDialog.hide();
+			});
 			console.log($scope.media);
 			
 		});

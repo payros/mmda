@@ -5,6 +5,7 @@ angular.module('mmda', ['ngMaterial', 'ui.router'])
 .constant('Categories', {
   'link':'link',
   'image':'photo',
+  'audio':'music_note',
   'pdf':'picture_as_pdf',
   'text':'library_books',
   'video':'theaters',

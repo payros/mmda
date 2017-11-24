@@ -16,6 +16,7 @@ router.post('/add_media', function(req, res, next) {
   var mediaList = req.body.media;
   var sqlQuery = "INSERT ALL\n";
   var promises = [];
+  //TO DO Sanatize  data before trying to insert it
 
   //Create DAGR
   if(!req.body.dagrID) {
