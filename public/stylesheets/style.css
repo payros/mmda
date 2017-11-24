@@ -30,6 +30,9 @@ md-toolbar {
   padding: 0 15px; }
 
 /*** DIALOG ***/
+md-dialog .md-toolbar-tools h2 {
+  color: #fff; }
+
 md-dialog md-dialog-content {
   padding: 0 15px; }
 
@@ -56,7 +59,8 @@ md-dialog md-dialog-actions {
 
 md-toolbar.search {
   background-color: #fff;
-  height: 64px; }
+  height: 64px;
+  z-index: 70; }
   md-toolbar.search input {
     font-size: 24px;
     padding: 0 15px;
@@ -77,10 +81,10 @@ md-sidenav {
   background: transparent; }
 
 .dagr-category, .media-category {
-  margin: 5px 0 30px; }
+  margin: 5px 0 40px; }
   .dagr-category > h3, .media-category > h3 {
     font-size: 22px;
-    margin-bottom: 10px; }
+    margin: 0 0 10px; }
   .dagr-category md-grid-tile, .media-category md-grid-tile {
     box-shadow: 0px 1px 8px 0px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 3px 3px -2px rgba(0, 0, 0, 0.12);
     border-radius: 5px;
@@ -144,6 +148,14 @@ md-sidenav {
       object-fit: cover;
       width: 100%;
       height: 100%; }
+    .media-category md-grid-tile .tile-thumb iframe {
+      border: none;
+      transform: scale(0.2);
+      transform-origin: top left;
+      position: relative;
+      width: 1024px;
+      height: 900px;
+      z-index: 1; }
   .media-category md-grid-tile .tile-info {
     padding: 10px; }
     .media-category md-grid-tile .tile-info p {

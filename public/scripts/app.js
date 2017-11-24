@@ -11,10 +11,11 @@ angular.module('mmda', ['ngMaterial', 'ui.router'])
   'other':'insert_drive_file'
 })
 
-.config(function($mdThemingProvider) {
+.config(function($mdThemingProvider, $sceDelegateProvider) {
   $mdThemingProvider.theme('default')
     .primaryPalette('brown')
     .backgroundPalette('brown')
     .accentPalette('blue');
     
+    $sceDelegateProvider.resourceUrlWhitelist(["**"]);
 });
