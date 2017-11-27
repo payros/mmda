@@ -39,9 +39,22 @@ md-dialog md-dialog-content {
 md-dialog md-dialog-actions {
   padding: 0 15px; }
 
+/*** LISTS ***/
+ul.empty {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+
+/*** CHIPS ***/
+md-chip-template strong {
+  color: #fff; }
+
 /****** APP COMPONENTS ******/
 * {
   color: #444; }
+
+[ui-sref] {
+  cursor: pointer; }
 
 .truncate {
   white-space: nowrap;
@@ -125,6 +138,12 @@ md-sidenav {
 .dagr-category md-grid-tile {
   color: #795548;
   background: #decec8; }
+  .dagr-category md-grid-tile.active {
+    background: #795548; }
+    .dagr-category md-grid-tile.active h3 {
+      color: #fff; }
+    .dagr-category md-grid-tile.active p, .dagr-category md-grid-tile.active md-icon, .dagr-category md-grid-tile.active strong, .dagr-category md-grid-tile.active span {
+      color: #ddd; }
   .dagr-category md-grid-tile figure {
     padding: 10px 15px; }
     .dagr-category md-grid-tile figure > div {

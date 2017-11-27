@@ -18,8 +18,11 @@ angular.module("mmda")
 	};
 })
 
-.controller("dagrCtrl", function($scope, Search) {
-	Search.allDagrs().then(function(dagrs){
+.controller("resultsCtrl", function($scope, Search, Proxy, Categories){
+	$scope.proxy = Proxy;
+	$scope.catIcons = Categories;
+
+	function renderDagrs(dagrs){
 		$scope.dagrs = dagrs;
 		$scope.categories = [];
 		angular.forEach(dagrs, function(dagr){
@@ -27,12 +30,16 @@ angular.module("mmda")
 		});
 		//'!' stands for uncategorized DAGRS
 		$scope.categories.push('!');
-	});
-})
+	}
 
-.controller("mediaCtrl", function($scope, Categories, Search) {
-	$scope.catIcons = Categories;
-	Search.allMedia().then(function(media){
+	function renderDagr(dagr){
+		$scope.dagr = dagr.info;
+		$scope.parents = dagr.parents;
+		$scope.children = dagr.children;
+		renderMedia(dagr.media);
+	}
+
+	function renderMedia(media){
 		$scope.media = media;
 		$scope.types = [];
 		angular.forEach($scope.media, function(m){
@@ -44,11 +51,37 @@ angular.module("mmda")
 			$scope.types.splice(otherIdx, 1);
 			$scope.types.push('other');
 		}
+	}
+
+
+	//When a new URL is loaded, get new data based on the URL
+	$scope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+		$scope.state = toState.name;
+		$scope.activeID = toParams.id;
+
+		if(toState.name === 'dagr') {
+			//Load all DAGRS on sidenav
+			Search.allDagrs().then(renderDagrs);
+			//Load single DAGR on content div
+			Search.getDagr(toParams.id).then(renderDagr);
+		} else if (toState.name === 'search') {
+			//Load DAGR search results on sidenav
+			Search.getDagrs(params).then(renderDagrs);
+			//Load Media search results on content div
+			Search.media(params).then(renderMedia);
+		} else {
+			//Load all DAGRS on sidenav
+			Search.allDagrs().then(renderDagrs);
+			//Load all Media on content div
+			Search.allMedia().then(renderMedia);
+		} 
+
 	});
+
+
 })
 
-.controller("newDagrCtrl", function($scope, $http, $q, $mdDialog, Create) {
-	var proxy = "https://cors-anywhere.herokuapp.com/";
+.controller("newDagrCtrl", function($scope, $http, $q, $mdDialog, Create, Proxy) {
 	$scope.media = [{"type":"link"}];
 	$scope.links = [];
 	$scope.placeholders = {
@@ -60,7 +93,7 @@ angular.module("mmda")
 
 	function addMetadata(media) {
 
-		return $http.get(proxy + 'http://' + media.uri).then(function(resp){
+		return $http.get(Proxy + 'http://' + media.uri).then(function(resp){
 
 			//If the page was loaded successfully, get the metadata
 			if(resp.status == 200) {

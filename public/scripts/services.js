@@ -25,6 +25,12 @@ angular.module('mmda')
     });
   };
 
+  var getDagr = function(id){
+    return $http.get('/search/get_dagr', {'params':{'id':id}} ).then(function(response){
+      return response.data;
+    });
+  };
+
   var allMedia = function(){
     return $http.get('/search/all_media', {'params':{'user':User}} ).then(function(response){
       return response.data;
@@ -33,6 +39,7 @@ angular.module('mmda')
 
   return {
     allDagrs: allDagrs,
+    getDagr: getDagr,
     allMedia: allMedia
   };
 });

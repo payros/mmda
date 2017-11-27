@@ -2,6 +2,8 @@ angular.module('mmda', ['ngMaterial', 'ui.router'])
 
 .constant('User', 'dummy')
 
+.constant('Proxy', 'https://unlimited-cors.herokuapp.com/')
+
 .constant('Categories', {
   'link':'link',
   'image':'photo',
@@ -12,11 +14,22 @@ angular.module('mmda', ['ngMaterial', 'ui.router'])
   'other':'insert_drive_file'
 })
 
-.config(function($mdThemingProvider, $sceDelegateProvider) {
+.config(function($mdThemingProvider, $sceDelegateProvider, $httpProvider) {
   $mdThemingProvider.theme('default')
     .primaryPalette('brown')
     .backgroundPalette('brown')
     .accentPalette('blue');
     
-    $sceDelegateProvider.resourceUrlWhitelist(["**"]);
+  // $httpProvider.interceptors.push(function() {
+  //   return {
+  //    'request': function(config) {
+  //       config.headers['X-Requested-With'] = "XMLHttpRequest";
+  //       return config;
+  //     }
+  //   };
+  // });
+
+  $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+  $sceDelegateProvider.resourceUrlWhitelist(["**"]);
 });

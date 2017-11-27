@@ -26,10 +26,11 @@
 		<script src="/scripts/routes.js"></script>
 		<script src="/scripts/services.js"></script>
 		<script src="/scripts/controllers.js"></script>
+		<!-- <script src="/scripts/directives.js"></script> -->
 	</head>
 	<body ng-app="mmda" ng-controller="mainCtrl" layout="column">
 		<md-toolbar class="header" ng-controller="headerCtrl" layout="row">
-			<h2>Multi-Media Data Aggregator</h2>
+			<h2 ui-sref="home">Multi-Media Data Aggregator</h2>
 			<span flex></span>
 			<md-button ng-click="newDagr()" aria-label="New DAGR">NEW DAGR <md-icon style="line-height: 20px;">device_hub</md-icon></md-button>
 		</md-toolbar>
@@ -45,11 +46,14 @@
 	        </md-button>
 		</md-toolbar>
 		
-		<div class="wrapper" layout="row" flex>
-			<md-sidenav ui-view="sidenav" class="md-whiteframe-1dp" md-is-locked-open="true" flex="20">
+		<div class="wrapper" layout="row" flex ng-controller="resultsCtrl">
+			<md-sidenav class="md-whiteframe-1dp" md-is-locked-open="true" flex="20">
+				<ng-include src="'/templates/dagrs.html'"></ng-include>
 			</md-sidenav>
 
-			<md-content ui-view="content" class="results" flex>
+			<md-content class="results" flex>
+				<ng-include ng-if="state === 'dagr'" src="'/templates/dagr-header.html'"></ng-include>
+				<ng-include src="'/templates/media.html'"></ng-include>
 			</md-content>
 		</div>
 
