@@ -41,7 +41,6 @@ angular.module('mmda')
 .filter('normalizePath', function() {
   return function(input) {
     if (!input) return input;
-    console.log(input.replace(/^[A-Z]:\\/, ""));
     return input.replace(/^[A-Z]:\\/, "");
   }
 });

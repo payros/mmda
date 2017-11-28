@@ -12,7 +12,7 @@
 	  		<div class="tile-thumb" flex="30">
 	  			<img ng-if="m.TYPE === 'image'" ng-src="/local-files/{{m.URI | normalizePath}}"/>
 	  			<audio ng-if="m.TYPE === 'audio'" controls>
-				  <source ng-src="/local-files/{{m.URI}}">
+				  <source ng-src="/local-files/{{m.URI | normalizePath}}">
 				</audio>
 	  			<!-- <iframe ng-if="m.TYPE === 'link'" ng-src="{{proxy + m.URI}}"></iframe> -->
 	  			<md-icon class="md">{{catIcons[m.TYPE]}}</md-icon>
