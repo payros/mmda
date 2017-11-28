@@ -1,0 +1,33 @@
+<md-dialog aria-label="New DAGR" flex="55">
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>New DAGR</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon aria-label="Close dialog">close</md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <div ng-repeat="m in media" flex layout="row" layout-align="center center">
+        <!-- TO DO Use Regex to figure this out -->
+        <md-select ng-model="m.type" md-no-underline flex="nogrow">
+            <md-option value="link">http://</md-option>
+            <md-option value="file">file://</md-option>    
+            <md-option value="folder">folder://</md-option>
+            <md-option value="dagr">dagr://</md-option>
+        </md-select>
+        <md-input-container md-no-float md-force-height="'40px'" flex="auto">
+            <input ng-model="m.uri" type="text" placeholder="{{placeholders[m.type]}}" />
+        </md-input-container>
+        <md-button class="md-fab md-mini" ng-if="$last" ng-click="media.push({'type':'link'})" flex="none"><md-icon>add</md-icon></md-button>
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button ng-click="create()" class="md-raised md-primary">Create</md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

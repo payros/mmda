@@ -1,0 +1,38 @@
+<h1>{{dagr.NAME}}</h1>
+
+<ul class="empty" layout="row">
+	<li flex>
+		<h2>Category: <em>{{dagr.CATEGORY || 'none'}}</em></h2>
+	</li>
+	<li flex>
+		<h2>Created: <em>{{dagr.CREATE_DATE | date}}</em></h2>
+	</li>
+	<li flex>
+		<h2>Modified: <em>{{dagr.MODIFY_DATE || 'never' | date}}</em></h2>
+	</li>
+</ul>
+<br>
+
+<h2>Parents</h2>
+<md-chips ng-model="parents" md-removable="true" placeholder="Add Parent">
+    <md-chip-template>
+      <strong>{{$chip.NAME}}</strong>
+    </md-chip-template>
+</md-chips>
+<br>
+
+<h2>Children</h2>
+<md-chips ng-model="children" md-removable="true" placeholder="Add Child">
+    <md-chip-template>
+      <strong>{{$chip.NAME}}</strong>
+    </md-chip-template>
+</md-chips>
+<br>
+
+<h2>Tags</h2>
+<md-chips ng-model="keywords" md-removable="true" placeholder="Add Tag">
+    <md-chip-template>
+      <strong>{{$chip.NAME}}</strong>
+    </md-chip-template>
+</md-chips>
+</br>
