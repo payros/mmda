@@ -1,7 +1,7 @@
 var fs = require('fs');
 var fsm = require('fs-meta');
 var hashFiles = require('hash-files');
-var os = require('os');
+var userid = require('userid');
 var Guid = require('guid');
 var db   = require('./db');
 var $q = require('q');
@@ -37,11 +37,10 @@ function metaToSQL(meta, dagrID) {
 			var columns = "GUID,TYPE,URI,NAME";
 			var values = "'" + meta.guid + "','" + util.getType(meta.extension) + "','" + meta.path + "','" + meta.basename + "'";
 
-			//TO DO Defaults to the current logged in user, but ideally it should use meta.uid
 			//TO DO write function get author that will look for author based on file type
 			if(meta.uid) {
 				columns += ",AUTHOR";
-				values += ",'" + require("os").userInfo().username + "'";
+				values += ",'" + userid.username(meta.uid) + "'";
 			}
 
 			SQL += "INTO MEDIA (" + columns + ") VALUES (" + values + ")\n"

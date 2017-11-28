@@ -25,9 +25,9 @@
     "hash-files": "^1.1.1",
     "morgan": "~1.9.0",
     "oracledb": "^1.13.1",
-    "os": "^0.1.1",
     "q": "^1.5.1",
-    "serve-favicon": "~2.4.5"
+    "serve-favicon": "~2.4.5",
+    "userid": "^0.3.1"
   },
   "devDependencies": {
     "node-sass": "^4.7.2",
