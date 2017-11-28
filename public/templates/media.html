@@ -10,7 +10,7 @@
   	<md-grid-tile ng-repeat="m in media | filter : {'TYPE':type}" class="md-whiteframe-2dp">
   		<div class="tile-content" layout="row">
 	  		<div class="tile-thumb" flex="30">
-	  			<img ng-if="m.TYPE === 'image'" ng-src="/local-files/{{m.URI}}"/>
+	  			<img ng-if="m.TYPE === 'image'" ng-src="/local-files/{{m.URI | normalizePath}}"/>
 	  			<audio ng-if="m.TYPE === 'audio'" controls>
 				  <source ng-src="/local-files/{{m.URI}}">
 				</audio>

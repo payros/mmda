@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build-css": "node-sass --include-path scss scss/style.scss   public/stylesheets/style.css",
-    "start": "npm run build-css; node ./bin/www mmda",
+    "start": "node ./bin/www mmda",
     "stop": "killall -SIGINT mmda"
   },
   "dependencies": {

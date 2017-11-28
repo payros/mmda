@@ -36,4 +36,12 @@ angular.module('mmda')
   	seconds = seconds%60;
   	return (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
   };
+})
+
+.filter('normalizePath', function() {
+  return function(input) {
+    if (!input) return input;
+    console.log(input.replace(/^[A-Z]:\\/, ""));
+    return input.replace(/^[A-Z]:\\/, "");
+  }
 });
