@@ -14,7 +14,9 @@ angular.module('mmda', ['ngMaterial', 'ui.router'])
   'other':'insert_drive_file'
 })
 
-.config(function($mdThemingProvider, $sceDelegateProvider, $httpProvider) {
+.config(function($mdThemingProvider, $sceDelegateProvider, $httpProvider, $locationProvider) {
+  $locationProvider.html5Mode(true);
+
   $mdThemingProvider.theme('default')
     .primaryPalette('brown')
     .backgroundPalette('brown')
