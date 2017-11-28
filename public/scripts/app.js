@@ -15,7 +15,7 @@ angular.module('mmda', ['ngMaterial', 'ui.router'])
 })
 
 .config(function($mdThemingProvider, $sceDelegateProvider, $httpProvider, $locationProvider) {
-  $locationProvider.html5Mode(true);
+  // $locationProvider.html5Mode(true);
 
   $mdThemingProvider.theme('default')
     .primaryPalette('brown')

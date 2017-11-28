@@ -2,7 +2,7 @@
 <div ng-repeat="cat in categories" class="dagr-category">
  	<h3 ng-if="cat !== '!'">{{cat | capitalize}}</h3>
 	<md-divider ng-if="cat !== '!'"></md-divider><br>
-	<md-grid-list md-cols="1" md-gutter="1em" md-row-height="4:2">
+	<md-grid-list md-cols="1" md-gutter="1em" md-row-height="7:3">
 	  	<md-grid-tile ui-sref="dagr({ id: d.GUID })" ng-class="activeID === d.GUID ? 'active' : ''" ng-repeat="d in dagrs | filter : {'CATEGORY':cat}" class="md-whiteframe-2dp">
 	  		<h3 class="tile-title truncate">{{d.NAME}}<span>{{d.CREATE_DATE | date}}</span></h3>
 	  		<div layout="row">
