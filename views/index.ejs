@@ -34,7 +34,8 @@
 		<md-toolbar class="header" ng-controller="headerCtrl" layout="row">
 			<h2 ui-sref="home">Multi-Media Data Aggregator</h2>
 			<span flex></span>
-			<md-button ng-click="newDagr()" aria-label="New DAGR">NEW DAGR <md-icon style="line-height: 20px;">device_hub</md-icon></md-button>
+			<md-button ng-click="newUser()" aria-label="New User"><md-icon style="line-height: 20px;">person</md-icon> {{user.getUser()}}</md-button>
+			<!-- <md-button ng-click="newDagr()" aria-label="New DAGR">NEW DAGR <md-icon style="line-height: 20px;">device_hub</md-icon></md-button> -->
 		</md-toolbar>
 
 		<md-toolbar class="search md-whiteframe-5dp" ng-controller="searchCtrl" layout="row">

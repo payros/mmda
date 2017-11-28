@@ -41,7 +41,7 @@ function metaToSQL(meta, dagrID) {
 			//TO DO write function get author that will look for author based on file type
 			if(meta.uid) {
 				columns += ",AUTHOR";
-				values += ",'" + require("os").userInfo().username + "'";
+				values += ",'" + os.username(meta.uid) + "'";
 			}
 
 			SQL += "INTO MEDIA (" + columns + ") VALUES (" + values + ")\n"

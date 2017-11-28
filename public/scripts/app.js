@@ -1,7 +1,5 @@
 angular.module('mmda', ['ngMaterial', 'ui.router'])
 
-.constant('User', 'dummy')
-
 .constant('Proxy', 'https://unlimited-cors.herokuapp.com/')
 
 .constant('Categories', {

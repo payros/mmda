@@ -2,14 +2,18 @@ angular.module("mmda")
 
 .controller("mainCtrl", function() {})
 
-.controller("headerCtrl", function($scope, $mdDialog) {
-	  $scope.newDagr = function(ev) {
+.controller("headerCtrl", function($scope, $mdDialog, User) {
+	$scope.user = User;
+
+	$scope.newUser = function(ev) {
 	    $mdDialog.show({
-	      controller: 'newDagrCtrl',
-	      templateUrl: 'templates/new-dagr-dialog.html',
-	      clickOutsideToClose:true
+	      	controller: 'newUserCtrl',
+	      	templateUrl: 'templates/new-username-dialog.html',
+	      	clickOutsideToClose:true
 	    });
-	  };
+	};
+
+	if(User.getUser() === '') $scope.newUser();
 })
 
 .controller("searchCtrl", function($scope) {
@@ -18,7 +22,7 @@ angular.module("mmda")
 	};
 })
 
-.controller("resultsCtrl", function($scope, Search, Proxy, Categories){
+.controller("resultsCtrl", function($rootScope, $scope, $state, $stateParams, $mdDialog, User, Search, Proxy, Categories){
 	$scope.proxy = Proxy;
 	$scope.catIcons = Categories;
 
@@ -53,18 +57,27 @@ angular.module("mmda")
 		}
 	}
 
+	$scope.newDagr = function(ev) {
+	    $mdDialog.show({
+	      	controller: 'newDagrCtrl',
+	      	templateUrl: 'templates/new-dagr-dialog.html',
+	      	clickOutsideToClose:true
+	    });
+	};
+
 
 	//When a new URL is loaded, get new data based on the URL
-	$scope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
-		$scope.state = toState.name;
-		$scope.activeID = toParams.id;
+	$rootScope.$on('$stateChangeSuccess', function () {
+		$scope.state = $state.current.name;
+		$scope.activeID = $stateParams.id;
+		console.log(User);
 
-		if(toState.name === 'dagr') {
+		if($scope.state === 'dagr') {
 			//Load all DAGRS on sidenav
 			Search.allDagrs().then(renderDagrs);
 			//Load single DAGR on content div
-			Search.getDagr(toParams.id).then(renderDagr);
-		} else if (toState.name === 'search') {
+			Search.getDagr($stateParams.id).then(renderDagr);
+		} else if ($scope.state === 'search') {
 			//Load DAGR search results on sidenav
 			Search.getDagrs(params).then(renderDagrs);
 			//Load Media search results on content div
@@ -81,7 +94,7 @@ angular.module("mmda")
 
 })
 
-.controller("newDagrCtrl", function($scope, $http, $q, $mdDialog, Create, Proxy) {
+.controller("newDagrCtrl", function($rootScope, $scope, $http, $q, $mdDialog, Create, Proxy) {
 	$scope.media = [{"type":"link"}];
 	$scope.links = [];
 	$scope.placeholders = {
@@ -164,13 +177,25 @@ angular.module("mmda")
 			Create.addMedia($scope.media).then(function(){
 				//TO DO show error or refresh page
 				$mdDialog.hide();
+				$rootScope.$broadcast('$stateChangeSuccess');
 			});
 			console.log($scope.media);
 			
 		});
 	};
+})
 
+.controller("newUserCtrl", function($rootScope, $scope, $mdDialog, User) {
+	$scope.title = User.getUser() === '' ? "Create User" : "Edit User";
+	$scope.save = function(){
+		if($scope.newUser) {
+			localStorage.user = $scope.newUser;
+			User.setUser($scope.newUser);
+			$mdDialog.hide();
+			$rootScope.$broadcast('$stateChangeSuccess');
+		} 
+	};
 
+	$scope.cancel = $mdDialog.hide;
 
-    
 });

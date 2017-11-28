@@ -31,7 +31,6 @@ router.post('/add_media', function(req, res, next) {
   	switch(media.type) {
   		case 'link':
         promises.push(util.generateLinkSQL(media, dagrID).then(function(sql){
-          
           sqlQuery += sql;
         }));
   			break;

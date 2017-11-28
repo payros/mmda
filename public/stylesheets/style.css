@@ -30,8 +30,10 @@ md-toolbar {
   padding: 0 15px; }
 
 /*** DIALOG ***/
-md-dialog .md-toolbar-tools h2 {
-  color: #fff; }
+md-dialog .md-toolbar-tools {
+  padding: 0; }
+  md-dialog .md-toolbar-tools h2 {
+    color: #fff; }
 
 md-dialog md-dialog-content {
   padding: 0 15px; }
@@ -48,6 +50,12 @@ ul.empty {
 /*** CHIPS ***/
 md-chip-template strong {
   color: #fff; }
+
+md-chips .md-chips {
+  box-shadow: none !important; }
+
+.md-chips .md-chip-input-container input:not([type]):focus {
+  border-bottom: 1px solid #795548; }
 
 /****** APP COMPONENTS ******/
 * {
@@ -70,7 +78,8 @@ md-chip-template strong {
     color: #fff;
     font-size: 18px;
     font-weight: 400;
-    transition: transform .2s; }
+    transition: transform .2s;
+    text-transform: none; }
     .header .md-button:hover {
       background-color: transparent;
       transform: scale(1.2, 1.2); }
@@ -97,6 +106,31 @@ md-toolbar.search {
 md-sidenav {
   padding: 0 10px;
   background: transparent; }
+
+ul.dagr-info em {
+  font-weight: 400;
+  font-style: italic; }
+
+.add-dagr, .add-media {
+  width: 100%;
+  background-color: transparent;
+  box-shadow: none;
+  border: 5px dashed #cbb1a8;
+  border-radius: 5px;
+  margin: 0 0 25px;
+  transition: all .3s; }
+  .add-dagr h3, .add-media h3 {
+    font-size: 26px;
+    color: #cbb1a8;
+    text-align: center;
+    transition: all .3s; }
+  .add-dagr md-icon, .add-media md-icon {
+    color: #795548; }
+  .add-dagr:hover, .add-media:hover {
+    background-color: transparent !important;
+    border-color: #795548; }
+    .add-dagr:hover h3, .add-media:hover h3 {
+      color: #795548; }
 
 .dagr-category, .media-category {
   margin: 5px 0 40px; }
@@ -157,6 +191,27 @@ md-sidenav {
 .media-category md-grid-tile {
   color: #448AFF;
   background-color: #91baff; }
+  .media-category md-grid-tile.add-media {
+    background-color: transparent;
+    box-shadow: none;
+    border: 5px dashed #91baff;
+    transition: all .3s;
+    padding-top: calc(((13.3333% - 0.666667em) * 1) - 10px) !important; }
+    .media-category md-grid-tile.add-media h3 {
+      font-size: 26px;
+      color: #91baff;
+      text-align: center;
+      transition: all .3s;
+      position: absolute;
+      margin: 0;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); }
+    .media-category md-grid-tile.add-media:hover {
+      box-shadow: none;
+      border-color: #448AFF; }
+      .media-category md-grid-tile.add-media:hover h3 {
+        color: #448AFF; }
   .media-category md-grid-tile .tile-content {
     height: 100%; }
   .media-category md-grid-tile .tile-thumb {

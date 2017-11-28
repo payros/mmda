@@ -2,8 +2,11 @@
 <div ng-repeat="cat in categories" class="dagr-category">
  	<h3 ng-if="cat !== '!'">{{cat | capitalize}}</h3>
 	<md-divider ng-if="cat !== '!'"></md-divider><br>
+	<md-button ng-click="newDagr()" class="add-dagr">
+  		<h3>New DAGR</h3>
+	</md-button>
 	<md-grid-list md-cols="1" md-gutter="1em" md-row-height="7:3">
-	  	<md-grid-tile ui-sref="dagr({ id: d.GUID })" ng-class="activeID === d.GUID ? 'active' : ''" ng-repeat="d in dagrs | filter : {'CATEGORY':cat}" class="md-whiteframe-2dp">
+	  	<md-grid-tile ui-sref="dagr({ id: d.GUID })" ng-class="activeID === d.GUID ? 'active' : ''" ng-repeat="d in dagrs | filter : {'CATEGORY':cat}">
 	  		<h3 class="tile-title truncate">{{d.NAME}}<span>{{d.CREATE_DATE | date}}</span></h3>
 	  		<div layout="row">
 	  			<p flex><md-icon>perm_media</md-icon> <strong>{{d.FILES}}</strong></p>

@@ -73,9 +73,14 @@ md-toolbar {
 
 /*** DIALOG ***/
 md-dialog {
-	.md-toolbar-tools h2 {
-		color:#fff;
+	.md-toolbar-tools {
+		padding:0;
+		
+		h2 {
+			color:#fff;
+		}	
 	}
+
 
 	md-dialog-content {
 		padding:0 15px;
@@ -100,6 +105,14 @@ md-chip-template {
 	strong {
 		color: #fff;
 	}
+}
+
+md-chips .md-chips {
+	box-shadow: none !important;
+}
+
+.md-chips .md-chip-input-container input:not([type]):focus {
+	border-bottom:1px solid $primary;
 }
 
 
@@ -132,6 +145,7 @@ md-chip-template {
 		font-size: 18px;
     	font-weight: 400;
     	transition: transform .2s;
+    	text-transform: none;
 
     	&:hover {
     		background-color:transparent;
@@ -174,13 +188,51 @@ md-sidenav {
 	background:transparent;
 }
 
+ul.dagr-info em {
+	font-weight:400;
+	font-style:italic;
+}
+
+
+.add-dagr, .add-media {
+	width:100%;
+	background-color: transparent;
+    box-shadow: none;
+    border: 5px dashed lighten($primary, 35);
+    border-radius:5px;
+    margin:0 0 25px;
+    transition:all .3s;
+
+    h3 {
+    	font-size:26px;
+    	color:lighten($primary, 35);
+    	text-align: center;
+    	transition:all .3s;
+    }
+
+    md-icon {
+    	color:$primary;
+    }
+
+    &:hover {
+    	background-color:transparent !important;
+    	border-color:$primary;
+
+    	h3 {
+    		color:$primary;
+    	}
+    }
+}
+
+
+
+
 .dagr-category, .media-category {
 	margin:5px 0 40px;
 
 	> h3 {
 		font-size:22px;
 		margin:0 0 10px;
-
 	}
 
 	md-grid-tile {
@@ -275,6 +327,35 @@ md-sidenav {
 	md-grid-tile {
 		color:$accent;
 		background-color:lighten($accent, 15);
+
+		&.add-media {
+			background-color: transparent;
+		    box-shadow: none;
+		    border: 5px dashed lighten($accent, 15);
+		    transition:all .3s;
+		    padding-top: calc(((13.3333% - 0.666667em) * 1) - 10px) !important;
+
+		    h3 {
+		    	font-size:26px;
+		    	color:lighten($accent, 15);
+		    	text-align: center;
+		    	transition:all .3s;
+    			position: absolute;
+    			margin:0;
+		    	top: 50%;
+    			left: 50%;
+    			transform: translate(-50%,-50%);
+		    }
+
+		    &:hover {
+		    	box-shadow:none;
+		    	border-color:$accent;
+
+		    	h3 {
+		    		color:$accent;
+		    	}
+		    }
+		}
 
 		.tile-content {
 			height:100%;
