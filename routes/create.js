@@ -65,7 +65,7 @@ router.post('/add_media', function(req, res, next) {
         db.doConnect().then(function(connection){
           db.doExecute(connection, sqlQuery, {}).then(function(result) {
             db.doCommit(connection).then(function(connection) {
-                res.send('Success');
+                res.send(dagrID);
                 db.doRelease(connection);
             });
           });

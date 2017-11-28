@@ -22,7 +22,7 @@ angular.module("mmda")
 	};
 })
 
-.controller("resultsCtrl", function($rootScope, $scope, $state, $stateParams, $mdDialog, User, Search, Proxy, Categories){
+.controller("resultsCtrl", function($rootScope, $scope, $state, $stateParams, $mdDialog, Search, Proxy, Categories){
 	$scope.proxy = Proxy;
 	$scope.catIcons = Categories;
 
@@ -70,7 +70,6 @@ angular.module("mmda")
 	$rootScope.$on('$stateChangeSuccess', function () {
 		$scope.state = $state.current.name;
 		$scope.activeID = $stateParams.id;
-		console.log(User);
 
 		if($scope.state === 'dagr') {
 			//Load all DAGRS on sidenav
@@ -90,11 +89,9 @@ angular.module("mmda")
 		} 
 
 	});
-
-
 })
 
-.controller("newDagrCtrl", function($rootScope, $scope, $http, $q, $mdDialog, Create, Proxy) {
+.controller("newDagrCtrl", function($rootScope, $scope, $state, $http, $q, $mdDialog, Create, Proxy) {
 	$scope.media = [{"type":"link"}];
 	$scope.links = [];
 	$scope.placeholders = {
@@ -174,10 +171,10 @@ angular.module("mmda")
 			//TO DO Prompt the user to add all extra links to the DAGR
 			console.log($scope.links);
 
-			Create.addMedia($scope.media).then(function(){
+			Create.addMedia($scope.media).then(function(dagrID){
 				//TO DO show error or refresh page
 				$mdDialog.hide();
-				$rootScope.$broadcast('$stateChangeSuccess');
+				$state.go('dagr', {'id':dagrID});
 			});
 			console.log($scope.media);
 			
@@ -197,5 +194,4 @@ angular.module("mmda")
 	};
 
 	$scope.cancel = $mdDialog.hide;
-
 });
