@@ -5,7 +5,7 @@ var $q = require('q');
 
 /* Root GET handler */
 router.get('/', function(req, res, next) {
-  res.send('nothing to see here. Move along...');
+  res.send('nothing to see here. Move along..,');
 });
 
 router.post('/dagr', function(req, res, next) {
