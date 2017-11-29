@@ -1,4 +1,4 @@
-<md-dialog aria-label="New DAGR" flex="55">
+<md-dialog aria-label="New DAGR" flex="50">
   <form ng-cloak>
     <md-toolbar>
       <div class="md-toolbar-tools">
@@ -11,6 +11,7 @@
     </md-toolbar>
 
     <md-dialog-content>
+      <br>
       <div ng-repeat="m in media" flex layout="row" layout-align="center center">
         <!-- TO DO Use Regex to figure this out -->
         <md-select ng-model="m.type" md-no-underline flex="nogrow">
@@ -19,11 +20,13 @@
             <md-option value="folder">folder://</md-option>
             <md-option value="dagr">dagr://</md-option>
         </md-select>
-        <md-input-container md-no-float md-force-height="'40px'" flex="auto">
+        <md-input-container md-no-float md-force-height="'46px'" flex="auto">
             <input ng-model="m.uri" type="text" placeholder="{{placeholders[m.type]}}" />
         </md-input-container>
         <md-button class="md-fab md-mini" ng-if="$last" ng-click="media.push({'type':'link'})" flex="none"><md-icon>add</md-icon></md-button>
+        <md-button class="md-fab md-mini warn" ng-if="!$last" ng-click="media.splice($index, 1)" flex="none"><md-icon>remove</md-icon></md-button>
       </div>
+      <br>
     </md-dialog-content>
 
     <md-dialog-actions layout="row">

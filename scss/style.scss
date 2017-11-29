@@ -1,5 +1,6 @@
 $primary:#795548;
 $accent:#448AFF;
+$warn:#D32F2F;
 $background:#FFF8E1;
 /****** GENERAL USE VARIABLES ******/
 
@@ -34,6 +35,16 @@ $whiteframe-shadow-23dp: 0px 11px 14px -7px rgba(0, 0, 0, $shadow-key-umbra-opac
 $whiteframe-shadow-24dp: 0px 11px 15px -7px rgba(0, 0, 0, $shadow-key-umbra-opacity), 0px 24px 38px 3px rgba(0, 0, 0, $shadow-key-penumbra-opacity), 0px 9px 46px 8px rgba(0, 0, 0, $shadow-ambient-shadow-opacity) !default;
 
 /****** ANGULAR MATERIAL COMPONENTS ******/
+
+/*** GENERAL ***/
+md-input-container .md-errors-spacer {
+    min-height: 0;
+}
+
+/*** COLORS ***/
+.warn {
+	background:$warn !important;
+}
 
 /*** ICONS ***/
 .sm {
@@ -75,12 +86,11 @@ md-toolbar {
 md-dialog {
 	.md-toolbar-tools {
 		padding:0;
-		
+
 		h2 {
 			color:#fff;
 		}	
 	}
-
 
 	md-dialog-content {
 		padding:0 15px;
@@ -88,6 +98,66 @@ md-dialog {
 
 	md-dialog-actions {
 		padding:0 15px;
+	}
+
+	.layout-row [flex] {
+		padding:0 10px;
+	}
+
+	input[type="text"],
+	input[type="search"],
+	md-select {
+		box-sizing:border-box;
+		background:#fff;
+		height: 42px;
+    	padding: 0 10px;
+    	box-shadow:$whiteframe-shadow-2dp;
+    	transition: all .3s;
+    	border:none;
+
+	    md-select-value {
+			border:none !important;
+		}
+
+    	&:focus {
+
+
+    		
+    		box-shadow:$whiteframe-shadow-4dp;
+    	}
+	}
+
+	md-input-container,
+	md-select {
+		margin:5px;
+	}
+
+}
+
+md-autocomplete .md-show-clear-button button {
+	position: absolute;
+    right: 0;
+    top: 7px;
+}
+
+md-autocomplete md-autocomplete-wrap md-progress-linear {
+	bottom:-4px;
+}
+
+.md-autocomplete-suggestions {
+	background:#fff;
+
+	li:hover {
+		background:#bbb;
+	}
+}
+
+md-select-menu md-content._md {
+	background:#fff;
+
+	md-option:hover,
+	md-option:focus  {
+		background:#bbb;
 	}
 }
 
@@ -114,6 +184,7 @@ md-chips .md-chips {
 .md-chips .md-chip-input-container input:not([type]):focus {
 	border-bottom:1px solid $primary;
 }
+
 
 
 /****** APP COMPONENTS ******/
@@ -188,9 +259,30 @@ md-sidenav {
 	background:transparent;
 }
 
-ul.dagr-info em {
-	font-weight:400;
-	font-style:italic;
+.edit-dagr-menu {
+	float: right;
+    margin-top: 24px;
+}
+
+md-menu-content {
+	md-menu-item md-icon, .md-button {
+    	color:#444;
+    }
+}
+
+ul.dagr-info  {
+	li {
+		padding-right:15px;
+	}
+
+	h3 {
+		margin:5px 0 30px;
+	}
+
+	em {
+		font-weight:400;
+		font-style:italic;
+	}
 }
 
 

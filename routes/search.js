@@ -139,4 +139,19 @@ router.get('/all_media', function(req, res, next) {
   });
 });
 
+router.get('/get_categories', function(req, res, next) {
+  db.doConnect().then(function(connection){
+    var sqlQuery = "SELECT CATEGORY\n" +
+                    "FROM DAGR\n" +
+                    "WHERE AUTHOR = :author\n" +
+                    "GROUP BY CATEGORY";
+
+    console.log("QUERY: ", sqlQuery);
+    db.doExecute(connection, sqlQuery, [req.query.user]).then(function(result) {
+      db.doRelease(connection);
+      res.send(result.rows.map(r => r.CATEGORY).filter(c => c !== null));
+    });
+  });
+});
+
 module.exports = router;

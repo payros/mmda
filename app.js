@@ -9,6 +9,7 @@ var dotenv = require('dotenv').config();
 var index = require('./routes/index');
 var create = require('./routes/create');
 var search = require('./routes/search');
+var update = require('./routes/update');
 
 var app = express();
 
@@ -29,6 +30,7 @@ app.use('/local-files', express.static('/'));
 app.use('/', index);
 app.use('/create', create);
 app.use('/search', search);
+app.use('/update', update);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

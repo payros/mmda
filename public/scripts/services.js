@@ -54,9 +54,30 @@ angular.module('mmda')
     });
   };
 
+  var getCategories = function(){
+    return $http.get('/search/get_categories', {'params':{'user':User.getUser()}} ).then(function(response){
+      return response.data;
+    });
+  };
+
   return {
     allDagrs: allDagrs,
     getDagr: getDagr,
-    allMedia: allMedia
+    allMedia: allMedia,
+    getCategories:getCategories
+  };
+})
+
+.service('Update', function($http) {
+
+  var dagrInfo = function(params){
+
+    return $http.post('/update/dagr', params).then(function(response){
+      return response.data;
+    });
+  };
+
+  return {
+    dagrInfo: dagrInfo
   };
 });

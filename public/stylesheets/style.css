@@ -1,6 +1,14 @@
 /****** GENERAL USE VARIABLES ******/
 /*** WHITEFRAMES ***/
 /****** ANGULAR MATERIAL COMPONENTS ******/
+/*** GENERAL ***/
+md-input-container .md-errors-spacer {
+  min-height: 0; }
+
+/*** COLORS ***/
+.warn {
+  background: #D32F2F !important; }
+
 /*** ICONS ***/
 .sm {
   font-size: 12px;
@@ -40,6 +48,51 @@ md-dialog md-dialog-content {
 
 md-dialog md-dialog-actions {
   padding: 0 15px; }
+
+md-dialog .layout-row [flex] {
+  padding: 0 10px; }
+
+md-dialog input[type="text"],
+md-dialog input[type="search"],
+md-dialog md-select {
+  box-sizing: border-box;
+  background: #fff;
+  height: 42px;
+  padding: 0 10px;
+  box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12);
+  transition: all .3s;
+  border: none; }
+  md-dialog input[type="text"] md-select-value,
+  md-dialog input[type="search"] md-select-value,
+  md-dialog md-select md-select-value {
+    border: none !important; }
+  md-dialog input[type="text"]:focus,
+  md-dialog input[type="search"]:focus,
+  md-dialog md-select:focus {
+    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12); }
+
+md-dialog md-input-container,
+md-dialog md-select {
+  margin: 5px; }
+
+md-autocomplete .md-show-clear-button button {
+  position: absolute;
+  right: 0;
+  top: 7px; }
+
+md-autocomplete md-autocomplete-wrap md-progress-linear {
+  bottom: -4px; }
+
+.md-autocomplete-suggestions {
+  background: #fff; }
+  .md-autocomplete-suggestions li:hover {
+    background: #bbb; }
+
+md-select-menu md-content._md {
+  background: #fff; }
+  md-select-menu md-content._md md-option:hover,
+  md-select-menu md-content._md md-option:focus {
+    background: #bbb; }
 
 /*** LISTS ***/
 ul.empty {
@@ -106,6 +159,19 @@ md-toolbar.search {
 md-sidenav {
   padding: 0 10px;
   background: transparent; }
+
+.edit-dagr-menu {
+  float: right;
+  margin-top: 24px; }
+
+md-menu-content md-menu-item md-icon, md-menu-content .md-button {
+  color: #444; }
+
+ul.dagr-info li {
+  padding-right: 15px; }
+
+ul.dagr-info h3 {
+  margin: 5px 0 30px; }
 
 ul.dagr-info em {
   font-weight: 400;

@@ -1,0 +1,43 @@
+<md-dialog aria-label="Edit DAGR" flex="55">
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>New DAGR</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon aria-label="Close dialog">close</md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <br>
+      <form>
+        <div layout="row">
+          <div flex="60">
+              <input ng-model="newTitle" type="text" placeholder="New DAGR Title" style="width:100%;"/>
+          </div>
+          <div flex>
+            <md-autocomplete
+                md-selected-item="newCategory"
+                md-search-text="searchText"
+                md-items="category in categories()"
+                md-item-text="category"
+                md-min-length="1"
+                placeholder="Category"
+                md-autofocus>
+              <md-item-template>
+                <span md-highlight-text="searchText" md-highlight-flags="^i">{{category}}</span>
+              </md-item-template>
+            </md-autocomplete>
+          </div>
+        </div>
+      </form>
+      <br>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button ng-click="save()" class="md-raised md-primary">Save</md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

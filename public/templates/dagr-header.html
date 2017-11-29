@@ -1,38 +1,59 @@
-<h1>{{dagr.NAME}}</h1>
 
-<ul class="empty dagr-info" layout="row">
-	<li flex>
-		<h2>Category: <em>{{dagr.CATEGORY || 'none'}}</em></h2>
+<md-menu md-position-mode="target-right target" class="edit-dagr-menu">
+  <md-button aria-label="DAGR Options" class="md-icon-button" ng-click="$mdMenu.open()">
+    <md-icon md-menu-origin class="md">more_vert</md-icon>
+  </md-button>
+  <md-menu-content width="2">
+    <md-menu-item>
+      <md-button ng-click="editDagr()">
+        <md-icon md-menu-align-target>person</md-icon>
+        Edit DAGR
+      </md-button>
+    </md-menu-item>
+    <md-menu-item>
+      <md-button ng-click="">
+        <md-icon>close</md-icon>
+        Delete DAGR
+      </md-button>
+    </md-menu-item>
+  </md-menu-content>
+</md-menu>
+<h1>{{dagr.NAME}}</h1>
+<ul class="empty dagr-info" layout-wrap layout="row">
+	<li flex="33">
+		<em>Category</em>
+		<h3>{{dagr.CATEGORY || 'none'}}</h3> 
 	</li>
-	<li flex>
-		<h2>Created: <em>{{dagr.CREATE_DATE | date}}</em></h2>
+	<li flex="33">
+		<em>Created</em>
+		<h3>{{dagr.CREATE_DATE | date}}</h3>
 	</li>
-	<li flex>
-		<h2>Modified: <em>{{dagr.MODIFY_DATE || 'never' | date}}</em></h2>
+	<li flex="33">
+		<em>Modified</em>
+		<h3>{{dagr.MODIFY_DATE || 'never' | date}}</h3>
+	</li>
+	<li flex="33">
+		<em>Parents</em>
+		<md-chips ng-model="parents" md-removable="true" placeholder="Add Parent">
+		    <md-chip-template>
+		      <strong>{{$chip.NAME}}</strong>
+		    </md-chip-template>
+		</md-chips>
+	</li>
+	<li flex="33">
+		<em>Children</em>
+		<md-chips ng-model="children" md-removable="true" placeholder="Add Child">
+		    <md-chip-template>
+		      <strong>{{$chip.NAME}}</strong>
+		    </md-chip-template>
+		</md-chips>
+	</li>
+	<li flex="33">
+		<em>Tags</em>
+		<md-chips ng-model="keywords" md-removable="true" placeholder="Add Tag">
+		    <md-chip-template>
+		      <strong>{{$chip.NAME}}</strong>
+		    </md-chip-template>
+		</md-chips>
 	</li>
 </ul>
-<br>
-
-<h2>Parents</h2>
-<md-chips ng-model="parents" md-removable="true" placeholder="Add Parent">
-    <md-chip-template>
-      <strong>{{$chip.NAME}}</strong>
-    </md-chip-template>
-</md-chips>
-<br>
-
-<h2>Children</h2>
-<md-chips ng-model="children" md-removable="true" placeholder="Add Child">
-    <md-chip-template>
-      <strong>{{$chip.NAME}}</strong>
-    </md-chip-template>
-</md-chips>
-<br>
-
-<h2>Tags</h2>
-<md-chips ng-model="keywords" md-removable="true" placeholder="Add Tag">
-    <md-chip-template>
-      <strong>{{$chip.NAME}}</strong>
-    </md-chip-template>
-</md-chips>
-</br>

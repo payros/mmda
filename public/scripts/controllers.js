@@ -65,6 +65,15 @@ angular.module("mmda")
 	    });
 	};
 
+	$scope.editDagr = function(ev) {
+	    $mdDialog.show({
+	    	locals: {currentDagr: $scope.dagr},
+	      	controller: 'editDagrCtrl',
+	      	templateUrl: 'templates/edit-dagr-dialog.html',
+	      	clickOutsideToClose:true
+	    });
+	};
+
 
 	//When a new URL is loaded, get new data based on the URL
 	$rootScope.$on('$stateChangeSuccess', function () {
@@ -180,6 +189,23 @@ angular.module("mmda")
 			
 		});
 	};
+})
+
+.controller("editDagrCtrl", function($rootScope, $scope, $mdDialog, currentDagr, Search, Update) {
+	$scope.cancel = $mdDialog.hide;
+	$scope.newTitle = currentDagr.NAME;
+	$scope.newCategory = currentDagr.CATEGORY;
+	$scope.categories = Search.getCategories;
+
+	$scope.save = function(){
+		var params = {'id':currentDagr.GUID};
+		if($scope.newTitle && $scope.newTitle !== currentDagr.NAME) params.name = $scope.newTitle;
+		if($scope.searchText && $scope.searchText !== currentDagr.CATEGORY) params.category = $scope.searchText;
+		Update.dagrInfo(params).then(function(){
+			$mdDialog.hide();
+			$rootScope.$broadcast('$stateChangeSuccess');
+		});
+	}
 })
 
 .controller("newUserCtrl", function($rootScope, $scope, $mdDialog, User) {
