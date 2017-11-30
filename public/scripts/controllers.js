@@ -2,7 +2,7 @@ angular.module("mmda")
 
 .controller("mainCtrl", function() {})
 
-.controller("headerCtrl", function($rootScope, $scope, $mdDialog, User) {
+.controller("headerCtrl", function($state, $scope, $mdDialog, User) {
 	$scope.user = User;
 
 	$scope.newUser = function(ev) {
@@ -21,7 +21,7 @@ angular.module("mmda")
 	      	$scope.newUser();
 	      } else {
 	      	User.setUser(result);
-	      	$rootScope.$broadcast('$stateChangeSuccess');
+	      	$state.go('home');
 	      } 
 	      
 	    }, function() {
