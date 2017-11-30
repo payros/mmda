@@ -144,7 +144,6 @@ router.get('/all_media', function(req, res, next) {
                        "   LEFT JOIN LINK_METADATA lm  "  + 
                        "  ON m.GUID = lm.MEDIA_GUID  " ; 
 
-    // console.log("INFO: username - ", req.query.user);
     // console.log("QUERY: ", mediaQuery);
     db.doExecute(connection, mediaQuery, [req.query.user]).then(function(results) {
       var promises = [];

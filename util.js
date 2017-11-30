@@ -18,17 +18,14 @@ function isDuplicate(val, dagrID) {
     	} else {
     		var sqlQuery = "SELECT media_guid FROM file_metadata WHERE hash = :val";
     	}
-    	console.log('NEW QUERY: ', sqlQuery);
-        return db.doExecute(connection, sqlQuery, [val]).then(function(result) {
-        	console.log('QUERY RESULT: ', result.rows);
 
+        return db.doExecute(connection, sqlQuery, [val]).then(function(result) {
         	//It's a duplicate. Check if this DAGR already references the original
         	if(result.rows.length) {
         		var originalMediaGUID = result.rows[0][isLink ? 'GUID' : 'MEDIA_GUID'];
 	    		var sqlQuery = "SELECT DAGR_GUID FROM DAGR_MEDIA WHERE MEDIA_GUID = :media AND DAGR_GUID = :dagr";
 
 		        return db.doExecute(connection, sqlQuery, [originalMediaGUID, dagrID]).then(function(r) {
-		        	console.log('QUERY RESULT: ', r);
 		        	db.doRelease(connection);
 		        	return r.rows.length ? 'exists' : originalMediaGUID;
 		        });	
@@ -129,7 +126,7 @@ util.generateLinkSQL = function(media, dagrID){
 	//Check for duplicates
 	return isDuplicate(media.uri, dagrID).then(function(duplicate) {
 		var query = "";
-		console.log("IS DUPLICATE RESULT: ", duplicate);
+
 		if(duplicate === '') {
 			media.guid = Guid.raw();
 
@@ -174,7 +171,7 @@ util.generateFileSQL = function(media, dagrID){
 	return fsm.getMeta(media.uri).then(function (meta) {
 		meta.guid = Guid.raw();
 		meta.hash = hashFiles.sync({"algorithm":'md5', "files":media.uri});
-		console.log(meta.hash);
+
 		return metaToSQL(meta, dagrID).then(function(SQL){
 			return SQL;
 		});
@@ -194,7 +191,6 @@ util.generateFolderSQL = function(media, dagrID){
 			var fm = meta.files[i];
 			//Check if it's a file, not a directory and the file/directory is not hidden
 			if(fm.isFile && !fm.path.match(/\/\./) && fm.basename.charAt(0) !== '.') {
-				console.log(fm.path);
 				fm.guid = Guid.raw();
 				//TO DO Make this async for performance. Right now it's sync for simplicity
 				fm.hash = hashFiles.sync({"files":fm.path});
@@ -224,7 +220,7 @@ util.generateDagrSQL = function(media, dagrID){
 	      for (var i = 0; i < result.rows.length; i++) {
 	      	resultQuery += "INTO DAGR_MEDIA (DAGR_GUID, MEDIA_GUID) VALUES ('" + dagrID + "','" + result.rows[i].MEDIA_GUID + "')\n"
 	      }
-			console.log(resultQuery);
+	      
 	      return resultQuery;
 	    });
 	});

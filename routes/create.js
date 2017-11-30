@@ -39,9 +39,7 @@ router.post('/add_media', function(req, res, next) {
   			break;
 
   		case 'file':
-        console.log('here');
   			promises.push(util.generateFileSQL(media, dagrID).then(function(sql){
-          console.log(sql);
           sqlQuery += sql;
         }));
   			break;
@@ -54,7 +52,6 @@ router.post('/add_media', function(req, res, next) {
 
       case 'dagr':
         promises.push(util.generateDagrSQL(media, dagrID).then(function(sql){
-          console.log('query received');
           sqlQuery += sql;
         }));
         break;      
@@ -98,7 +95,7 @@ router.post('/add_media', function(req, res, next) {
         });  
     } else {
       res.send('Nothing to update');
-      console.log("INFO: No new media references")
+      console.log("INFO: No new media references");
     }
   
   });
