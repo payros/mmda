@@ -125,6 +125,21 @@ angular.module("mmda")
 	$scope.removeKeyword = function(chip){
 		Delete.removeKeyword(chip.KEYWORD, $stateParams.id);
 	};
+
+	$scope.deleteDagr = function(){
+	    var confirm = $mdDialog.confirm()
+	      .title('Delete DAGR?')
+	      .textContent('You will lose all media references. This action is irreversible')
+	      .ariaLabel('Confirm DAGR Deletion')
+	      .ok('Delete')
+	      .cancel('Cancel');
+
+		$mdDialog.show(confirm).then(function(){
+			Delete.removeDagr($stateParams.id).then(function(){
+				$state.go('home');
+			});
+		});
+	};
 })
 
 .controller("editDagrCtrl", function($rootScope, $scope, $state, $http, $q, $mdDialog, currentDagr, formType, Create, Search, Update, Proxy) {

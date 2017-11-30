@@ -7,6 +7,21 @@ router.get('/', function(req, res, next) {
   res.send('nothing to see here. Move along...');
 });
 
+router.post('/remove_dagr', function(req, res, next) {
+  db.doConnect().then(function(connection){
+    var sqlQuery = "DELETE FROM DAGR\n"
+                 + "WHERE GUID = :guid";
+
+    db.doExecute(connection, sqlQuery, [req.body.id]).then(function(result) {
+      db.doCommit(connection).then(function(connection) {
+          res.send('Success');
+          db.doRelease(connection);
+      });
+    });
+  });  
+
+});
+
 router.post('/remove_parent', function(req, res, next) {
   var parentID = req.body.pID;
   var childID = req.body.cID;
