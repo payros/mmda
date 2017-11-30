@@ -1,8 +1,8 @@
-<md-dialog aria-label="Edit DAGR" flex="55">
+<md-dialog aria-label="New DAGR" flex="50">
   <form ng-cloak>
     <md-toolbar>
       <div class="md-toolbar-tools">
-        <h2>New DAGR</h2>
+        <h2>{{dialogTitle[formType]}}</h2>
         <span flex></span>
         <md-button class="md-icon-button" ng-click="cancel()">
           <md-icon aria-label="Close dialog">close</md-icon>
@@ -11,33 +11,71 @@
     </md-toolbar>
 
     <md-dialog-content>
-      <br>
-      <form>
+      <section ng-show="formType !== 'add'">
+
+        <br>
+        <h3>DAGR Info <em ng-hide="formType === 'edit'">optional</em></h3>
         <div layout="row">
-          <div flex="60">
-              <input ng-model="newTitle" type="text" placeholder="New DAGR Title" style="width:100%;"/>
-          </div>
-          <div flex>
+          <md-input-container md-no-float md-force-height="'46px'" flex="60">
+            <input ng-model="newTitle" type="text" placeholder="DAGR Title" style="width:100%;"/>
+          </md-input-container>
+          <div class="auto-complete-container" flex>
             <md-autocomplete
+                md-menu-class="md-dialog-form"
                 md-selected-item="newCategory"
-                md-search-text="searchText"
+                md-search-text="categoryInput"
                 md-items="category in categories()"
                 md-item-text="category"
-                md-min-length="1"
-                placeholder="Category"
-                md-autofocus>
+                md-min-length="0"
+                placeholder="Category">
               <md-item-template>
-                <span md-highlight-text="searchText" md-highlight-flags="^i">{{category}}</span>
+                <span md-highlight-text="categoryInput" md-highlight-flags="^i">{{category}}</span>
               </md-item-template>
             </md-autocomplete>
           </div>
         </div>
-      </form>
+      </section>
+      <section ng-show="formType !== 'edit'">
+        <br>
+        <h3>Referenced Media</h3>
+        <div ng-repeat="m in media track by $index" flex layout="row" layout-align="center center">
+          <!-- TO DO Use Regex to figure this out -->
+          <md-select ng-model="m.type" md-no-underline flex="nogrow">
+              <md-option value="link">http://</md-option>
+              <md-option value="file">file://</md-option>    
+              <md-option value="folder">folder://</md-option>
+              <md-option value="dagr">dagr://</md-option>
+          </md-select>
+          <md-input-container ng-if="m.type !== 'dagr'" md-no-float md-force-height="'46px'" flex="auto">
+              <input ng-model="m.uri" type="text" placeholder="{{placeholders[m.type]}}" />
+          </md-input-container>
+          <md-autocomplete ng-if="m.type === 'dagr'" flex="auto"
+              md-no-cache="true"
+              class="auto-complete-container"
+              style="top: -1px; position: relative;"
+              md-menu-class="md-dialog-form"
+              md-selected-item="m.selectedDagr"
+              md-search-text="m.uri"
+              md-item-text="m.selectedDagr.NAME"
+              md-items="item in getDagrs(m.uri)"
+              md-min-length="0"
+              placeholder="DAGR Title"
+              ng-model-options="{debounce: 500}">
+            <md-item-template>
+              <span md-highlight-text="m.uri" md-highlight-flags="^i">{{item.NAME}} ({{item.FILES}})</span>
+            </md-item-template>
+          </md-autocomplete>
+          <md-button class="md-fab md-mini" ng-if="$last" ng-click="media.push({'type':'link'})" flex="none"><md-icon>add</md-icon></md-button>
+          <md-button class="md-fab md-mini warn" ng-if="!$last" ng-click="media.splice($index, 1)" flex="none"><md-icon>remove</md-icon></md-button>
+        </div>
+      </section>
       <br>
     </md-dialog-content>
 
     <md-dialog-actions layout="row">
-      <md-button ng-click="save()" class="md-raised md-primary">Save</md-button>
+      <md-button ng-if="formType === 'new'" ng-click="add(true)" ng-disabled="invalidMedia()" class="md-raised md-primary">Create</md-button>
+      <md-button ng-if="formType === 'edit'" ng-click="save()" ng-disabled="invalidInfo()" class="md-raised md-primary">Save</md-button>
+      <md-button ng-if="formType === 'add'" ng-click="add(false)" ng-disabled="invalidInfo()" class="md-raised md-primary">Add</md-button>
     </md-dialog-actions>
   </form>
 </md-dialog>

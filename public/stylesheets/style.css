@@ -45,12 +45,22 @@ md-dialog .md-toolbar-tools {
 
 md-dialog md-dialog-content {
   padding: 0 15px; }
+  md-dialog md-dialog-content h3 {
+    padding: 0 5px;
+    margin-bottom: 5px; }
+    md-dialog md-dialog-content h3 em {
+      font-weight: 200;
+      font-size: 75%; }
 
 md-dialog md-dialog-actions {
   padding: 0 15px; }
 
-md-dialog .layout-row [flex] {
-  padding: 0 10px; }
+md-dialog .layout-row [flex].auto-complete-container {
+  margin: 8px 5px;
+  padding: 0 2px; }
+
+md-dialog md-autocomplete input:not(.md-input) {
+  font-size: 16px; }
 
 md-dialog input[type="text"],
 md-dialog input[type="search"],
@@ -83,9 +93,9 @@ md-autocomplete .md-show-clear-button button {
 md-autocomplete md-autocomplete-wrap md-progress-linear {
   bottom: -4px; }
 
-.md-autocomplete-suggestions {
+.md-dialog-form.md-autocomplete-suggestions {
   background: #fff; }
-  .md-autocomplete-suggestions li:hover {
+  .md-dialog-form.md-autocomplete-suggestions li:hover {
     background: #bbb; }
 
 md-select-menu md-content._md {
@@ -102,13 +112,24 @@ ul.empty {
 
 /*** CHIPS ***/
 md-chip-template strong {
-  color: #fff; }
+  color: #fff;
+  padding-right: 5px; }
 
 md-chips .md-chips {
   box-shadow: none !important; }
 
 .md-chips .md-chip-input-container input:not([type]):focus {
   border-bottom: 1px solid #795548; }
+
+[md-on-select] md-chip {
+  cursor: pointer;
+  transition: all .3s;
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12); }
+  [md-on-select] md-chip:hover {
+    box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12);
+    background-color: #795548; }
+  [md-on-select] md-chip .md-chip-remove:hover md-icon {
+    fill: #fff; }
 
 /****** APP COMPONENTS ******/
 * {
@@ -209,7 +230,7 @@ ul.dagr-info em {
     transition: box-shadow .4s;
     cursor: pointer; }
     .dagr-category md-grid-tile:hover, .media-category md-grid-tile:hover {
-      box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12); }
+      box-shadow: 0px 6px 6px -3px rgba(0, 0, 0, 0.2), 0px 10px 14px 1px rgba(0, 0, 0, 0.14), 0px 4px 18px 3px rgba(0, 0, 0, 0.12); }
     .dagr-category md-grid-tile figure, .media-category md-grid-tile figure {
       display: block; }
     .dagr-category md-grid-tile h3.tile-title, .media-category md-grid-tile h3.tile-title {

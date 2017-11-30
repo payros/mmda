@@ -20,17 +20,33 @@ angular.module('mmda')
 
 .service('Create', function($http, User) {
 
-  var addMedia = function(media, dagrID){
+  var addMedia = function(media, dagrInfo){
     var params = {'user':User.getUser(), 'media':media};
-    if(dagrID) params['dagrID'] = dagrID;
+    if(dagrInfo.title) params['dagrTitle'] = dagrInfo.title;
+    if(dagrInfo.category) params['dagrCategory'] = dagrInfo.category;
+    if(dagrInfo.id) params['dagrID'] = dagrInfo.id;
 
     return $http.post('/create/add_media', params ).then(function(response){
       return response.data;
     });
   };
 
+  var addParent = function(parentId, childId){
+    return $http.post('/create/add_parent', {'pID': parentId, 'cID': childId}).then(function(response){
+      return response.data;
+    });
+  };
+
+  var addKeyword = function(keyword, id){
+    return $http.post('/create/add_keyword', {'keyword': keyword, 'id': id}).then(function(response){
+      return response.data;
+    });
+  };
+
   return {
-    addMedia: addMedia
+    addMedia: addMedia,
+    addParent: addParent,
+    addKeyword: addKeyword
   };
 })
 
@@ -60,18 +76,45 @@ angular.module('mmda')
     });
   };
 
+  var getPossibleDagrs = function(searchTerm){
+    return $http.get('/search/get_possible_dagrs', {'params':{'term':searchTerm, 'user':User.getUser()}} ).then(function(response){
+      return response.data;
+    });
+  };
+
+  var getPossibleParents = function(searchTerm, dagrID){
+    return $http.get('/search/get_possible_parents', {'params':{'term':searchTerm,'id':dagrID, 'user':User.getUser()}} ).then(function(response){
+      return response.data;
+    });
+  };
+
+  var getPossibleChildren = function(searchTerm, dagrID){
+    return $http.get('/search/get_possible_children', {'params':{'term':searchTerm,'id':dagrID, 'user':User.getUser()}} ).then(function(response){
+      return response.data;
+    });
+  };
+
+  var getPossibleKeywords = function(searchTerm, dagrID){
+    return $http.get('/search/get_possible_keywords', {'params':{'term':searchTerm,'id':dagrID, 'user':User.getUser()}} ).then(function(response){
+      return response.data;
+    });
+  };
+
   return {
     allDagrs: allDagrs,
     getDagr: getDagr,
     allMedia: allMedia,
-    getCategories:getCategories
+    getCategories: getCategories,
+    getPossibleParents: getPossibleParents,
+    getPossibleChildren: getPossibleChildren,
+    getPossibleKeywords: getPossibleKeywords,
+    getPossibleDagrs: getPossibleDagrs
   };
 })
 
 .service('Update', function($http) {
 
   var dagrInfo = function(params){
-
     return $http.post('/update/dagr', params).then(function(response){
       return response.data;
     });
@@ -79,5 +122,25 @@ angular.module('mmda')
 
   return {
     dagrInfo: dagrInfo
+  };
+})
+
+.service('Delete', function($http) {
+
+  var removeParent = function(parentId, childId){
+    return $http.post('/delete/remove_parent', {'pID': parentId, 'cID': childId}).then(function(response){
+      return response.data;
+    });
+  };
+
+  var removeKeyword = function(keyword, dagrId){
+    return $http.post('/delete/remove_keyword', {'keyword': keyword, 'id': dagrId}).then(function(response){
+      return response.data;
+    });
+  };
+
+  return {
+    removeParent: removeParent,
+    removeKeyword: removeKeyword
   };
 });

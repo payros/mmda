@@ -22,9 +22,13 @@ angular.module("mmda")
 	};
 })
 
-.controller("resultsCtrl", function($rootScope, $scope, $state, $stateParams, $mdDialog, Search, Proxy, Categories){
+.controller("resultsCtrl", function($rootScope, $scope, $state, $stateParams, $mdDialog, Create, Search, Delete, Proxy, Categories){
+	$scope.$state = $state;
 	$scope.proxy = Proxy;
 	$scope.catIcons = Categories;
+	$scope.getParents = Search.getPossibleParents;
+	$scope.getChildren = Search.getPossibleChildren;
+	$scope.getKeywords = Search.getPossibleKeywords;
 
 	function renderDagrs(dagrs){
 		$scope.dagrs = dagrs;
@@ -40,6 +44,7 @@ angular.module("mmda")
 		$scope.dagr = dagr.info;
 		$scope.parents = dagr.parents;
 		$scope.children = dagr.children;
+		$scope.keywords = dagr.keywords;
 		renderMedia(dagr.media);
 	}
 
@@ -57,17 +62,9 @@ angular.module("mmda")
 		}
 	}
 
-	$scope.newDagr = function(ev) {
+	$scope.editDagr = function(formType) {
 	    $mdDialog.show({
-	      	controller: 'newDagrCtrl',
-	      	templateUrl: 'templates/new-dagr-dialog.html',
-	      	clickOutsideToClose:true
-	    });
-	};
-
-	$scope.editDagr = function(ev) {
-	    $mdDialog.show({
-	    	locals: {currentDagr: $scope.dagr},
+	    	locals: {currentDagr: $scope.dagr || null, formType:formType},
 	      	controller: 'editDagrCtrl',
 	      	templateUrl: 'templates/edit-dagr-dialog.html',
 	      	clickOutsideToClose:true
@@ -96,19 +93,65 @@ angular.module("mmda")
 			//Load all Media on content div
 			Search.allMedia().then(renderMedia);
 		} 
-
 	});
+
+	$scope.saveParent = function(dagr){
+		//TO DO remove chip if transaction fails
+		Create.addParent(dagr.GUID, $stateParams.id);
+	};
+
+	$scope.saveChild = function(dagr){
+		//TO DO remove chip if transaction fails
+		Create.addParent($stateParams.id, dagr.GUID);
+	};
+
+	$scope.removeParent = function(dagr){
+		Delete.removeParent(dagr.GUID, $stateParams.id);
+	};
+
+	$scope.removeChild = function(dagr){
+		Delete.removeParent($stateParams.id, dagr.GUID);
+	};
+
+	$scope.transformKeyword = function(chip){
+		return typeof chip === "string" ?  {'KEYWORD':chip} : chip;
+	}
+
+	$scope.saveKeyword = function(chip){
+		//TO DO remove chip if transaction fails
+		Create.addKeyword(chip.KEYWORD, $stateParams.id);
+	};
+
+	$scope.removeKeyword = function(chip){
+		Delete.removeKeyword(chip.KEYWORD, $stateParams.id);
+	};
 })
 
-.controller("newDagrCtrl", function($rootScope, $scope, $state, $http, $q, $mdDialog, Create, Proxy) {
+.controller("editDagrCtrl", function($rootScope, $scope, $state, $http, $q, $mdDialog, currentDagr, formType, Create, Search, Update, Proxy) {
+	$scope.cancel = $mdDialog.hide;
+	$scope.formType = formType;
+	$scope.categories = Search.getCategories;
+	$scope.getDagrs = Search.getPossibleDagrs;
 	$scope.media = [{"type":"link"}];
 	$scope.links = [];
+
 	$scope.placeholders = {
 		'link':'example.com',
 		'file':'/path/to/file.eg',
 		'folder':'/path/to/folder',
 		'dagr':'DAGR title'
 	};
+
+	$scope.dialogTitle = {
+		'new': 'New DAGR',
+		'edit': 'Edit DAGR',
+		'add': 'Add Media'
+	};
+
+	if(formType === 'edit' && currentDagr) {
+		$scope.newTitle = currentDagr.NAME;
+		$scope.newCategory = currentDagr.CATEGORY;
+	}
 
 	function addMetadata(media) {
 
@@ -158,12 +201,7 @@ angular.module("mmda")
 		});
 	}
 
-	function addPath(media) {
-	}
-
-	$scope.cancel = $mdDialog.hide;
-
-	$scope.create = function(){
+	$scope.add = function(isNew){
 		var promises = [];
 		$scope.links = [];
 
@@ -174,38 +212,45 @@ angular.module("mmda")
 					$scope.media[i] = newMedia;
 				}));
 			}
+
+			if(media.type === 'dagr') {
+				media.id = media.selectedDagr.GUID;
+			}
 		});
 
 		$q.all(promises).then(function(){
 			//TO DO Prompt the user to add all extra links to the DAGR
-			console.log($scope.links);
+			// console.log($scope.links);
+			var dagrInfo = {};
+			if($scope.newTitle) dagrInfo.title = $scope.newTitle;
+			if($scope.categoryInput) dagrInfo.category = $scope.categoryInput;
+			if(!isNew) dagrInfo.id = currentDagr.GUID;
 
-			Create.addMedia($scope.media).then(function(dagrID){
+			Create.addMedia($scope.media, dagrInfo).then(function(dagrID){
 				//TO DO show error or refresh page
 				$mdDialog.hide();
-				$state.go('dagr', {'id':dagrID});
+				if(isNew) {
+					$state.go('dagr', {'id':dagrID});
+				} else {
+					$rootScope.$broadcast('$stateChangeSuccess');
+				}
 			});
-			console.log($scope.media);
-			
 		});
 	};
-})
 
-.controller("editDagrCtrl", function($rootScope, $scope, $mdDialog, currentDagr, Search, Update) {
-	$scope.cancel = $mdDialog.hide;
-	$scope.newTitle = currentDagr.NAME;
-	$scope.newCategory = currentDagr.CATEGORY;
-	$scope.categories = Search.getCategories;
+	$scope.invalidMedia = function(){
+		return $scope.media.reduce((invalid, m) => invalid || ( m.type === 'dagr' && !m.selectedDagr ) || (m.type !== 'dagr' && !m.uri), false );		
+	};
 
 	$scope.save = function(){
 		var params = {'id':currentDagr.GUID};
 		if($scope.newTitle && $scope.newTitle !== currentDagr.NAME) params.name = $scope.newTitle;
-		if($scope.searchText && $scope.searchText !== currentDagr.CATEGORY) params.category = $scope.searchText;
+		if($scope.categoryInput && $scope.categoryInput !== currentDagr.CATEGORY) params.category = $scope.categoryInput;
 		Update.dagrInfo(params).then(function(){
 			$mdDialog.hide();
 			$rootScope.$broadcast('$stateChangeSuccess');
 		});
-	}
+	};
 })
 
 .controller("newUserCtrl", function($rootScope, $scope, $mdDialog, User) {

@@ -6,10 +6,11 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var dotenv = require('dotenv').config();
 
-var index = require('./routes/index');
-var create = require('./routes/create');
-var search = require('./routes/search');
-var update = require('./routes/update');
+var indexR = require('./routes/index');
+var createR = require('./routes/create');
+var searchR = require('./routes/search');
+var updateR = require('./routes/update');
+var deleteR = require('./routes/delete');
 
 var app = express();
 
@@ -27,10 +28,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/scripts/lib', express.static(__dirname + '/node_modules'));
 app.use('/local-files', express.static('/'));
 
-app.use('/', index);
-app.use('/create', create);
-app.use('/search', search);
-app.use('/update', update);
+app.use('/', indexR);
+app.use('/create', createR);
+app.use('/search', searchR);
+app.use('/update', updateR);
+app.use('/delete', deleteR);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

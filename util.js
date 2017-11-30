@@ -174,6 +174,23 @@ util.generateFolderSQL = function(media, dagrID){
 	});
 };
 
+util.generateDagrSQL = function(media, dagrID){
+	return db.doConnect().then(function(connection){
+		var sqlQuery = "SELECT MEDIA_GUID FROM DAGR_MEDIA WHERE DAGR_GUID = :guid";
+	    return db.doExecute(connection, sqlQuery, [media.id]).then(function(result) {
+
+	      db.doRelease(connection);
+	      var resultQuery = "";
+
+	      for (var i = 0; i < result.rows.length; i++) {
+	      	resultQuery += "INTO DAGR_MEDIA (DAGR_GUID, MEDIA_GUID) VALUES ('" + dagrID + "','" + result.rows[i].MEDIA_GUID + "')\n"
+	      }
+			console.log(resultQuery);
+	      return resultQuery;
+	    });
+	});
+};
+
 
 module.exports = util;
 

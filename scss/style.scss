@@ -94,14 +94,29 @@ md-dialog {
 
 	md-dialog-content {
 		padding:0 15px;
+
+		h3 {
+			padding: 0 5px;
+			margin-bottom:5px;
+
+			em {
+				font-weight:200;
+				font-size:75%;
+			}
+		}
 	}
 
 	md-dialog-actions {
 		padding:0 15px;
 	}
 
-	.layout-row [flex] {
-		padding:0 10px;
+	.layout-row [flex].auto-complete-container {
+		margin:8px 5px;
+		padding:0 2px;
+	}
+
+	md-autocomplete input:not(.md-input) {
+		font-size:16px;
 	}
 
 	input[type="text"],
@@ -144,7 +159,7 @@ md-autocomplete md-autocomplete-wrap md-progress-linear {
 	bottom:-4px;
 }
 
-.md-autocomplete-suggestions {
+.md-dialog-form.md-autocomplete-suggestions {
 	background:#fff;
 
 	li:hover {
@@ -174,6 +189,7 @@ ul {
 md-chip-template {
 	strong {
 		color: #fff;
+		padding-right:5px;
 	}
 }
 
@@ -183,6 +199,21 @@ md-chips .md-chips {
 
 .md-chips .md-chip-input-container input:not([type]):focus {
 	border-bottom:1px solid $primary;
+}
+
+[md-on-select] md-chip {
+	cursor:pointer;
+	transition: all .3s;
+	box-shadow:$whiteframe-shadow-1dp;
+
+	&:hover {
+		box-shadow:$whiteframe-shadow-2dp;
+		background-color:$primary;
+	}
+
+	.md-chip-remove:hover md-icon{
+		fill:#fff;
+	}
 }
 
 
@@ -334,7 +365,7 @@ ul.dagr-info  {
 		cursor:pointer;
 
 		&:hover {
-			box-shadow:$whiteframe-shadow-8dp;
+			box-shadow:$whiteframe-shadow-10dp;
 		}
 
 		figure {

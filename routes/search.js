@@ -52,12 +52,12 @@ router.get('/get_dagr', function(req, res, next) {
                     "FROM DAGR\n" +
                     "WHERE GUID = :guid";
 
-    var parentsQuery =  "SELECT d.name, dp.PARENT_GUID\n"  + 
+    var parentsQuery =  "SELECT d.name, dp.PARENT_GUID AS GUID\n"  + 
                         "FROM DAGR d, DAGR_PARENT dp\n"  + 
                         "WHERE d.GUID = dp.PARENT_GUID\n"  + 
                         "AND dp.CHILD_GUID = :guid";
 
-    var childrenQuery =  "SELECT d.name, dp.CHILD_GUID\n"  + 
+    var childrenQuery =  "SELECT d.name, dp.CHILD_GUID AS GUID\n"  + 
                          "FROM DAGR d, DAGR_PARENT dp\n"  + 
                          "WHERE d.GUID = dp.CHILD_GUID\n"  + 
                          "AND dp.PARENT_GUID = :guid";
@@ -146,10 +146,111 @@ router.get('/get_categories', function(req, res, next) {
                     "WHERE AUTHOR = :author\n" +
                     "GROUP BY CATEGORY";
 
-    console.log("QUERY: ", sqlQuery);
+    // console.log("QUERY: ", sqlQuery);
     db.doExecute(connection, sqlQuery, [req.query.user]).then(function(result) {
       db.doRelease(connection);
       res.send(result.rows.map(r => r.CATEGORY).filter(c => c !== null));
+    });
+  });
+});
+
+router.get('/get_possible_dagrs', function(req, res, next) {
+  db.doConnect().then(function(connection){
+    var sqlQuery =  "WITH FILES\n"  + 
+                   "AS (SELECT DAGR_GUID, COUNT(MEDIA_GUID) AS MEDIA\n"  + 
+                   "FROM DAGR_MEDIA\n"  + 
+                   "GROUP BY DAGR_GUID)\n"  + 
+                   "SELECT d.GUID, d.NAME, COALESCE(f.MEDIA, 0) AS FILES\n"  + 
+                   "FROM DAGR d\n"  + 
+                   "LEFT JOIN FILES f\n"  + 
+                   "ON d.GUID = f.DAGR_GUID\n"  + 
+                   "WHERE d.NAME LIKE :term\n"  + 
+                   "AND d.AUTHOR = :author" ; 
+
+    // console.log("QUERY: ", sqlQuery);
+    db.doExecute(connection, sqlQuery, [('%' + req.query.term + '%'), req.query.user]).then(function(result) {
+      db.doRelease(connection);
+      res.send(result.rows);
+    });
+  });
+});
+
+router.get('/get_possible_parents', function(req, res, next) {
+  db.doConnect().then(function(connection){
+    var sqlQuery = "WITH MEDIA_COUNT\n"  + 
+                   "AS (SELECT DAGR_GUID, COUNT(MEDIA_GUID) AS MEDIA\n"  + 
+                   "FROM DAGR_MEDIA\n"  + 
+                   "GROUP BY DAGR_GUID)\n"  + 
+                   "SELECT d.GUID, d.NAME, COALESCE(mc.MEDIA, 0) AS MEDIA\n"  + 
+                   "FROM DAGR d\n"  + 
+                   "LEFT JOIN MEDIA_COUNT mc\n"  + 
+                   "ON d.GUID = mc.DAGR_GUID\n"  + 
+                   "LEFT JOIN DAGR_PARENT dp\n"  + 
+                   "ON d.GUID = dp.PARENT_GUID\n"  + 
+                   "WHERE dp.CHILD_GUID IS NULL\n"  + 
+                   "AND d.NAME LIKE :term\n" +
+                   "AND d.GUID != :guid\n"  + 
+                   "AND d.author = :author" ;
+
+    console.log("QUERY: ", sqlQuery);
+    db.doExecute(connection, sqlQuery, [('%' + req.query.term + '%'), req.query.id, req.query.user]).then(function(result) {
+      db.doRelease(connection);
+      res.send(result.rows);
+    });
+  });
+});
+
+
+router.get('/get_possible_children', function(req, res, next) {
+  db.doConnect().then(function(connection){
+    var sqlQuery = "WITH MEDIA_COUNT\n"  + 
+                   "AS (SELECT DAGR_GUID, COUNT(MEDIA_GUID) AS MEDIA\n"  + 
+                   "FROM DAGR_MEDIA\n"  + 
+                   "GROUP BY DAGR_GUID)\n"  + 
+                   "SELECT d.GUID, d.NAME, COALESCE(mc.MEDIA, 0) AS MEDIA\n"  + 
+                   "FROM DAGR d\n"  + 
+                   "LEFT JOIN MEDIA_COUNT mc\n"  + 
+                   "ON d.GUID = mc.DAGR_GUID\n"  + 
+                   "LEFT JOIN DAGR_PARENT dp\n"  + 
+                   "ON d.GUID = dp.CHILD_GUID\n"  + 
+                   "WHERE dp.PARENT_GUID IS NULL\n"  + 
+                   "AND d.NAME LIKE :term\n" +
+                   "AND d.GUID != :guid\n"  + 
+                   "AND d.author = :author" ;
+
+    console.log("QUERY: ", sqlQuery);
+    db.doExecute(connection, sqlQuery, [('%' + req.query.term + '%'), req.query.id, req.query.user]).then(function(result) {
+      db.doRelease(connection);
+      res.send(result.rows);
+    });
+  });
+});
+
+router.get('/get_possible_keywords', function(req, res, next) {
+  db.doConnect().then(function(connection){
+    var sqlQuery = "WITH CURRENT_KEYWORDS\n"  + 
+                    "AS (SELECT KEYWORD\n"  + 
+                    "FROM DAGR_KEYWORD\n"  + 
+                    "WHERE DAGR_GUID = :guid),\n"  + 
+                    "WORD_COUNT\n"  + 
+                    "AS (SELECT KEYWORD, COUNT(DAGR_GUID) AS DAGRS FROM DAGR_KEYWORD GROUP BY KEYWORD )\n"  + 
+                    "SELECT dk.KEYWORD, wc.DAGRS\n"  + 
+                    "FROM DAGR_KEYWORD dk\n"  + 
+                    "LEFT JOIN DAGR d\n"  + 
+                    "ON dk.DAGR_GUID = d.GUID\n"  + 
+                    "LEFT JOIN CURRENT_KEYWORDS ck \n"  + 
+                    "ON dk.KEYWORD = ck.KEYWORD\n"  + 
+                    "LEFT JOIN WORD_COUNT wc\n"  + 
+                    "ON dk.KEYWORD = wc.KEYWORD\n"  + 
+                    "WHERE dk.KEYWORD LIKE :term\n"  + 
+                    "AND ck.keyword IS NULL\n"  + 
+                    "AND d.AUTHOR = :author\n"  + 
+                    "GROUP BY dk.KEYWORD, wc.DAGRS" ; 
+
+    console.log("QUERY: ", sqlQuery);
+    db.doExecute(connection, sqlQuery, [req.query.id, ('%' + req.query.term + '%'), req.query.user]).then(function(result) {
+      db.doRelease(connection);
+      res.send(result.rows);
     });
   });
 });

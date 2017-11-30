@@ -5,7 +5,7 @@
   </md-button>
   <md-menu-content width="2">
     <md-menu-item>
-      <md-button ng-click="editDagr()">
+      <md-button ng-click="editDagr('edit')">
         <md-icon md-menu-align-target>person</md-icon>
         Edit DAGR
       </md-button>
@@ -34,26 +34,77 @@
 	</li>
 	<li flex="33">
 		<em>Parents</em>
-		<md-chips ng-model="parents" md-removable="true" placeholder="Add Parent">
-		    <md-chip-template>
-		      <strong>{{$chip.NAME}}</strong>
-		    </md-chip-template>
-		</md-chips>
+	    <md-chips 
+	    	ng-model="parents" 
+	    	md-autocomplete-snap
+	    	md-no-cache
+	    	md-require-match="true" 
+	    	md-on-add="saveParent($chip)" 
+	    	md-on-remove="removeParent($chip)"
+	    	md-on-select="$state.go('dagr',{'id' : $chip.GUID})">
+	      	<md-autocomplete
+	      		md-autoselect
+	      		md-select-on-match
+	      		md-search-text="searchParent"
+	          	md-items="dagr in getParents(searchParent, activeID)"
+	            placeholder="Add Parent">
+	        	<span>{{dagr.NAME}} ({{dagr.MEDIA}})</span>
+	      	</md-autocomplete>
+	      	<md-chip-template>
+	        	<span>
+	          		<strong>{{$chip.NAME}}</strong>
+	        	</span>
+	      	</md-chip-template>
+	    </md-chips>
 	</li>
 	<li flex="33">
 		<em>Children</em>
-		<md-chips ng-model="children" md-removable="true" placeholder="Add Child">
-		    <md-chip-template>
-		      <strong>{{$chip.NAME}}</strong>
-		    </md-chip-template>
-		</md-chips>
+	    <md-chips 
+	    	ng-model="children" 
+	    	md-autocomplete-snap
+	    	md-no-cache
+	    	md-require-match="true"
+	    	md-on-add="saveChild($chip)" 
+	    	md-on-remove="removeChild($chip)"
+	    	md-on-select="$state.go('dagr',{'id' : $chip.GUID})">
+	      	<md-autocomplete
+	      		md-autoselect
+	      		md-select-on-match
+	      		md-search-text="searchChild"
+	          	md-items="dagr in getChildren(searchChild, activeID)"
+	            placeholder="Add Child">
+	        	<span>{{dagr.NAME}} ({{dagr.MEDIA}})</span>
+	      	</md-autocomplete>
+	      	<md-chip-template>
+	        	<span>
+	          		<strong>{{$chip.NAME}}</strong>
+	        	</span>
+	      	</md-chip-template>
+	    </md-chips>
 	</li>
 	<li flex="33">
 		<em>Tags</em>
-		<md-chips ng-model="keywords" md-removable="true" placeholder="Add Tag">
-		    <md-chip-template>
-		      <strong>{{$chip.NAME}}</strong>
-		    </md-chip-template>
-		</md-chips>
+	    <md-chips 
+	    	ng-model="keywords" 
+	    	md-autocomplete-snap
+	    	md-no-cache 
+	    	md-require-match="false"
+	    	md-transform-chip="transformKeyword($chip)" 
+	    	md-on-add="saveKeyword($chip)" 
+	    	md-on-remove="removeKeyword($chip)">
+	    	<!-- TO DO When cliking on a keyword, go to search state and searck by keyword -->
+	      	<md-autocomplete
+	      		md-select-on-match
+	      		md-search-text="searchKeyword"
+	          	md-items="keyword in getKeywords(searchKeyword, activeID)"
+	            placeholder="Add Tag">
+	        	<span>{{keyword.KEYWORD}} ({{keyword.DAGRS}})</span>
+	      	</md-autocomplete>
+	      	<md-chip-template>
+	        	<span>
+	          		<strong>{{$chip.KEYWORD}}</strong>
+	        	</span>
+	      	</md-chip-template>
+	    </md-chips>
 	</li>
 </ul>
