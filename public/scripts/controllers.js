@@ -2,14 +2,30 @@ angular.module("mmda")
 
 .controller("mainCtrl", function() {})
 
-.controller("headerCtrl", function($scope, $mdDialog, User) {
+.controller("headerCtrl", function($rootScope, $scope, $mdDialog, User) {
 	$scope.user = User;
 
 	$scope.newUser = function(ev) {
-	    $mdDialog.show({
-	      	controller: 'newUserCtrl',
-	      	templateUrl: 'templates/new-username-dialog.html',
-	      	clickOutsideToClose:true
+	    var confirm = $mdDialog.prompt()
+	      .title('New Username')
+	      .textContent('Please enter a username for the account')
+	      .placeholder('Username')
+	      .ariaLabel('Username')
+	      .initialValue(User.getUser())
+	      .required(true)
+	      .ok('OK')
+	      .cancel('Cancel');
+
+	    $mdDialog.show(confirm).then(function(result) {
+	      if(result === ''){
+	      	$scope.newUser();
+	      } else {
+	      	User.setUser(result);
+	      	$rootScope.$broadcast('$stateChangeSuccess');
+	      } 
+	      
+	    }, function() {
+	      if(User.getUser() === '') $scope.newUser();
 	    });
 	};
 
@@ -268,16 +284,16 @@ angular.module("mmda")
 	};
 })
 
-.controller("newUserCtrl", function($rootScope, $scope, $mdDialog, User) {
-	$scope.title = User.getUser() === '' ? "Create User" : "Edit User";
-	$scope.save = function(){
-		if($scope.newUser) {
-			localStorage.user = $scope.newUser;
-			User.setUser($scope.newUser);
-			$mdDialog.hide();
-			$rootScope.$broadcast('$stateChangeSuccess');
-		} 
-	};
+// .controller("newUserCtrl", function($rootScope, $scope, $mdDialog, User) {
+// 	$scope.title = User.getUser() === '' ? "Create User" : "Edit User";
+// 	$scope.save = function(){
+// 		if($scope.newUser) {
+// 			localStorage.user = $scope.newUser;
+// 			User.setUser($scope.newUser);
+// 			$mdDialog.hide();
+// 			$rootScope.$broadcast('$stateChangeSuccess');
+// 		} 
+// 	};
 
-	$scope.cancel = $mdDialog.hide;
-});
+// 	$scope.cancel = $mdDialog.hide;
+// });

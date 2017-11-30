@@ -2,14 +2,12 @@ angular.module('mmda')
 
 /////// SERVICES ///////
 .service ('User', function(){
-  var user = localStorage.user || '';
-
   var getUser = function(){
-    return user;
+    return localStorage.user || '';
   };
 
   var setUser = function(newUser){
-    user = newUser;
+    localStorage.user = newUser;
   };
 
   return {
