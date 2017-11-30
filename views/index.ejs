@@ -19,6 +19,7 @@
   		<script src="/scripts/lib/angular-messages/angular-messages.min.js"></script>
   		<script src="/scripts/lib/angular-material/angular-material.min.js"></script>
   		<script src="/scripts/lib/angular-ui-router/release/angular-ui-router.min.js"></script>
+  		<script src="/scripts/lib/angular-filesize-filter/angular-filesize-filter.js"></script>
 		<!-- <script src="/scripts/lib/angular-md5/angular-md5.js"></script> -->
 		<!-- <script src="/scripts/lib/angular-file-upload.min.js"></script> -->
 
@@ -50,7 +51,7 @@
 		</md-toolbar>
 		
 		<div id="results" class="wrapper" layout="row" flex ng-controller="resultsCtrl">
-			<md-sidenav class="md-whiteframe-1dp" md-is-locked-open="true" flex="20">
+			<md-sidenav class="md-whiteframe-1dp" md-is-locked-open="true" flex="none">
 				<ng-include src="'/templates/dagrs.html'"></ng-include>
 			</md-sidenav>
 

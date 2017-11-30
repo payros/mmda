@@ -10,6 +10,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/all_dagrs', function(req, res, next) {
   db.doConnect().then(function(connection){
+    var resp = [];
     var dagrQuery = "WITH files\n" +
                   "AS (SELECT DAGR_GUID, COUNT(MEDIA_GUID) AS MEDIA\n" +
                   "FROM DAGR_MEDIA\n" +
@@ -32,11 +33,24 @@ router.get('/all_dagrs', function(req, res, next) {
                   "ON d.GUID=c.PARENT_GUID\n" +
                   "WHERE d.author = :author";
 
-    console.log("INFO: username - ", req.query.user);
-    console.log("QUERY: ", dagrQuery);
-    db.doExecute(connection, dagrQuery, [req.query.user]).then(function(result) {
-      db.doRelease(connection);
-      res.send(result.rows);
+    // console.log("QUERY: ", dagrQuery);
+    db.doExecute(connection, dagrQuery, [req.query.user]).then(function(dagrs) {
+      var promises = [];
+      var keywordQuery =  "SELECT keyword\n"  + 
+            "FROM DAGR_KEYWORD\n"  + 
+            "WHERE DAGR_GUID = :guid";
+
+      //Get the keywords for each dagr
+      dagrs.rows.forEach(function(dagr){
+        promises.push(db.doExecute(connection, keywordQuery, [dagr.GUID]).then(function(r) {
+          dagr.KEYWORDS = r.rows.map(r => r.KEYWORD);
+        }));
+      });
+
+      $q.all(promises).then(function(){
+        db.doRelease(connection);
+        res.send(dagrs.rows);
+      });
     });
   });
 
@@ -130,11 +144,25 @@ router.get('/all_media', function(req, res, next) {
                        "   LEFT JOIN LINK_METADATA lm  "  + 
                        "  ON m.GUID = lm.MEDIA_GUID  " ; 
 
-    console.log("INFO: username - ", req.query.user);
-    console.log("QUERY: ", mediaQuery);
-    db.doExecute(connection, mediaQuery, [req.query.user]).then(function(result) {
-      db.doRelease(connection);
-      res.send(result.rows);
+    // console.log("INFO: username - ", req.query.user);
+    // console.log("QUERY: ", mediaQuery);
+    db.doExecute(connection, mediaQuery, [req.query.user]).then(function(results) {
+      var promises = [];
+      var keywordQuery =  "SELECT keyword\n"  + 
+            "FROM MEDIA_KEYWORD\n"  + 
+            "WHERE MEDIA_GUID = :guid";
+
+      //Get the keywords for each dagr
+      results.rows.forEach(function(media){
+        promises.push(db.doExecute(connection, keywordQuery, [media.GUID]).then(function(r) {
+          media.KEYWORDS = r.rows.map(r => r.KEYWORD);
+        }));
+      });
+
+      $q.all(promises).then(function(){
+        db.doRelease(connection);
+        res.send(results.rows);
+      });
     });
   });
 });

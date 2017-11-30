@@ -8,23 +8,44 @@ var $q = require('q');
 var util = {};
 
 //TO DO file hashing is yielding a different hash for identical files in different directories. Figure out why...
-function isDuplicate(val) {	
+function isDuplicate(val, dagrID) {	
     return db.doConnect().then(function(connection){
     	var isLink = val.indexOf('.') > -1;
-		var sqlQuery = "SELECT guid FROM media WHERE " + (isLink ? 'uri' : 'hash') + " = :val";
-		val = isLink ? 'http://' + val : val;
 
+    	if(isLink) {
+    		var sqlQuery = "SELECT guid FROM media WHERE uri = :val";
+    		val = 'http://' + val;
+    	} else {
+    		var sqlQuery = "SELECT media_guid FROM file_metadata WHERE hash = :val";
+    	}
+    	console.log('NEW QUERY: ', sqlQuery);
         return db.doExecute(connection, sqlQuery, [val]).then(function(result) {
-          db.doRelease(connection);
-          return result.rows.length ? result.rows[0]['GUID'] : '';
+        	console.log('QUERY RESULT: ', result.rows);
+
+        	//It's a duplicate. Check if this DAGR already references the original
+        	if(result.rows.length) {
+        		var originalMediaGUID = result.rows[0][isLink ? 'GUID' : 'MEDIA_GUID'];
+	    		var sqlQuery = "SELECT DAGR_GUID FROM DAGR_MEDIA WHERE MEDIA_GUID = :media AND DAGR_GUID = :dagr";
+
+		        return db.doExecute(connection, sqlQuery, [originalMediaGUID, dagrID]).then(function(r) {
+		        	console.log('QUERY RESULT: ', r);
+		        	db.doRelease(connection);
+		        	return r.rows.length ? 'exists' : originalMediaGUID;
+		        });	
+
+        	//It's not a duplicate. Return an empty string
+        	} else {
+        		db.doRelease(connection);
+        		return '';
+        	}
         });
     });
 }
 
 function metaToSQL(meta, dagrID) {
 	//Check for duplicates
-	return isDuplicate(meta.path).then(function(duplicate) {
-		var SQL = "";
+	return isDuplicate(meta.hash, dagrID).then(function(duplicate) {
+		var SQL = "";	
 
 		//If it's a new file
 		if(duplicate === '') {
@@ -41,7 +62,7 @@ function metaToSQL(meta, dagrID) {
 			//TO DO write function get author that will look for author based on file type
 			if(meta.uid) {
 				columns += ",AUTHOR";
-				values += ",'" + os.username(meta.uid) + "'";
+				values += ",'" + os.userInfo().username + "'";
 			}
 
 			SQL += "INTO MEDIA (" + columns + ") VALUES (" + values + ")\n"
@@ -51,12 +72,15 @@ function metaToSQL(meta, dagrID) {
 
 			//INSERT INTO DAGR_MEDIA TABLE
 			SQL += "INTO DAGR_MEDIA (DAGR_GUID,MEDIA_GUID) VALUES ('" + dagrID + "','" + meta.guid + "')\n"	
+		} else if (duplicate === 'exists') {
+			console.log("INFO: " + meta.path + " already referenced in this DAGR. Duplicates are not allowed");
 		} else {
 			//TO DO, check if the the media is already referencing this dagrID so we don't insert it twice (which violates the PK for the table)
 
 			//INSERT INTO DAGR_MEDIA TABLE
-			SQL += "INTO DAGR_MEDIA (DAGR_GUID,MEDIA_GUID) VALUES ('" + dagrID + "','" + meta.guid + "')\n"
+			SQL += "INTO DAGR_MEDIA (DAGR_GUID,MEDIA_GUID) VALUES ('" + dagrID + "','" + duplicate + "')\n"
 		}
+
 		return SQL;			
 	});
 }
@@ -72,6 +96,10 @@ util.getName = function(media) {
 
 		case 'folder':
 			return media.uri.match(/([^\\\/]+)$/)[1];
+
+		case 'dagr':
+			//TO DO append an index after the string based on the number of similar titles
+			return 'DAGR Collection';
 	
 	}
 };
@@ -83,6 +111,14 @@ util.getType = function(extension) {
 		case 'jpeg':
 		case 'png':
 			return 'image';
+
+		case 'mp4':
+			return 'video';
+
+		case 'wav':
+		case 'mp3':
+			return 'audio';
+
 		default:
 			return 'other';
 	}
@@ -91,9 +127,9 @@ util.getType = function(extension) {
 util.generateLinkSQL = function(media, dagrID){
 	
 	//Check for duplicates
-	return isDuplicate(media.uri).then(function(duplicate) {
+	return isDuplicate(media.uri, dagrID).then(function(duplicate) {
 		var query = "";
-
+		console.log("IS DUPLICATE RESULT: ", duplicate);
 		if(duplicate === '') {
 			media.guid = Guid.raw();
 
@@ -121,13 +157,15 @@ util.generateLinkSQL = function(media, dagrID){
 			}
 			
 			//INSERT INTO DAGR_MEDIA TABLE
-			query += "INTO DAGR_MEDIA (DAGR_GUID,MEDIA_GUID) VALUES ('" + dagrID + "','" + media.guid + "')\n"		
-		} else {
-			console.log('INFO: ' + media.uri + ' already exists in the DB. Skipping.')
-		}
+			query += "INTO DAGR_MEDIA (DAGR_GUID,MEDIA_GUID) VALUES ('" + dagrID + "','" + media.guid + "')\n"	
 
-		return query;			
-		
+		} else if (duplicate === 'exists'){
+			console.log("INFO: " + media.uri + " already referenced in this DAGR. Duplicates are not allowed");
+		} else {
+			query += "INTO DAGR_MEDIA (DAGR_GUID,MEDIA_GUID) VALUES ('" + dagrID + "','" + duplicate + "')\n"
+		}		
+
+		return query;
 	});
 };
 
@@ -135,7 +173,8 @@ util.generateFileSQL = function(media, dagrID){
 	// TO DO Handle exceptions (NO File found, permission errors, etc)
 	return fsm.getMeta(media.uri).then(function (meta) {
 		meta.guid = Guid.raw();
-		meta.hash = hashFiles.sync({"files":media.uri});
+		meta.hash = hashFiles.sync({"algorithm":'md5', "files":media.uri});
+		console.log(meta.hash);
 		return metaToSQL(meta, dagrID).then(function(SQL){
 			return SQL;
 		});

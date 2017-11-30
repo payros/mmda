@@ -216,6 +216,30 @@ md-chips .md-chips {
 	}
 }
 
+ul.mini-chips {
+    margin: 0;
+    padding: 0;
+    margin-top: 0px;
+    height: 30px;
+    max-width: 100%;
+    overflow: hidden;
+
+
+	li {
+	    font-size: 12px;
+	    font-weight: 500;
+	    color: #fff;
+	    display: inline-block;
+	    padding: 3px 6px;
+	    margin: 3px;
+	    border-radius: 15px;
+
+	    &:first-child {
+	    	margin-left:0;
+	    }
+	}
+}
+
 
 
 /****** APP COMPONENTS ******/
@@ -232,6 +256,14 @@ md-chips .md-chips {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+
+.empty-message {
+	transform: translate(-50%,-50%);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    color:lighten($primary, 45);
 }
 
 .header {
@@ -287,6 +319,7 @@ md-toolbar.search {
 
 md-sidenav {
 	padding:0 10px;
+	width:260px;
 	background:transparent;
 }
 
@@ -372,10 +405,11 @@ ul.dagr-info  {
 			display: block;
 		}
 
+
 		h3.tile-title {
 			margin:0;
 			font-size:16px;
-			min-height: 38px;
+			// min-height: 38px;
 
 			span {
 			    font-size: 12px;
@@ -386,6 +420,14 @@ ul.dagr-info  {
 			}
 		}
 
+		em.tile-date {
+			text-align: right;
+		    font-size: 12px;
+		    font-weight: 400;
+		    margin-top: 5px;
+		    font-style: italic;
+		}
+
 		p {
 			margin:0;
 			font-size:14px;
@@ -393,6 +435,7 @@ ul.dagr-info  {
 			&:first-child md-icon {
 				line-height:30px;
 				height:36px;
+				width:36px;
 			}
 
 			strong {
@@ -409,8 +452,13 @@ ul.dagr-info  {
 	}
 
 	md-grid-tile {
-		color:$primary;
+		color:lighten($primary, 20);
 		background:lighten($primary, 45);
+
+		.mini-chips > li {
+			background: lighten($primary, 30);
+		}
+
 
 		&.active {
 			background:$primary;
@@ -418,22 +466,27 @@ ul.dagr-info  {
 				color:#fff;
 			}
 
-			p, md-icon, strong, span {
+			p, md-icon, strong, span, em {
 				color:#ddd;
+			}
+
+			.mini-chips > li {
+				color:#eee;
+				background:darken($primary, 10);
 			}
 		}
 
 		figure {
 			padding: 10px 15px;
 
-		    > div {
-				margin-top: 10px;
+		    > div:not(:first-child) {
+				margin-top: 5px;
 			}
 		}
 
 		p {
 			md-icon, strong {
-				color:lighten($primary, 5);
+				color:lighten($primary, 20);
 			}			
 		}
 
@@ -451,12 +504,16 @@ ul.dagr-info  {
 		color:$accent;
 		background-color:lighten($accent, 15);
 
+		.mini-chips > li {
+			background: $accent;
+		}
+
 		&.add-media {
 			background-color: transparent;
 		    box-shadow: none;
 		    border: 5px dashed lighten($accent, 15);
 		    transition:all .3s;
-		    padding-top: calc(((13.3333% - 0.666667em) * 1) - 10px) !important;
+		    padding-top:calc(((20% - 0.5em) * 1) - 10px) !important;
 
 		    h3 {
 		    	font-size:26px;
@@ -504,6 +561,27 @@ ul.dagr-info  {
     			height: 100%;
     			position:relative;
 				z-index:1;
+				border-radius: 5px 0 0 5px;
+			}
+
+			.play-button {
+				z-index:2;
+				width: 100%;
+			    padding: 52% 0;
+			    color:#fff;
+			    text-align: center;
+			    box-shadow:$whiteframe-shadow-2dp;
+			    transform: translate(-50%,-50%) scale(1.5);
+			}
+
+			video {
+			    width: 230%;
+			    position: absolute;
+			    z-index: 1;
+			    border-radius: 5px 0 0 5px;
+			    bottom: 0;
+			    left: -50%;
+				border-radius: 5px 0 0 5px;				
 			}
 
 			iframe {
@@ -519,12 +597,24 @@ ul.dagr-info  {
 
 		.tile-info {
 			padding:10px;
+			position:relative;
 
+			div[layout=column] {
+				position: absolute;
+			    left: 10px;
+			    right: 10px;
+			    bottom: 10px;
+			    top:30px;
+			}
+			
 			 p {
+			 	  margin:3px 0;
 			 	  white-space: nowrap;
 				  overflow: hidden;
 				  text-overflow: ellipsis;
 			 }
+
+
 		}
 	}
 	

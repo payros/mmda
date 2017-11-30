@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/add_media', function(req, res, next) {
-  
+
   var dagrAuthor = req.body.user;
   var dagrID = req.body.dagrID || Guid.raw();
   var mediaList = req.body.media;
@@ -39,6 +39,7 @@ router.post('/add_media', function(req, res, next) {
   			break;
 
   		case 'file':
+        console.log('here');
   			promises.push(util.generateFileSQL(media, dagrID).then(function(sql){
           console.log(sql);
           sqlQuery += sql;

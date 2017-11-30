@@ -1,27 +1,49 @@
 <h1><md-icon class="md" style="line-height: 30px;">perm_media</md-icon>  Media</h1>
 <!-- <h2 ng-if="state === 'dagr'">Media</h2> -->
+<div class="media-category" ng-if="!types.length && activeID">
+	<md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-lg="3" md-cols-xl="5" md-gutter="1em" md-row-height="5:2">
+		<md-grid-tile  class="add-media" ng-click="editDagr('add')">
+			<h3>ADD MEDIA</h3>
+		</md-grid-tile>
+	</md-grid-list>
+</div>
 <div ng-repeat="type in types" class="media-category">
  	<h3>{{type | capitalize}}</h3>
 	<md-divider></md-divider><br>
-	<md-grid-list md-cols="3" md-gutter="1em" md-row-height="5:2">
-	<md-grid-tile ng-if="$first && state === 'dagr'" class="add-media" ng-click="editDagr('add')">
-		<h3>ADD MEDIA</h3>
-	</md-grid-tile>
-  	<md-grid-tile ng-repeat="m in media | filter : {'TYPE':type}" class="md-whiteframe-2dp">
-  		<div class="tile-content" layout="row">
-	  		<div class="tile-thumb" flex="30">
-	  			<img ng-if="m.TYPE === 'image'" ng-src="/local-files/{{m.URI | normalizePath}}"/>
-	  			<audio ng-if="m.TYPE === 'audio'" controls>
-				  <source ng-src="/local-files/{{m.URI | normalizePath}}">
-				</audio>
-	  			<!-- <iframe ng-if="m.TYPE === 'link'" ng-src="{{proxy + m.URI}}"></iframe> -->
-	  			<md-icon class="md">{{catIcons[m.TYPE]}}</md-icon>
-	  		</div>
-	  		<div class="tile-info" flex>
-		  		<h3 class="tile-title truncate">{{m.NAME}}<span>{{m.CREATE_DATE || m.INSERT_DATE | date}}</span></h3>
-		  		<p title="{{m.uri}}"><strong>{{m.URI}}</strong></p>
-  			</div>
-		</div>
-	</md-grid-tile>
+	<md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-lg="3" md-cols-xl="5" md-gutter="1em" md-row-height="5:2">
+		<md-grid-tile ng-if="$first && state === 'dagr'" class="add-media" ng-click="editDagr('add')">
+			<h3>ADD MEDIA</h3>
+		</md-grid-tile>
+	  	<md-grid-tile ng-repeat="m in media | filter : {'TYPE':type}" class="md-whiteframe-2dp" ng-init="videoPaused = true">
+	  		<div class="tile-content" layout="row">
+		  		<div class="tile-thumb" flex="30">
+		  			<md-icon class="md">{{catIcons[m.TYPE]}}</md-icon>
+		  			<img ng-if="m.TYPE === 'image'" ng-src="/local-files/{{m.URI | normalizePath}}"/>
+		  			<audio ng-if="m.TYPE === 'audio'" controls>
+					  <source ng-src="/local-files/{{m.URI | normalizePath}}">
+					</audio>
+					<md-icon ng-if="m.TYPE === 'video'" ng-click="videoPaused = toggleVideo('video' + $index, videoPaused)" class="md play-button"  ng-style="{'opacity' : videoPaused ? 1 : 0}">play_arrow</md-icon>
+					<video id="{{'video' + $index}}" ng-if="m.TYPE === 'video'" >
+					  	<source ng-src="/local-files/{{m.URI | normalizePath}}">
+					</video>
+		  			<!-- <iframe ng-if="m.TYPE === 'link'" ng-src="{{proxy + m.URI}}"></iframe> -->
+		  		</div>
+		  		<div class="tile-info" flex>
+		  			<div layout="row">
+				  		<h3 class="tile-title truncate" flex="60">{{m.NAME}}</h3>
+				  		<em class="tile-date" flex>{{m.CREATE_DATE || m.INSERT_DATE | date}}</em>
+			  		</div>
+			  		<div layout="column" layout-align="space-around left">
+				  		<p title="{{m.uri}}" flex><strong>{{m.URI}}</strong></p>
+				  		<p ng-if="m.DESCRIPTION" title="description" class="truncate" flex>{{m.DESCRIPTION}}</p>
+				  		<p ng-if="m.SIZE" title="size" flex><em>size </em><strong>{{m.SIZE | filesize}}</strong></p>
+				  		<ul ng-if="m.KEYWORDS.length" class="mini-chips" flex="none">
+				  			<li ng-repeat="k in m.KEYWORDS">{{k}}</li>
+				  		</ul>
+			  		</div>
+	  			</div>
+			</div>
+		</md-grid-tile>
 	</md-grid-list>
 </div>
+<h2 class="empty-message" ng-if="!types.length && !activeID">NO MEDIA</h2>

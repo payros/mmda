@@ -1,4 +1,4 @@
-angular.module('mmda', ['ngMaterial', 'ui.router'])
+angular.module('mmda', ['ngMaterial', 'ui.router', 'ngFilesizeFilter'])
 
 .constant('Proxy', 'https://unlimited-cors.herokuapp.com/')
 

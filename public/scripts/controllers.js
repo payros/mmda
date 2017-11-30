@@ -87,6 +87,19 @@ angular.module("mmda")
 	    });
 	};
 
+	$scope.toggleVideo = function(vidID){
+		var video = document.getElementById(vidID);
+
+		if(video.paused) {
+			video.play();
+		} else {
+			video.pause();
+		}
+
+		return video.paused;
+		
+	}
+
 
 	//When a new URL is loaded, get new data based on the URL
 	$rootScope.$on('$stateChangeSuccess', function () {
