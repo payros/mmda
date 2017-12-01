@@ -107,6 +107,7 @@ util.getType = function(extension) {
 		case 'jpg':
 		case 'jpeg':
 		case 'png':
+		case 'gif':
 			return 'image';
 
 		case 'mp4':

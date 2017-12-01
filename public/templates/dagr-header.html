@@ -40,8 +40,7 @@
 	    	md-no-cache
 	    	md-require-match="true" 
 	    	md-on-add="saveParent($chip)" 
-	    	md-on-remove="removeParent($chip)"
-	    	md-on-select="$state.go('dagr',{'id' : $chip.GUID})">
+	    	md-on-remove="removeParent($chip)">
 	      	<md-autocomplete
 	      		md-autoselect
 	      		md-select-on-match
@@ -50,7 +49,7 @@
 	            placeholder="Add Parent">
 	        	<span>{{dagr.NAME}} ({{dagr.MEDIA}})</span>
 	      	</md-autocomplete>
-	      	<md-chip-template>
+	      	<md-chip-template ng-click="$state.go('dagr',{'id' : $chip.GUID})">
 	        	<span>
 	          		<strong>{{$chip.NAME}}</strong>
 	        	</span>
@@ -65,8 +64,7 @@
 	    	md-no-cache
 	    	md-require-match="true"
 	    	md-on-add="saveChild($chip)" 
-	    	md-on-remove="removeChild($chip)"
-	    	md-on-select="$state.go('dagr',{'id' : $chip.GUID})">
+	    	md-on-remove="removeChild($chip)">
 	      	<md-autocomplete
 	      		md-autoselect
 	      		md-select-on-match
@@ -75,13 +73,13 @@
 	            placeholder="Add Child">
 	        	<span>{{dagr.NAME}} ({{dagr.MEDIA}})</span>
 	      	</md-autocomplete>
-	      	<md-chip-template>
+	      	<md-chip-template ng-click="$state.go('dagr',{'id' : $chip.GUID})">
 	        	<span>
 	          		<strong>{{$chip.NAME}}</strong>
 	        	</span>
 	      	</md-chip-template>
 	    </md-chips>
-	</li>
+	</li>git commit -m "Fix chip propagation error"
 	<li flex="33">
 		<em>Tags</em>
 	    <md-chips 

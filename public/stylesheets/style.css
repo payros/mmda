@@ -433,7 +433,7 @@ ul.dagr-info em {
       transform: scale(0.1);
       transform-origin: top left;
       width: 1000%;
-      height: 1000%;
+      height: 3000px;
       position: relative;
       z-index: 1;
       background: #fff; }
@@ -442,9 +442,9 @@ ul.dagr-info em {
         height: 100%;
         transform: none; }
       .media-category md-grid-tile .tile-thumb iframe.half-width {
-        width: 200%;
-        height: 200%;
-        transform: scale(0.5); }
+        width: 400%;
+        height: 2000px;
+        transform: scale(0.25); }
   .media-category md-grid-tile .tile-info {
     padding: 10px;
     position: relative; }
