@@ -80,7 +80,7 @@ router.get('/get_dagr', function(req, res, next) {
                         "FROM DAGR_KEYWORD\n"  + 
                         "WHERE DAGR_GUID = :guid";
 
-    var mediaQuery =  "SELECT m.guid, m.name, m.type, m.uri, m.author, m.insert_date, fm.\"SIZE\", fm.create_date, lm.description\n"  + 
+    var mediaQuery =  "SELECT m.guid, m.name, m.type, m.uri, m.author, m.insert_date, dm.reference_date, fm.\"SIZE\", fm.create_date, fm.modify_date, lm.description\n"  + 
                       "FROM MEDIA m\n"  + 
                       "JOIN DAGR_MEDIA dm\n"  + 
                       "ON m.GUID = dm.MEDIA_GUID\n"  + 

@@ -6,7 +6,10 @@ angular.module("mmda")
 	$scope.user = User;
 
 	$scope.newUser = function(ev) {
-	    var confirm = $mdDialog.prompt()
+	    var confirm = $mdDialog.prompt({onComplete: function() {
+                        angular.element(document.querySelector("button[ng-click='dialog.hide()']")).addClass('md-raised md-accent');
+                        angular.element(document.querySelector("button[ng-click='dialog.abort()']")).addClass('md-raised');
+                    }})
 	      .title('New Username')
 	      .textContent('Please enter a username for the account')
 	      .placeholder('Username')
@@ -38,10 +41,9 @@ angular.module("mmda")
 	};
 })
 
-.controller("resultsCtrl", function($rootScope, $scope, $state, $stateParams, $mdDialog, Create, Search, Delete, Proxy, Categories){
+.controller("resultsCtrl", function($rootScope, $scope, $state, $stateParams, $mdDialog, Create, Search, Delete, Proxy){
 	$scope.$state = $state;
 	$scope.proxy = Proxy;
-	$scope.catIcons = Categories;
 	$scope.getParents = Search.getPossibleParents;
 	$scope.getChildren = Search.getPossibleChildren;
 	$scope.getKeywords = Search.getPossibleKeywords;
@@ -78,27 +80,7 @@ angular.module("mmda")
 		}
 	}
 
-	$scope.editDagr = function(formType) {
-	    $mdDialog.show({
-	    	locals: {currentDagr: $scope.dagr || null, formType:formType},
-	      	controller: 'editDagrCtrl',
-	      	templateUrl: 'templates/edit-dagr-dialog.html',
-	      	clickOutsideToClose:true
-	    });
-	};
 
-	$scope.toggleVideo = function(vidID){
-		var video = document.getElementById(vidID);
-
-		if(video.paused) {
-			video.play();
-		} else {
-			video.pause();
-		}
-
-		return video.paused;
-		
-	}
 
 
 	//When a new URL is loaded, get new data based on the URL
@@ -156,7 +138,10 @@ angular.module("mmda")
 	};
 
 	$scope.deleteDagr = function(){
-	    var confirm = $mdDialog.confirm()
+	    var confirm = $mdDialog.confirm({onComplete: function() {
+                        angular.element(document.querySelector("button[ng-click='dialog.hide()']")).addClass('md-raised md-warn');
+                        angular.element(document.querySelector("button[ng-click='dialog.abort()']")).addClass('md-raised');
+                    }})
 	      .title('Delete DAGR?')
 	      .textContent('You will lose all media references. This action is irreversible')
 	      .ariaLabel('Confirm DAGR Deletion')
@@ -168,6 +153,38 @@ angular.module("mmda")
 				$state.go('home');
 			});
 		});
+	};
+
+	$scope.showMedia = function(ev, media) {
+		$mdDialog.show({
+		  locals:{Media:media},
+		  controller: 'mediaDetailsCtrl',
+		  templateUrl: 'templates/media-dialog.html',
+		  openFrom:ev.currentTarget,
+		  clickOutsideToClose:true
+		});
+	};
+
+	$scope.editDagr = function(formType) {
+	    $mdDialog.show({
+	    	locals: {currentDagr: $scope.dagr || null, formType:formType},
+	      	controller: 'editDagrCtrl',
+	      	templateUrl: 'templates/edit-dagr-dialog.html',
+	      	clickOutsideToClose:true
+	    });
+	};
+
+	$scope.toggleVideo = function(ev, vidID){
+		ev.stopPropagation();
+		var video = document.getElementById(vidID);
+
+		if(video.paused) {
+			video.play();
+		} else {
+			video.pause();
+		}
+
+		return video.paused;	
 	};
 })
 
@@ -297,16 +314,8 @@ angular.module("mmda")
 	};
 })
 
-// .controller("newUserCtrl", function($rootScope, $scope, $mdDialog, User) {
-// 	$scope.title = User.getUser() === '' ? "Create User" : "Edit User";
-// 	$scope.save = function(){
-// 		if($scope.newUser) {
-// 			localStorage.user = $scope.newUser;
-// 			User.setUser($scope.newUser);
-// 			$mdDialog.hide();
-// 			$rootScope.$broadcast('$stateChangeSuccess');
-// 		} 
-// 	};
-
-// 	$scope.cancel = $mdDialog.hide;
-// });
+.controller("mediaDetailsCtrl", function($scope, $stateParams, $mdDialog, Media){
+	$scope.media = Media;
+	$scope.cancel = $mdDialog.hide;
+	$scope.activeID = $stateParams.id;
+});

@@ -1,0 +1,71 @@
+<md-dialog class="media-dialog" aria-label="{{media.NAME}}">
+  <form ng-cloak>
+    <md-toolbar ng-class="media.TYPE === 'other' || media.TYPE === 'link' ? '' : 'preview'">
+      <div class="md-toolbar-tools">
+        <h2><md-icon class="md" style="margin-right:5px;">{{media.TYPE | catIcon}}</md-icon> {{media.NAME}}</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon aria-label="Close dialog">close</md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <div class="media-preview">
+            <img ng-if="media.TYPE === 'image'" ng-src="{{media.URI | normalizePath }}"/>
+            <audio ng-if="media.TYPE === 'audio'" controls>
+                <source ng-src="{{media.URI | normalizePath }}">
+            </audio>
+            <video id="{{'video' + $index}}" ng-if="media.TYPE === 'video'" controls>
+                <source ng-src="{{media.URI | normalizePath }}">
+            </video>
+            <iframe ng-if="media.TYPE | isIframe" ng-src="{{media.URI | normalizePath }}" ng-attr-sandbox="{{media.TYPE === 'link' ? 'allow-forms allow-scripts' : undefined}}"></iframe>
+      </div>
+      <div class="md-dialog-content">
+        <h2 style="display:inline;">
+          <md-tooltip md-direction="bottom left">Open or Download</md-tooltip>
+          <a class="md-accent" target="_blank" href="{{media.URI | normalizePath}}">{{media.URI}}</a>
+        </h2>
+        <p ng-if="media.DESCRIPTION">{{media.DESCRIPTION}}</p>
+
+        <ul class="media-meta" layout="row" layout-wrap>
+          <li ng-if="media.INSERT_DATE" flex="33">
+            <label>Insert Date</label>
+            <h4>{{media.INSERT_DATE | date}}</h4>
+          </li>
+          <li ng-if="media.CREATE_DATE" flex="33">
+            <label>Create Date</label>
+            <h4>{{media.CREATE_DATE | date}}</h4>
+          </li>
+          <li ng-if="media.MODIFY_DATE" flex="33">
+            <label>Modify Date</label>
+            <h4>{{media.MODIFY_DATE | date}}</h4>
+          </li>
+          <li ng-if="media.TYPE" flex="33">
+            <label>Type</label>
+            <h4>{{media.TYPE | uppercase}}</h4>
+          </li>
+          <li ng-if="media.AUTHOR" flex="33">
+            <label>Author</label>
+            <h4>{{media.AUTHOR}}</h4>
+          </li>
+          <li ng-if="media.SIZE" flex="33">
+            <label>File Size</label>
+            <h4>{{media.SIZE | filesize}}</h4>
+          </li>
+
+        </ul>
+        <ul ng-if="m.KEYWORDS.length" class="mini-chips">
+          <li ng-repeat="k in m.KEYWORDS">{{k}}</li>
+        </ul>
+
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button ng-if="activeID" class="md-warn">Remove</md-button>
+      <span flex></span>
+      <md-button ng-click="cancel()" class="md-accent md-raised">OK</md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

@@ -8,6 +8,13 @@ angular.module('mmda')
   }
 })
 
+.filter('uppercase', function() {
+  return function(input) {
+    if (!input) return input;
+    return input.toUpperCase();
+  }
+})
+
 .filter('percent', function() {
   return function(input) {
   	var multiplier = 20;
@@ -38,9 +45,58 @@ angular.module('mmda')
   };
 })
 
-.filter('normalizePath', function() {
+.filter('normalizePath', function($sce, Proxy) {
   return function(input) {
     if (!input) return input;
-    return input.replace(/^[A-Z]:\\/, "");
+    if(input.indexOf("http://") > -1) {
+      var uri = input;
+    } else {
+      var uri =  '/local-files/' + input.replace(/^[A-Z]:\\/, "");
+    }
+    return $sce.trustAsResourceUrl(uri);
+  }
+})
+
+.filter('catIcon', function(){
+  return function(input) {
+    switch(input) {
+      case 'html':
+        return 'web';
+      case 'image':
+        return 'photo';
+      case 'audio':
+        return 'music_note';
+      case 'pdf':
+        return 'picture_as_pdf';
+      case 'text':
+        return 'library_books';
+      case 'video':
+        return 'theaters';
+      case 'other':
+        return 'insert_drive_file';
+      default:
+        return input;
+    }
+  }
+})
+
+.filter('isIframe', function(){
+  return function(input) {
+  if (!input) return false;
+    return input === 'link' || input === 'html' || input === 'pdf' || input === 'code' || input === 'text';
+  }
+})
+
+.filter('frameWidth', function(){
+  return function(input) {
+    switch(input) {
+      case 'pdf':
+        return 'full-width';
+      case 'text':
+      case 'code':
+        return 'half-width';
+      default:
+        return '';
+    }
   }
 });

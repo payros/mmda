@@ -116,6 +116,22 @@ util.getType = function(extension) {
 		case 'mp3':
 			return 'audio';
 
+		case 'html':
+			return 'html';
+
+		case 'pdf':
+			return 'pdf';
+
+		case 'txt':
+		case 'doc':
+			return 'text';
+
+		case 'sass':
+		case 'css':
+		case 'js':
+			return 'code';
+
+
 		default:
 			return 'other';
 	}

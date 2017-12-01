@@ -147,6 +147,98 @@ md-dialog {
 		margin:5px;
 	}
 
+
+	&.media-dialog {
+		position:relative;
+		background-color:lighten($accent, 10);
+
+		md-toolbar {
+			position:absolute;
+			z-index:1;
+			background:transparent;
+
+			// h2, md-icon {
+			// 	font-size:30px;
+			// 	color:darken($accent,40);
+			// }
+
+			h2, md-icon {
+				color:lighten($accent,80);
+				text-shadow:1px 1px 6px rgba(0,0,0, 0.3);
+
+			}	
+		}
+
+		&.md-transition-in {
+			transform: none;
+		}
+
+		md-dialog-content {
+			padding:0;
+
+			h2, md-icon, p {
+				color:#444;
+			}
+
+			a:not(.md-button).md-accent {
+				color:darken($accent,20);
+				text-decoration:none;
+				transition: all .3s;
+
+				&:hover {
+					color:darken($accent,40);
+					text-shadow:1px 1px 1px rgba(0,0,0, 0.25);
+				}
+			} 
+		}
+
+		.media-preview {
+			background:$accent;
+			width:100%;
+			min-height:64px;
+			position:relative;
+			overflow: hidden;
+
+			video {
+				width:100%;
+			}
+
+			audio {
+				width: 100%;
+    			margin-top: 64px;
+			}
+
+			img {
+				width:100%;
+			}
+
+			iframe {
+				border:none;
+				width: 100%;
+    			height: 350px;
+    			margin-top:64px;
+
+    			background:#fff;
+			}
+		}
+
+		.media-meta {
+			list-style:none;
+			padding:0;
+			margin:20px 0 10px;
+
+			li {
+				label {
+					font-size: 12px;
+    				font-style: italic;
+				}
+
+				h4 {
+					margin-top:0;
+				}
+			}
+		}
+	}
 }
 
 md-autocomplete .md-show-clear-button button {
@@ -497,12 +589,13 @@ ul.dagr-info  {
 
 .media-category  {
 	> h3 {
-		color:lighten($accent, 5);
+		color:$accent;
 	}
 
 	md-grid-tile {
 		color:$accent;
 		background-color:lighten($accent, 15);
+		background-color:lighten($accent, 10);
 
 		.mini-chips > li {
 			background: $accent;
@@ -546,6 +639,7 @@ ul.dagr-info  {
 			position:relative;
 			border-radius:5px 0 0 5px;
 			background-color:adjust-color($accent, $lightness:20%, $saturation:-20%);
+			background-color:$accent;
 			overflow:hidden;
 
 			md-icon {
@@ -553,6 +647,7 @@ ul.dagr-info  {
 			    left: 50%;
 			    top: 50%;
 			    transform: translate(-50%,-50%);
+			    color:#fff;
 			}
 
 			img {
@@ -592,6 +687,19 @@ ul.dagr-info  {
   				height: 1000%;
   				position:relative;
 				z-index:1;
+				background:#fff;
+
+				&.full-width {
+					width:100%;
+					height:100%;
+					transform:none;
+				}
+
+				&.half-width {
+					width:200%;
+					height:200%;
+					transform: scale(0.5);
+				}
 			}
 		}
 

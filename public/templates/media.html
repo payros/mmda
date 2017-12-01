@@ -14,24 +14,24 @@
 		<md-grid-tile ng-if="$first && state === 'dagr'" class="add-media" ng-click="editDagr('add')">
 			<h3>ADD MEDIA</h3>
 		</md-grid-tile>
-	  	<md-grid-tile ng-repeat="m in media | filter : {'TYPE':type}" class="md-whiteframe-2dp" ng-init="videoPaused = true">
+	  	<md-grid-tile ng-repeat="m in media | filter : {'TYPE':type}" class="md-whiteframe-2dp" ng-init="videoPaused = true" ng-click="showMedia($event, m)">
 	  		<div class="tile-content" layout="row">
 		  		<div class="tile-thumb" flex="30">
-		  			<md-icon class="md">{{catIcons[m.TYPE]}}</md-icon>
-		  			<img ng-if="m.TYPE === 'image'" ng-src="/local-files/{{m.URI | normalizePath}}"/>
+		  			<md-icon class="md">{{m.TYPE | catIcon}}</md-icon>
+		  			<img ng-if="m.TYPE === 'image'" ng-src="{{m.URI | normalizePath}}"/>
 		  			<audio ng-if="m.TYPE === 'audio'" controls>
-					  <source ng-src="/local-files/{{m.URI | normalizePath}}">
+					  <source ng-src="{{m.URI | normalizePath}}">
 					</audio>
-					<md-icon ng-if="m.TYPE === 'video'" ng-click="videoPaused = toggleVideo('video' + $index, videoPaused)" class="md play-button"  ng-style="{'opacity' : videoPaused ? 1 : 0}">play_arrow</md-icon>
+					<md-icon ng-if="m.TYPE === 'video'" ng-click="videoPaused = toggleVideo($event, 'video' + $index, videoPaused)" class="md play-button"  ng-style="{'opacity' : videoPaused ? 1 : 0}">play_arrow</md-icon>
 					<video id="{{'video' + $index}}" ng-if="m.TYPE === 'video'" >
-					  	<source ng-src="/local-files/{{m.URI | normalizePath}}">
+					  	<source ng-src="{{m.URI | normalizePath}}">
 					</video>
-		  			<!-- <iframe ng-if="m.TYPE === 'link'" ng-src="{{proxy + m.URI}}"></iframe> -->
+		  			<iframe ng-class="m.TYPE | frameWidth" ng-if="m.TYPE | isIframe" ng-src="{{m.URI | normalizePath}}" ng-attr-sandbox="{{m.TYPE === 'link' ? 'allow-forms allow-scripts' : undefined}}"></iframe>
 		  		</div>
 		  		<div class="tile-info" flex>
 		  			<div layout="row">
 				  		<h3 class="tile-title truncate" flex="60">{{m.NAME}}</h3>
-				  		<em class="tile-date" flex>{{m.CREATE_DATE || m.INSERT_DATE | date}}</em>
+				  		<em class="tile-date" flex>{{m.REFERENCE_DATE | date}}</em>
 			  		</div>
 			  		<div layout="column" layout-align="space-around left">
 				  		<p title="{{m.uri}}" flex><strong>{{m.URI}}</strong></p>

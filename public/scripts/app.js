@@ -2,23 +2,14 @@ angular.module('mmda', ['ngMaterial', 'ui.router', 'ngFilesizeFilter'])
 
 .constant('Proxy', 'https://unlimited-cors.herokuapp.com/')
 
-.constant('Categories', {
-  'link':'link',
-  'image':'photo',
-  'audio':'music_note',
-  'pdf':'picture_as_pdf',
-  'text':'library_books',
-  'video':'theaters',
-  'other':'insert_drive_file'
-})
-
 .config(function($mdThemingProvider, $sceDelegateProvider, $httpProvider, $locationProvider) {
   // $locationProvider.html5Mode(true);
 
   $mdThemingProvider.theme('default')
     .primaryPalette('brown')
     .backgroundPalette('brown')
-    .accentPalette('blue');
+    .accentPalette('blue')
+    .warnPalette('red');
     
   // $httpProvider.interceptors.push(function() {
   //   return {
