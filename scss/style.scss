@@ -46,6 +46,10 @@ md-input-container .md-errors-spacer {
 	background:$warn !important;
 }
 
+.accent {
+	color:darken($accent, 10);
+}
+
 /*** ICONS ***/
 .sm {
 	font-size:12px;
@@ -84,6 +88,8 @@ md-toolbar {
 
 /*** DIALOG ***/
 md-dialog {
+	max-height:90% !important;
+
 	.md-toolbar-tools {
 		padding:0;
 
@@ -149,11 +155,13 @@ md-dialog {
 
 
 	&.media-dialog {
+		min-width:500px;
 		position:relative;
 		background-color:lighten($accent, 10);
 
 		md-toolbar {
-			position:absolute;
+			position:relative;
+			margin-bottom: -64px;
 			z-index:1;
 			background:transparent;
 
@@ -235,6 +243,10 @@ md-dialog {
 
 				h4 {
 					margin-top:0;
+				}
+
+				.mini-chips > li {
+					background: $accent;
 				}
 			}
 		}
@@ -322,7 +334,7 @@ ul.mini-chips {
 	    font-weight: 500;
 	    color: #fff;
 	    display: inline-block;
-	    padding: 3px 6px;
+	    padding: 4px 8px;
 	    margin: 3px;
 	    border-radius: 15px;
 
@@ -345,6 +357,7 @@ ul.mini-chips {
 }
 
 .truncate {
+	display: block;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -406,6 +419,10 @@ md-toolbar.search {
 	h1 {
 		color:#666;
 		font-size:36px;
+
+		span {
+			color:#666;
+		}
 	}
 }
 

@@ -53,17 +53,21 @@
             <label>File Size</label>
             <h4>{{media.SIZE | filesize}}</h4>
           </li>
+          <li ng-if="media.KEYWORDS.length" flex="100">
+              <label>Keywords</label>
+              <ul  class="mini-chips">
+                <li ng-repeat="k in media.KEYWORDS">{{k}}</li>
+              </ul>
+          </li>
+        </ul>
+        <br>
 
-        </ul>
-        <ul ng-if="m.KEYWORDS.length" class="mini-chips">
-          <li ng-repeat="k in m.KEYWORDS">{{k}}</li>
-        </ul>
 
       </div>
     </md-dialog-content>
 
     <md-dialog-actions layout="row">
-      <md-button ng-if="activeID" class="md-warn">Remove</md-button>
+      <md-button ng-if="activeID" class="md-warn" ng-click="removeMedia()">Remove</md-button>
       <span flex></span>
       <md-button ng-click="cancel()" class="md-accent md-raised">OK</md-button>
     </md-dialog-actions>

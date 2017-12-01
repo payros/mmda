@@ -73,9 +73,9 @@
     </md-dialog-content>
 
     <md-dialog-actions layout="row">
-      <md-button ng-if="formType === 'new'" ng-click="add(true)" ng-disabled="invalidMedia()" class="md-raised md-primary">Create</md-button>
+      <md-button ng-if="formType === 'new'" ng-click="add()" ng-disabled="invalidMedia()" class="md-raised md-primary">Create</md-button>
       <md-button ng-if="formType === 'edit'" ng-click="save()" ng-disabled="invalidInfo()" class="md-raised md-primary">Save</md-button>
-      <md-button ng-if="formType === 'add'" ng-click="add(false)" ng-disabled="invalidInfo()" class="md-raised md-primary">Add</md-button>
+      <md-button ng-if="formType === 'add'" ng-click="add()" ng-disabled="invalidInfo()" class="md-raised md-primary">Add</md-button>
     </md-dialog-actions>
   </form>
 </md-dialog>

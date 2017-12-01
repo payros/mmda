@@ -131,6 +131,12 @@ angular.module('mmda')
     });
   };
 
+  var removeMedia = function(mediaId, dagrId){
+    return $http.post('/delete/remove_media', {'mId':mediaId, 'dId': dagrId}).then(function(response){
+      return response.data;
+    });
+  };
+
   var removeParent = function(parentId, childId){
     return $http.post('/delete/remove_parent', {'pID': parentId, 'cID': childId}).then(function(response){
       return response.data;
@@ -145,6 +151,7 @@ angular.module('mmda')
 
   return {
     removeDagr: removeDagr,
+    removeMedia: removeMedia,
     removeParent: removeParent,
     removeKeyword: removeKeyword
   };

@@ -22,6 +22,21 @@ router.post('/remove_dagr', function(req, res, next) {
 
 });
 
+router.post('/remove_media', function(req, res, next) {
+  db.doConnect().then(function(connection){
+    var sqlQuery = "DELETE FROM DAGR_MEDIA\n"
+                 + "WHERE MEDIA_GUID = :mid\n"
+                 + "AND DAGR_GUID = :did\n";
+
+    db.doExecute(connection, sqlQuery, [req.body.mId, req.body.dId]).then(function(result) {
+      db.doCommit(connection).then(function(connection) {
+          res.send('Success');
+          db.doRelease(connection);
+      });
+    });
+  });  
+
+});
 router.post('/remove_parent', function(req, res, next) {
   var parentID = req.body.pID;
   var childID = req.body.cID;

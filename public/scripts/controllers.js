@@ -161,6 +161,7 @@ angular.module("mmda")
 		  controller: 'mediaDetailsCtrl',
 		  templateUrl: 'templates/media-dialog.html',
 		  openFrom:ev.currentTarget,
+		  closeTo:ev.currentTarget,
 		  clickOutsideToClose:true
 		});
 	};
@@ -196,6 +197,8 @@ angular.module("mmda")
 	$scope.media = [{"type":"link"}];
 	$scope.links = [];
 
+	var isNew = formType === 'new';
+
 	$scope.placeholders = {
 		'link':'example.com',
 		'file':'/path/to/file.eg',
@@ -212,6 +215,53 @@ angular.module("mmda")
 	if(formType === 'edit' && currentDagr) {
 		$scope.newTitle = currentDagr.NAME;
 		$scope.newCategory = currentDagr.CATEGORY;
+	}
+
+	function closePopup(dagrID){
+		if(isNew) {
+			$state.go('dagr', {'id':dagrID});
+		} else {
+			$rootScope.$broadcast('$stateChangeSuccess');
+		}
+	}
+
+	function saveMedia(){
+		console.log($scope.links);
+		var dagrInfo = {};
+		if($scope.newTitle) dagrInfo.title = $scope.newTitle;
+		if($scope.categoryInput) dagrInfo.category = $scope.categoryInput;
+		if(!isNew) dagrInfo.id = currentDagr.GUID;
+
+		if($scope.links.length) {
+			$mdDialog.show({
+			  locals: { Links : $scope.links },
+		      controller: 'addLinksCtrl',
+		      templateUrl: 'templates/add-links-dialog.html',
+		      clickOutsideToClose:true,
+		    })
+		    .then(function(extraLinks) {
+		      var p = [];
+
+		      //If there are links to add, gather the metadata for those links and include
+		      if(extraLinks) {
+		      	var extraLinks = extraLinks.map(function(l){return { 'type':'link', 'uri': l.replace(/^http[s]*:\/\//g, "") };});
+		      	console.log(extraLinks);
+				//Pull metadata for all links
+				angular.forEach(extraLinks, function(media, i){
+					p.push(addMetadata(media).then(function(newMedia){
+						$scope.media.push(newMedia);
+					}));
+				});
+		      }
+
+		      //All metadata has been gathered
+		      $q.all(p).then(function(){
+		      	Create.addMedia($scope.media, dagrInfo).then(closePopup);
+		      });
+		    });
+		} else {
+			Create.addMedia($scope.media, dagrInfo).then(closePopup);
+		}
 	}
 
 	function addMetadata(media) {
@@ -262,7 +312,7 @@ angular.module("mmda")
 		});
 	}
 
-	$scope.add = function(isNew){
+	$scope.add = function(){
 		var promises = [];
 		$scope.links = [];
 
@@ -279,24 +329,7 @@ angular.module("mmda")
 			}
 		});
 
-		$q.all(promises).then(function(){
-			//TO DO Prompt the user to add all extra links to the DAGR
-			// console.log($scope.links);
-			var dagrInfo = {};
-			if($scope.newTitle) dagrInfo.title = $scope.newTitle;
-			if($scope.categoryInput) dagrInfo.category = $scope.categoryInput;
-			if(!isNew) dagrInfo.id = currentDagr.GUID;
-
-			Create.addMedia($scope.media, dagrInfo).then(function(dagrID){
-				//TO DO show error or refresh page
-				$mdDialog.hide();
-				if(isNew) {
-					$state.go('dagr', {'id':dagrID});
-				} else {
-					$rootScope.$broadcast('$stateChangeSuccess');
-				}
-			});
-		});
+		$q.all(promises).then(saveMedia).catch(saveMedia);
 	};
 
 	$scope.invalidMedia = function(){
@@ -314,8 +347,64 @@ angular.module("mmda")
 	};
 })
 
-.controller("mediaDetailsCtrl", function($scope, $stateParams, $mdDialog, Media){
+.controller("addLinksCtrl", function($scope, $mdDialog, Links){
+	$scope.close = $mdDialog.hide;
+	$scope.links = Links;
+	$scope.selected = [];
+
+	  $scope.toggle = function (item, list) {
+	    var idx = list.indexOf(item);
+	    if (idx > -1) {
+	      list.splice(idx, 1);
+	    }
+	    else {
+	      list.push(item);
+	    }
+	  };
+
+	  $scope.exists = function (item, list) {
+	    return list.indexOf(item) > -1;
+	  };
+
+	  $scope.isIndeterminate = function() {
+	    return ($scope.selected.length !== 0 &&
+	        $scope.selected.length !== $scope.links.length);
+	  };
+
+	  $scope.isChecked = function() {
+	    return $scope.selected.length === $scope.links.length;
+	  };
+
+	  $scope.toggleAll = function() {
+	    if ($scope.selected.length === $scope.links.length) {
+	      $scope.selected = [];
+	    } else if ($scope.selected.length === 0 || $scope.selected.length > 0) {
+	      $scope.selected = $scope.links.slice(0);
+	    }
+	  };
+})
+
+
+.controller("mediaDetailsCtrl", function($rootScope, $scope, $stateParams, $mdDialog, Delete, Media){
 	$scope.media = Media;
 	$scope.cancel = $mdDialog.hide;
 	$scope.activeID = $stateParams.id;
+
+	$scope.removeMedia = function(){
+	    var confirm = $mdDialog.confirm({onComplete: function() {
+                        angular.element(document.querySelector("button[ng-click='dialog.hide()']")).addClass('md-raised md-warn');
+                        angular.element(document.querySelector("button[ng-click='dialog.abort()']")).addClass('md-raised');
+                    }})
+	      .title('Remove Media?')
+	      .htmlContent('<strong>' + Media.NAME + '</strong><br> will be unlinked from the current DAGR')
+	      .ariaLabel('Confirm Media Removal')
+	      .ok('Remove')
+	      .cancel('Cancel');
+
+		$mdDialog.show(confirm).then(function(){
+			Delete.removeMedia($scope.media.GUID, $stateParams.id).then(function(){
+				$rootScope.$broadcast('$stateChangeSuccess');
+			});
+		});
+	};
 });

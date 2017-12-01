@@ -83,7 +83,7 @@ angular.module('mmda')
 .filter('isIframe', function(){
   return function(input) {
   if (!input) return false;
-    return input === 'link' || input === 'html' || input === 'pdf' || input === 'text';
+    return input === 'link' || input === 'html' || input === 'pdf' || input === 'text' || input === 'code';
   }
 })
 
@@ -92,6 +92,7 @@ angular.module('mmda')
     switch(input) {
       case 'pdf':
       case 'text':
+      case 'code':
         return 'half-width';
       default:
         return '';

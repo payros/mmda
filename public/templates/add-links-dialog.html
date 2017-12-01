@@ -1,0 +1,37 @@
+<md-dialog aria-label="New DAGR" flex="50">
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Reference Links Found</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="close()">
+          <md-icon aria-label="Close dialog">close</md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+    <br>
+      <h3><strong class="accent" style="font-size:120%;">{{links.length}}</strong> reference links have been found</h3>
+      <h4>Please check any links you would like to include in your DAGR:</h4>
+      <br>
+      <md-checkbox aria-label="Select All"
+                   ng-checked="isChecked()"
+                   md-indeterminate="isIndeterminate()"
+                   ng-click="toggleAll()">
+        <strong><span ng-if="isChecked()">Un-</span>Select All</strong>
+      </md-checkbox>
+      <br>
+      <div ng-repeat="link in links">
+        <md-checkbox ng-checked="exists(link, selected)" ng-click="toggle(link, selected)">
+            <span class="truncate" style="width:550px;">{{ link }}</span>
+        </md-checkbox>
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button ng-click="close()" class="md-raised">Cancel</md-button>
+      <md-button ng-click="close(selected)" ng-disabled="invalidInfo()" class="md-raised md-primary">Done</md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

@@ -127,11 +127,10 @@ util.getType = function(extension) {
 		case 'doc':
 			return 'text';
 
-		case 'sass':
 		case 'css':
 		case 'js':
+		case 'xml':
 			return 'code';
-
 
 		default:
 			return 'other';
