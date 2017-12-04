@@ -24,7 +24,7 @@ angular.module("mmda")
 	      	$scope.newUser();
 	      } else {
 	      	User.setUser(result);
-	      	$state.go('home');
+	      	$state.go('home', {}, {reload: true});
 	      } 
 	      
 	    }, function() {
