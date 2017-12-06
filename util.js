@@ -441,8 +441,8 @@ util.generateMediaSearchSQL = function(params){
 					break;
 
 				case 'file_size':
-					if(params.minSize) andFilters += "AND m.\"SIZE\" >= " + parseInt(params.minSize) + "\n";
-					if(params.maxSize) andFilters += "AND m.\"SIZE\" <= " + parseInt(params.maxSize) + "\n";
+					if(params.minSize) andFilters += "AND fm.\"SIZE\" >= " + parseInt(params.minSize) + "\n";
+					if(params.maxSize) andFilters += "AND fm.\"SIZE\" <= " + parseInt(params.maxSize) + "\n";
 					break;
 
 				case 'reference_date':
