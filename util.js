@@ -133,8 +133,15 @@ util.getType = function(extension) {
 			return 'text';
 
 		case 'css':
+		case 'java':
 		case 'js':
+		case 'json':
+		case 'm':
+		case 'py':
+		case 'sql':
 		case 'xml':
+		case 'xsd':
+		case 'xsl':
 			return 'code';
 
 		default:
