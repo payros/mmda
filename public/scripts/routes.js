@@ -11,21 +11,15 @@ angular.module('mmda')
 
   .state('home', {
     url: '/'
-    // views: {
-    //   'sidenav': {
-    //     templateUrl: 'templates/dagrs.html',
-    //     controller: 'dagrCtrl'
-    //   },
-    //   'content': {
-    //     templateUrl: 'templates/media.html',
-    //     controller: 'mediaCtrl'      
-    //   }
-    // }
   })
 
   .state('dagr', {
     url: '/dagr/:id'
-  });
+  })
+
+    .state('search', {
+    url: '/search?q&filter&minDate&maxDate&minSize&maxSize'
+  })
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/');

@@ -14,7 +14,7 @@
 		<md-grid-tile ng-if="$first && state === 'dagr'" class="add-media" ng-click="editDagr('add')">
 			<h3>ADD MEDIA</h3>
 		</md-grid-tile>
-	  	<md-grid-tile ng-repeat="m in media | filter : {'TYPE':type}" class="md-whiteframe-2dp" ng-init="videoPaused = true" ng-click="showMedia($event, m)">
+	  	<md-grid-tile ng-repeat="m in media | filter : {'TYPE':type}" class="md-whiteframe-2dp" ng-init="videoPaused = true" ng-click="showMedia($event, m)" style="transition-delay: {{$index * 500}}ms">
 	  		<div class="tile-content" layout="row">
 		  		<div class="tile-thumb" flex="30">
 		  			<md-icon class="md">{{m.TYPE | catIcon}}</md-icon>
@@ -26,7 +26,7 @@
 					<video id="{{'video' + $index}}" ng-if="m.TYPE === 'video'" >
 					  	<source ng-src="{{m.URI | normalizePath}}">
 					</video>
-		  			<iframe ng-class="m.TYPE | frameWidth" ng-if="m.TYPE | isIframe" ng-src="{{m.URI | normalizePath}}" ng-attr-sandbox="{{m.TYPE === 'link' ? 'allow-forms allow-scripts' : undefined}}"></iframe>
+		  			<iframe ng-class="m.TYPE | frameWidth" ng-if="(m.TYPE | isIframe) && !loader.loading" ng-src="{{m.URI | normalizePath}}" ng-attr-sandbox="{{m.TYPE === 'link' ? 'allow-forms allow-scripts' : undefined}}"></iframe>
 		  		</div>
 		  		<div class="tile-info" flex>
 		  			<div layout="row">

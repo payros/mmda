@@ -35,18 +35,136 @@ angular.module("mmda")
 	if(User.getUser() === '') $scope.newUser();
 })
 
-.controller("searchCtrl", function($scope) {
+.controller("searchCtrl", function($scope, $rootScope, $state, $stateParams) {
+	$scope.$state = $state;
+	$scope.data = {};
+	$scope.minDate = new Date(0);
+	$scope.maxDate = new Date();
+	$scope.minSize = 0;
+	$scope.maxSize = 1000000000; //1 GB
+	$scope.searchTypes = [
+			{'label': 'Title', 'value':'title', 'checked':true, 'type':'all' },
+			{'label': 'Keyword', 'value':'keyword', 'checked':true, 'type':'all' },
+			{'label': 'Category', 'value':'category', 'checked':true, 'type':'all' },
+			{'label': 'Create Date', 'value':'create_date', 'checked':false, 'type':'all' },
+			{'label': 'Modify Date', 'value':'modify_date', 'checked':false, 'type':'all' },
+			{'label': 'Author', 'value':'author', 'checked':true, 'type':'all' },
+			{'label': 'No Parents', 'value':'orphan', 'checked':false, 'type':'dagr' },
+			{'label': 'No Children', 'value':'sterile', 'checked':false, 'type':'dagr' },
+			{'label': 'Description', 'value':'description', 'checked':true, 'type':'media' },
+			{'label': 'File Size', 'value':'file_size', 'checked':false, 'type':'media' },
+			{'label': 'Reference Date', 'value':'reference_date', 'checked':false, 'type':'media' },
+			{'label': 'Insert Date', 'value':'insert_date', 'checked':false, 'type':'media' },
+		];
+
+	$scope.isChecked = function(){
+		for(var i=0; i<$scope.searchTypes.length; i++){
+			switch($scope.searchTypes[i].value) {
+				case 'title':
+				case 'keyword':
+				case 'category':
+				case 'author':
+				case 'description':
+					if(!$scope.searchTypes[i].checked) return false;
+					break;
+
+				case 'orphan':
+				case 'sterile':
+				case 'create_date':
+				case 'modify_date':
+				case 'file_size':
+				case 'reference_date':
+				case 'insert_date':
+					if($scope.searchTypes[i].checked) return false;
+			}
+		}
+		return true;
+	};
+
+	$scope.setDefault = function(isDefault){
+		for(var i=0; i<$scope.searchTypes.length; i++){
+			if(isDefault) {
+				switch($scope.searchTypes[i].value) {
+					case 'title':
+					case 'keyword':
+					case 'category':
+					case 'author':
+					case 'description':
+						$scope.searchTypes[i].checked = true;
+						break;
+
+					case 'orphan':
+					case 'sterile':
+					case 'create_date':
+					case 'modify_date':
+					case 'file_size':
+					case 'reference_date':
+					case 'insert_date':
+						$scope.searchTypes[i].checked = false;
+				}				
+			}
+		}
+	}
+
+	$scope.search = function(){
+		var params = {'q':$scope.query };
+		if(!$scope.data.checkbox) {
+			console.log('hey');
+			var filter = '';
+			for(var i=1; i<$scope.searchTypes.length; i++){
+				if($scope.searchTypes[i].checked) {
+					filter += $scope.searchTypes[i].value + ',';
+
+					switch($scope.searchTypes[i].value) {
+						case 'create_date':
+						case 'modify_date':
+						case 'reference_date':
+						case 'insert_date':
+							params['minDate'] = $scope.minDate.getTime();
+							params['maxDate'] = $scope.maxDate.getTime();
+							break;
+
+						case 'file_size':
+							params['minSize'] = $scope.minSize;
+							params['maxSize'] = $scope.maxSize;
+					}
+				}
+			}
+
+			if(filter.length) {
+				params['filter'] = filter.substring(0, filter.length-1);
+			}
+		} else {
+			params['filter'] = undefined;
+			params['minDate'] = undefined;
+			params['maxDate'] = undefined;							
+			params['minSize'] = undefined;
+			params['maxSize'] = undefined;
+		}
+		console.log(params);
+		$state.go('search', params);
+	};
+
 	$scope.clearSearch = function(){
 		$scope.searchInput = '';
 	};
+
+	$rootScope.$on('$stateChangeSuccess', function () {
+		if($stateParams.q) $scope.query = $stateParams.q;
+		angular.element(document.getElementById('search-bar')).focus();
+	});
+
+	$scope.$on("$mdMenuClose", $scope.search);
 })
 
-.controller("resultsCtrl", function($rootScope, $scope, $state, $stateParams, $mdDialog, Create, Search, Delete, Proxy){
+.controller("resultsCtrl", function($rootScope, $scope, $window, $state, $stateParams, $mdDialog, Create, Search, Delete, Proxy, loader){
 	$scope.$state = $state;
 	$scope.proxy = Proxy;
+	$scope.loader = loader;
 	$scope.getParents = Search.getPossibleParents;
 	$scope.getChildren = Search.getPossibleChildren;
 	$scope.getKeywords = Search.getPossibleKeywords;
+	
 
 	function renderDagrs(dagrs){
 		$scope.dagrs = dagrs;
@@ -80,7 +198,10 @@ angular.module("mmda")
 		}
 	}
 
-
+	function renderResults(results){
+		renderDagrs(results.dagrs);
+		renderMedia(results.media);
+	}
 
 
 	//When a new URL is loaded, get new data based on the URL
@@ -94,10 +215,7 @@ angular.module("mmda")
 			//Load single DAGR on content div
 			Search.getDagr($stateParams.id).then(renderDagr);
 		} else if ($scope.state === 'search') {
-			//Load DAGR search results on sidenav
-			Search.getDagrs(params).then(renderDagrs);
-			//Load Media search results on content div
-			Search.media(params).then(renderMedia);
+			Search.all($stateParams).then(renderResults);
 		} else {
 			//Load all DAGRS on sidenav
 			Search.allDagrs().then(renderDagrs);
@@ -105,6 +223,10 @@ angular.module("mmda")
 			Search.allMedia().then(renderMedia);
 		} 
 	});
+
+	$scope.showIframes = function(){
+		return false;
+	}
 
 	$scope.saveParent = function(dagr){
 		//TO DO remove chip if transaction fails
@@ -387,8 +509,13 @@ angular.module("mmda")
 
 .controller("mediaDetailsCtrl", function($rootScope, $scope, $stateParams, $mdDialog, Delete, Media){
 	$scope.media = Media;
+	$scope.showFrame = false;
 	$scope.cancel = $mdDialog.hide;
 	$scope.activeID = $stateParams.id;
+
+	$scope.showFrameNow = function(){
+		console.log('test test test');
+	};
 
 	$scope.removeMedia = function(){
 	    var confirm = $mdDialog.confirm({onComplete: function() {

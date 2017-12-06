@@ -151,6 +151,7 @@ util.generateLinkSQL = function(media, dagrID){
 			var values = "'" + media.guid + "','" + media.type + "','http://" + media.uri + "','" + (media.title || media.uri) + "'";
 
 			if(media.author) {
+				media.author = media.author.replace(/'/g, "''");
 				columns += ",AUTHOR";
 				values += ",'" + media.author + "'";
 			}
@@ -159,13 +160,21 @@ util.generateLinkSQL = function(media, dagrID){
 
 			//INSERT INTO LINK_METADATA TABLE
 			if(media.description) {
+				media.description = media.description.replace(/'/g, "''");
+
 				query += "INTO LINK_METADATA (MEDIA_GUID,DESCRIPTION) VALUES ('" + media.guid + "','" + media.description + "')\n"			
 			}
 
 			//INSERT INTO MEDIA_KEYWORDS TABLE
 			if(media.keywords) {
-				for(var i=0; i<media.keywords.length; i++) {
-					query += "INTO MEDIA_KEYWORD (MEDIA_GUID,KEYWORD) VALUES ('" + media.guid + "','" + media.keywords[i] + "')\n"		
+
+				var uniqueKeywords = media.keywords.filter(function(item, pos) {
+					    return media.keywords.indexOf(item) == pos;
+				});
+				
+				for(var i=0; i<uniqueKeywords.length; i++) {
+					uniqueKeywords[i] = uniqueKeywords[i].replace(/'/g, "''");
+					query += "INTO MEDIA_KEYWORD (MEDIA_GUID,KEYWORD) VALUES ('" + media.guid + "','" + uniqueKeywords[i] + "')\n"		
 				}			
 			}
 			
@@ -240,6 +249,10 @@ util.generateDagrSQL = function(media, dagrID){
 	      return resultQuery;
 	    });
 	});
+};
+
+util.connectionError = function(err){
+    console.log('CONNECTION ERROR: ', err);
 };
 
 

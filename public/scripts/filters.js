@@ -45,7 +45,7 @@ angular.module('mmda')
   };
 })
 
-.filter('normalizePath', function($sce, Proxy) {
+.filter('normalizePath', function($sce, $timeout, Proxy) {
   return function(input) {
     if (!input) return input;
     if(input.indexOf("http://") > -1) {
@@ -83,7 +83,7 @@ angular.module('mmda')
 .filter('isIframe', function(){
   return function(input) {
   if (!input) return false;
-    return input === 'link' || input === 'html' || input === 'pdf' || input === 'text' || input === 'code';
+    return /*input === 'link' ||*/ input === 'html' || input === 'pdf' || input === 'text' || input === 'code';
   }
 })
 

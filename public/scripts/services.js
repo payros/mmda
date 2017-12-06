@@ -50,6 +50,13 @@ angular.module('mmda')
 
 .service('Search', function($http, User) {
 
+  var all = function(params){
+    params.user = User.getUser();
+    return $http.get('/search', {'params':params} ).then(function(response){
+      return response.data;
+    });
+  };
+
   var allDagrs = function(){
     return $http.get('/search/all_dagrs', {'params':{'user':User.getUser()}} ).then(function(response){
       return response.data;
@@ -99,6 +106,7 @@ angular.module('mmda')
   };
 
   return {
+    all:all,
     allDagrs: allDagrs,
     getDagr: getDagr,
     allMedia: allMedia,

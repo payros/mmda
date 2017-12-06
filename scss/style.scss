@@ -289,6 +289,8 @@ ul {
 	}
 }
 
+
+
 /*** CHIPS ***/
 md-chip-template {
 	strong {
@@ -415,13 +417,53 @@ md-toolbar.search {
    	}
 }
 
+md-menu-content { max-height: 90vh; }
+
+.filter-menu {
+	background:#fff;
+
+	md-menu-item.checkbox {
+		padding-left:20px;
+
+		div.md-label {
+			font-size:15px;
+			margin-left:25px;
+		}
+	}
+
+	.md-button:hover {
+		background:#bbb;
+	}
+
+
+}
+
 .wrapper {
+	position:relative;
+
 	h1 {
 		color:#666;
 		font-size:36px;
 
 		span {
 			color:#666;
+		}
+	}
+
+	.loader {
+		position:absolute;
+		top:0;
+		bottom:0;
+		left:0;
+		right:0;
+		background:rgba(lighten($primary, 30), 0.7);
+		z-index:100;
+
+		md-progress-circular {
+			position:absolute;
+			left:50%;
+			top:50%;
+			transform: translate(-50%,-50%);
 		}
 	}
 }
@@ -605,6 +647,8 @@ ul.dagr-info  {
 }
 
 .media-category  {
+	
+
 	> h3 {
 		color:$accent;
 	}
@@ -613,6 +657,17 @@ ul.dagr-info  {
 		color:$accent;
 		background-color:lighten($accent, 15);
 		background-color:lighten($accent, 10);
+		// transition:opacity 1s;
+
+		// &.ng-enter {
+		// 	transition:opacity 1s;
+		// 	opacity: 0;
+		// }
+
+		// &.ng-enter-active {
+		// 	transition:opacity 1s;
+		// 	opacity:1;
+		// }
 
 		.mini-chips > li {
 			background: $accent;
@@ -623,7 +678,6 @@ ul.dagr-info  {
 		    box-shadow: none;
 		    border: 5px dashed lighten($accent, 15);
 		    transition:all .3s;
-		    padding-top:calc(((20% - 0.5em) * 1) - 10px) !important;
 
 		    h3 {
 		    	font-size:26px;
@@ -656,7 +710,7 @@ ul.dagr-info  {
 			position:relative;
 			border-radius:5px 0 0 5px;
 			background-color:adjust-color($accent, $lightness:20%, $saturation:-20%);
-			background-color:$accent;
+			// background-color:$accent;
 			overflow:hidden;
 
 			md-icon {
@@ -704,7 +758,7 @@ ul.dagr-info  {
   				height: 3000px;
   				position:relative;
 				z-index:1;
-				background:#fff;
+				// background:#fff;
 
 				&.full-width {
 					width:100%;
@@ -747,4 +801,29 @@ ul.dagr-info  {
 
 md-content {
 	padding:0 15px;
+}
+
+@media (min-width:1920px) {
+	.media-category md-grid-tile.add-media {
+		padding-top: calc(((8% - 0.8em) * 1) - 10px) !important;
+	}
+}
+
+
+@media (max-width:1919px) {
+	.media-category md-grid-tile.add-media {
+		padding-top: calc(((13.3333% - 0.666667em) * 1) - 10px) !important;
+	}
+}
+
+@media (max-width:1279px) {
+	.media-category md-grid-tile.add-media {
+		padding-top: calc(((20% - 0.5em) * 1) - 10px) !important;
+	}
+}
+
+@media (max-width:959px) {
+	.media-category md-grid-tile.add-media {
+		padding-top: calc(((40% - 0.5em) * 1) - 10px) !important;
+	}
 }

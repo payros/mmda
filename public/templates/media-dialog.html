@@ -19,7 +19,7 @@
             <video id="{{'video' + $index}}" ng-if="media.TYPE === 'video'" controls>
                 <source ng-src="{{media.URI | normalizePath }}">
             </video>
-            <iframe ng-if="media.TYPE | isIframe" ng-src="{{media.URI | normalizePath }}" ng-attr-sandbox="{{media.TYPE === 'link' ? 'allow-forms allow-scripts' : undefined}}"></iframe>
+            <iframe ng-if="media.TYPE | isIframe" iframe-onload="showFrameNow()" ng-src="{{media.URI | normalizePath }}" ng-attr-sandbox="{{media.TYPE === 'link' ? 'allow-forms allow-scripts' : undefined}}"></iframe>
       </div>
       <div class="md-dialog-content">
         <h2 style="display:inline;">

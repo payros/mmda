@@ -1,0 +1,38 @@
+<!-- 			<md-select ng-model="searchType">
+    <md-option ng-repeat="type in searchTypes" ng-value="type.value">
+      {{type.label}}
+    </md-option>
+	</md-select> -->
+<md-icon class="md" flex="none" style="color:#888;">search</md-icon>
+<input id="search-bar" ng-model="$parent.query" ng-model-options='{ debounce: 500 }' ng-change="search()" type="text" placeholder="Search DAGRs, Media" flex="auto"/>
+<md-button ng-if="query" ng-click="clearSearch()"class="md-icon-button" aria-label="Clear Search" flex="none">
+  <md-icon>close</md-icon>
+</md-button>
+<md-menu flex="none" md-position-mode="target-right target">
+  <md-button aria-label="Search Options" class="md-icon-button" ng-click="$mdMenu.open()">
+    <md-icon class="md">more_vert</md-icon>
+  </md-button>
+  <md-menu-content class="filter-menu">
+    <md-menu-item class="checkbox">
+	    <md-checkbox aria-label="Select Default"
+	    			 ng-model="data.checkbox"
+	                 ng-checked="isChecked()"
+	                 ng-change="setDefault(data.checkbox)"
+	                 (click)="$event.stopPropagation()">
+	        Default
+	    </md-checkbox>
+    </md-menu-item>
+    <md-menu-item ng-repeat="type in searchTypes" class="checkbox">
+        <md-checkbox ng-model="type.checked" (click)="$event.stopPropagation()" >
+            {{ type.label }} <md-icon ng-show="type.type !== 'all'" class="sm">{{type.type === 'dagr' ? 'device_hub' : 'perm_media'}}</md-icon>
+        </md-checkbox>
+    </md-menu-item>
+    <md-menu-divider></md-menu-divider>
+    <md-menu-item>
+    	<md-button>
+        <md-icon md-menu-align-target>settings</md-icon>
+        Filter Settings
+      </md-button>
+    </md-menu-item>
+  </md-menu-content>
+</md-menu>
