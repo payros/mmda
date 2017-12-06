@@ -8,87 +8,23 @@ var $q = require('q');
 router.get('/', function(req, res, next) {
   db.doConnect().then(function(connection){
     var resp = {};
-    var promises = [];
-
-    //utils.generateDAGRSearchSQL();
+    var promises = [];    
     var term = req.query.q || '';
     var queryTerm = '%' + term.toLowerCase() + '%' ;
-    // var filters = req.query.filter.split(',');
-    var dagrQuery = "WITH files\n"  + 
-                    "  AS (SELECT DAGR_GUID, COUNT(MEDIA_GUID) AS MEDIA\n"  + 
-                    "  FROM DAGR_MEDIA\n"  + 
-                    "  GROUP BY DAGR_GUID),\n"  + 
-                    "children\n"  + 
-                    "  AS (SELECT PARENT_GUID, COUNT(CHILD_GUID) AS CHILDREN\n"  + 
-                    "  FROM DAGR_PARENT\n"  + 
-                    "  GROUP BY PARENT_GUID),\n"  + 
-                    "parents\n"  + 
-                    "  AS (SELECT CHILD_GUID, COUNT(PARENT_GUID) AS PARENTS\n"  + 
-                    "  FROM DAGR_PARENT\n"  + 
-                    "  GROUP BY CHILD_GUID),\n"  + 
-                    "keywords\n"  + 
-                    "  AS (SELECT DAGR_GUID\n"  + 
-                    "  FROM DAGR_KEYWORD\n"  + 
-                    "  WHERE KEYWORD LIKE :q\n"  + 
-                    "  GROUP BY DAGR_GUID)\n"  + 
-                    "SELECT d.guid, d.name, d.category, COALESCE(f.media, 0) AS files, COALESCE(p.parents, 0) AS parents, COALESCE(c.children, 0) AS children, d.create_date\n"  + 
-                    "FROM dagr d\n"  + 
-                    "LEFT JOIN files f\n"  + 
-                    "ON d.GUID=f.DAGR_GUID\n"  + 
-                    "LEFT JOIN parents p\n"  + 
-                    "ON d.GUID=p.CHILD_GUID\n"  + 
-                    "LEFT JOIN children c\n"  + 
-                    "ON d.GUID=c.PARENT_GUID\n"  + 
-                    "LEFT JOIN keywords k\n"  + 
-                    "ON d.GUID=k.DAGR_GUID\n"  + 
-                    "WHERE d.author = :author\n"  + 
-                    "AND (d.GUID LIKE :q\n"  + 
-                    "OR LOWER(d.NAME) LIKE :q\n"  + 
-                    "OR LOWER(d.CATEGORY) LIKE :q\n"  + 
-                    "OR k.DAGR_GUID IS NOT NULL)"; 
+    var queryParams = { 'q':queryTerm,'author':req.query.user };
+    var dagrQuery = util.generateDagrSearchSQL(req.query);
+    var mediaQuery = util.generateMediaSearchSQL(req.query);
 
-    //utils.generateMediaSearchSQL();
-    var mediaQuery =   "WITH mediaByAuthor\n" + 
-                       "  AS (SELECT m.GUID\n" + 
-                       "  FROM MEDIA m\n" + 
-                       "  LEFT JOIN DAGR_MEDIA dm\n" + 
-                       "  ON m.GUID = dm.MEDIA_GUID\n" + 
-                       "  LEFT JOIN DAGR d\n" + 
-                       "  ON dm.DAGR_GUID = d.GUID\n" + 
-                       "  WHERE d.author = :author\n" + 
-                       "  GROUP BY m.GUID),\n" + 
-                       "keywords\n" + 
-                       "  AS (SELECT MEDIA_GUID\n" + 
-                       "  FROM MEDIA_KEYWORD\n" + 
-                       "  WHERE KEYWORD LIKE :q\n" + 
-                       "  GROUP BY MEDIA_GUID)\n" + 
-                       "SELECT m.guid, m.name, m.type, m.uri, m.author, m.insert_date, fm.\"SIZE\", fm.create_date, lm.description\n" + 
-                       "FROM MEDIA m\n" + 
-                       "JOIN mediaByAuthor mba\n" + 
-                       "ON m.GUID = mba.GUID\n" + 
-                       "LEFT JOIN FILE_METADATA fm\n" + 
-                       "ON m.GUID = fm.MEDIA_GUID\n" + 
-                       "LEFT JOIN LINK_METADATA lm\n" + 
-                       "ON m.GUID = lm.MEDIA_GUID\n" + 
-                       "LEFT JOIN KEYWORDS k\n" + 
-                       "ON m.GUID = k.MEDIA_GUID\n" + 
-                       "WHERE m.GUID LIKE :q\n" + 
-                       "OR LOWER(m.NAME) LIKE :q\n" + 
-                       "OR LOWER(m.TYPE) LIKE :q\n" + 
-                       "OR LOWER(m.URI) LIKE :q\n" + 
-                       "OR LOWER(m.AUTHOR) LIKE :q\n" + 
-                       "OR LOWER(m.NAME) LIKE :q\n" + 
-                       'OR LOWER(lm.DESCRIPTION) LIKE :q\n' +
-                       "OR k.MEDIA_GUID IS NOT NULL"; 
-
-    console.log('QUERY: ', dagrQuery);
-    promises.push(db.doExecute(connection, dagrQuery, {'author':req.query.user, 'q':queryTerm}).then(function(dagrs) {
+    console.log('QUERY: ', mediaQuery);
+    console.log('PARAMS: ', queryParams);
+    promises.push(db.doExecute(connection, dagrQuery, queryParams).then(function(dagrs) {
+      // console.log('QUERY RESULTS: ', dagrs.rows);
       return dagrs.rows;
     }).catch(function(err){
       console.log('QUERY ERROR: ', err);
     }));
 
-    promises.push(db.doExecute(connection, mediaQuery, {'author':req.query.user, 'q':queryTerm}).then(function(results) {
+    promises.push(db.doExecute(connection, mediaQuery, queryParams).then(function(results) {
       return results.rows;
     }).catch(function(err){
       console.log('QUERY ERROR: ', err);
@@ -109,7 +45,6 @@ router.get('/', function(req, res, next) {
       resp.dagrs = results[0];
       resp.media = results[1];
 
-      console.log('connected');
 
       //Get the keywords for each dagr
        resp.dagrs.forEach(function(dagr){

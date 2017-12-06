@@ -8,7 +8,7 @@
 	</md-grid-list>
 </div>
 <div ng-repeat="type in types" class="media-category">
- 	<h3>{{type | capitalize}}</h3>
+ 	<h3 ui-sref="search({'q':type, 'filter':'type'})">{{type | capitalize}}</h3>
 	<md-divider></md-divider><br>
 	<md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-lg="3" md-cols-xl="5" md-gutter="1em" md-row-height="5:2">
 		<md-grid-tile ng-if="$first && state === 'dagr'" class="add-media" ng-click="editDagr('add')">

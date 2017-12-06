@@ -82,6 +82,11 @@ function metaToSQL(meta, dagrID) {
 	});
 }
 
+function toTimestamp(dateString) {
+	secs = Math.floor(new Date(parseInt(dateString)).getTime()/1000);
+	return "(timestamp'1970-01-01 00:00:00' + numtodsinterval(" + secs + ",'SECOND'))";
+}
+
 
 util.getName = function(media) {
 	switch(media.type) {
@@ -251,13 +256,211 @@ util.generateDagrSQL = function(media, dagrID){
 	});
 };
 
+
+util.generateDagrSearchSQL = function(params){
+    var dagrQuery = "WITH files\n"  + 
+                    "  AS (SELECT DAGR_GUID, COUNT(MEDIA_GUID) AS MEDIA\n"  + 
+                    "  FROM DAGR_MEDIA\n"  + 
+                    "  GROUP BY DAGR_GUID),\n"  + 
+                    "children\n"  + 
+                    "  AS (SELECT PARENT_GUID, COUNT(CHILD_GUID) AS CHILDREN\n"  + 
+                    "  FROM DAGR_PARENT\n"  + 
+                    "  GROUP BY PARENT_GUID),\n"  + 
+                    "parents\n"  + 
+                    "  AS (SELECT CHILD_GUID, COUNT(PARENT_GUID) AS PARENTS\n"  + 
+                    "  FROM DAGR_PARENT\n"  + 
+                    "  GROUP BY CHILD_GUID),\n"  + 
+                    "keywords\n"  + 
+                    "  AS (SELECT DAGR_GUID\n"  + 
+                    "  FROM DAGR_KEYWORD\n"  + 
+                    "  WHERE KEYWORD LIKE :q\n"  + 
+                    "  GROUP BY DAGR_GUID)\n"  + 
+                    "SELECT d.guid, d.name, d.category, COALESCE(f.media, 0) AS files, COALESCE(p.parents, 0) AS parents, COALESCE(c.children, 0) AS children, d.create_date\n"  + 
+                    "FROM dagr d\n"  + 
+                    "LEFT JOIN files f\n"  + 
+                    "ON d.GUID=f.DAGR_GUID\n"  + 
+                    "LEFT JOIN parents p\n"  + 
+                    "ON d.GUID=p.CHILD_GUID\n"  + 
+                    "LEFT JOIN children c\n"  + 
+                    "ON d.GUID=c.PARENT_GUID\n"  + 
+                    "LEFT JOIN keywords k\n"  + 
+                    "ON d.GUID=k.DAGR_GUID\n"  + 
+                    "WHERE d.author = :author\n";
+
+	if(params.filter) {
+		var filters = params.filter.split(',');
+		var andFilters = "";
+		var orFilters = "AND (d.GUID LIKE :q\n";
+
+
+		for (var i = 0; i< filters.length; i++) {
+			switch(filters[i]) {
+				case 'title':
+					orFilters += "OR LOWER(d.NAME) LIKE :q\n";
+					break;
+
+				case 'keyword':
+					orFilters += "OR k.DAGR_GUID IS NOT NULL\n";
+					break;
+
+				case 'category':
+					orFilters += "OR LOWER(d.CATEGORY) LIKE :q\n";
+					break;
+
+				case 'orphan':
+					andFilters += "AND p.parents IS NULL \n";
+					break;
+
+				case 'sterile':
+					andFilters += "AND c.children IS NULL \n";
+					break;
+
+				case 'create_date':
+					if(params.minDate) andFilters += "AND d.create_date >= " + toTimestamp(params.minDate) + "\n";
+					if(params.maxDate) andFilters += "AND d.create_date <= " + toTimestamp(params.maxDate) + "\n";
+					break;
+
+				case 'modify_date':
+					if(params.minDate) andFilters += "AND d.modify_date >= " + toTimestamp(params.minDate) + "\n";
+					if(params.maxDate) andFilters += "AND d.modify_date <= " + toTimestamp(params.maxDate) + "\n";
+					break;
+			}
+		};
+
+		orFilters = orFilters.substring(0, orFilters.length - 1) + ")\n";
+		dagrQuery += andFilters + orFilters;
+
+	} else {
+	    dagrQuery += "AND (d.GUID LIKE :q\n"  + 
+	                "OR LOWER(d.NAME) LIKE :q\n"  + 
+	                "OR LOWER(d.CATEGORY) LIKE :q\n"  + 
+	                "OR k.DAGR_GUID IS NOT NULL)";      	
+	}
+
+    return dagrQuery;
+};
+
+util.generateMediaSearchSQL = function(params){
+    var withClause =   "WITH mediaByAuthor\n" + 
+                       "  AS (SELECT m.GUID\n" + 
+                       "  FROM MEDIA m\n" + 
+                       "  LEFT JOIN DAGR_MEDIA dm\n" + 
+                       "  ON m.GUID = dm.MEDIA_GUID\n" + 
+                       "  LEFT JOIN DAGR d\n" + 
+                       "  ON dm.DAGR_GUID = d.GUID\n" + 
+                       "  WHERE d.author = :author\n" + 
+                       "  GROUP BY m.GUID),\n" + 
+                       "keywords\n" + 
+                       "  AS (SELECT MEDIA_GUID\n" + 
+                       "  FROM MEDIA_KEYWORD\n" + 
+                       "  WHERE KEYWORD LIKE :q\n" + 
+                       "  GROUP BY MEDIA_GUID)\n"; 
+
+    var selectClause =  "SELECT m.guid, m.name, m.type, m.uri, m.author, m.insert_date, fm.\"SIZE\", fm.create_date, lm.description\n" + 
+                        "FROM MEDIA m\n";
+
+    var joinClause =   "JOIN mediaByAuthor mba\n" + 
+                       "ON m.GUID = mba.GUID\n" + 
+                       "LEFT JOIN FILE_METADATA fm\n" + 
+                       "ON m.GUID = fm.MEDIA_GUID\n" + 
+                       "LEFT JOIN LINK_METADATA lm\n" + 
+                       "ON m.GUID = lm.MEDIA_GUID\n" + 
+                       "LEFT JOIN KEYWORDS k\n" + 
+                       "ON m.GUID = k.MEDIA_GUID\n";
+
+
+    var whereClause = "WHERE (m.GUID LIKE :q\n";
+; 
+
+	if(params.filter) {
+		var filters = params.filter.split(',');
+		var andFilters = "";
+		var orFilters = "";
+
+
+		for (var i = 0; i< filters.length; i++) {
+			switch(filters[i]) {
+				case 'title':
+					orFilters += "OR LOWER(m.NAME) LIKE :q\n";
+					break;
+
+				case 'keyword':
+					orFilters += "OR k.MEDIA_GUID IS NOT NULL\n";
+					break;
+
+				case 'uri':
+					orFilters += "OR LOWER(m.URI) LIKE :q\n";
+					break;
+
+				case 'type':
+					orFilters += "OR LOWER(m.TYPE) LIKE :q\n";
+					break;
+
+				case 'description':
+					orFilters += "OR LOWER(lm.DESCRIPTION) LIKE :q\n"
+					break;
+
+				case 'author':
+					orFilters += "OR LOWER(m.AUTHOR) LIKE :q\n";
+					break;
+
+				case 'create_date':
+					if(params.minDate) andFilters += "AND fm.create_date >= " + toTimestamp(params.minDate) + "\n";
+					if(params.maxDate) andFilters += "AND fm.create_date <= " + toTimestamp(params.maxDate) + "\n";
+					break;
+
+				case 'modify_date':
+					if(params.minDate) andFilters += "AND fm.modify_date >= " + toTimestamp(params.minDate) + "\n";
+					if(params.maxDate) andFilters += "AND fm.modify_date <= " + toTimestamp(params.maxDate) + "\n";
+					break;
+
+				case 'insert_date':
+					if(params.minDate) andFilters += "AND m.insert_date >= " + toTimestamp(params.minDate) + "\n";
+					if(params.maxDate) andFilters += "AND m.insert_date <= " + toTimestamp(params.maxDate) + "\n";
+					break;
+
+				case 'file_size':
+					if(params.minSize) andFilters += "AND m.\"SIZE\" >= " + parseInt(params.minSize) + "\n";
+					if(params.maxSize) andFilters += "AND m.\"SIZE\" <= " + parseInt(params.maxSize) + "\n";
+					break;
+
+				case 'reference_date':
+					if(params.minDate || params.maxDate) {
+						withClause += "references\n" + 
+	                      "  AS (SELECT MEDIA_GUID\n" + 
+	                      "  FROM DAGR_MEDIA\n";
+						if(params.minDate) withClause += "WHERE m.reference_date >= " + toTimestamp(params.minDate) + "\n";
+						if(params.maxDate) withClause += (params.minDate ? "AND" : "WHERE") + " m.reference_date <= " + toTimestamp(params.maxDate) + "\n";
+				        withClause += "GROUP BY MEDIA_GUID)\n";
+						joinClause += "LEFT JOIN REFERENCES r\n" + 
+                       			      "ON r.MEDIA_GUID = m.GUID\n" 
+				        andFilters += "OR r.MEDIA_GUID IS NOT NULL\n"; 						
+					}
+					break;
+			}
+		};
+
+		orFilters = orFilters.substring(0, orFilters.length - 1) + ")\n";
+		mediaQuery = withClause + selectClause + joinClause + whereClause + orFilters + andFilters;
+
+	} else {
+		mediaQuery = withClause + selectClause + joinClause + whereClause;
+        mediaQuery += "OR LOWER(m.NAME) LIKE :q\n" + 
+                       "OR LOWER(m.TYPE) LIKE :q\n" + 
+                       "OR LOWER(m.URI) LIKE :q\n" + 
+                       "OR LOWER(m.AUTHOR) LIKE :q\n" + 
+                       "OR LOWER(m.NAME) LIKE :q\n" + 
+                       'OR LOWER(lm.DESCRIPTION) LIKE :q\n' +
+                       "OR k.MEDIA_GUID IS NOT NULL)";    	
+	}
+
+    return mediaQuery;
+};
+
 util.connectionError = function(err){
     console.log('CONNECTION ERROR: ', err);
 };
 
 
 module.exports = util;
-
-
-
 

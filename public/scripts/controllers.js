@@ -36,6 +36,7 @@ angular.module("mmda")
 })
 
 .controller("searchCtrl", function($scope, $rootScope, $state, $stateParams) {
+	
 	$scope.$state = $state;
 	$scope.data = {};
 	$scope.minDate = new Date(0);
@@ -43,75 +44,52 @@ angular.module("mmda")
 	$scope.minSize = 0;
 	$scope.maxSize = 1000000000; //1 GB
 	$scope.searchTypes = [
-			{'label': 'Title', 'value':'title', 'checked':true, 'type':'all' },
-			{'label': 'Keyword', 'value':'keyword', 'checked':true, 'type':'all' },
-			{'label': 'Category', 'value':'category', 'checked':true, 'type':'all' },
-			{'label': 'Create Date', 'value':'create_date', 'checked':false, 'type':'all' },
-			{'label': 'Modify Date', 'value':'modify_date', 'checked':false, 'type':'all' },
-			{'label': 'Author', 'value':'author', 'checked':true, 'type':'all' },
-			{'label': 'No Parents', 'value':'orphan', 'checked':false, 'type':'dagr' },
-			{'label': 'No Children', 'value':'sterile', 'checked':false, 'type':'dagr' },
-			{'label': 'Description', 'value':'description', 'checked':true, 'type':'media' },
-			{'label': 'File Size', 'value':'file_size', 'checked':false, 'type':'media' },
-			{'label': 'Reference Date', 'value':'reference_date', 'checked':false, 'type':'media' },
-			{'label': 'Insert Date', 'value':'insert_date', 'checked':false, 'type':'media' },
-		];
+		{'label': 'Title', 'value':'title', 'checked':isDefault('title'), 'type':'all' },
+		{'label': 'Tag', 'value':'keyword', 'checked':isDefault('keyword'), 'type':'all' },
+		{'label': 'Create Date', 'value':'create_date', 'checked':isDefault('create_date'), 'type':'all' },
+		{'label': 'Modify Date', 'value':'modify_date', 'checked':isDefault('modify_date'), 'type':'all' },
+
+		{'label': 'Category', 'value':'category', 'checked':isDefault('category'), 'type':'dagr' },
+		{'label': 'No Parents', 'value':'orphan', 'checked':isDefault('orphan'), 'type':'dagr' },
+		{'label': 'No Children', 'value':'sterile', 'checked':isDefault('sterile'), 'type':'dagr' },
+
+		{'label': 'Type', 'value':'type', 'checked':isDefault('type'), 'type':'media' },
+		{'label': 'URI/Path', 'value':'uri', 'checked':isDefault('uri'), 'type':'media' },
+		{'label': 'Description', 'value':'description', 'checked':isDefault('description'), 'type':'media' },
+		{'label': 'Author', 'value':'author', 'checked':isDefault('author'), 'type':'media' },
+		{'label': 'File Size', 'value':'file_size', 'checked':isDefault('file_size'), 'type':'media' },
+		{'label': 'Reference Date', 'value':'reference_date', 'checked':isDefault('reference_date'), 'type':'media' },
+		{'label': 'Insert Date', 'value':'insert_date', 'checked':isDefault('insert_date'), 'type':'media' },
+	];
+
+	function isDefault(filter){
+		var defaultFilters = ['title', 'keyword', 'category', 'type', 'uri', 'description', 'author'];
+		return defaultFilters.indexOf(filter) > -1;
+	}
+
+	//BIG TO DO Add Reach Queries somewhere
 
 	$scope.isChecked = function(){
 		for(var i=0; i<$scope.searchTypes.length; i++){
-			switch($scope.searchTypes[i].value) {
-				case 'title':
-				case 'keyword':
-				case 'category':
-				case 'author':
-				case 'description':
-					if(!$scope.searchTypes[i].checked) return false;
-					break;
-
-				case 'orphan':
-				case 'sterile':
-				case 'create_date':
-				case 'modify_date':
-				case 'file_size':
-				case 'reference_date':
-				case 'insert_date':
-					if($scope.searchTypes[i].checked) return false;
-			}
+			if(isDefault($scope.searchTypes[i].value) && !$scope.searchTypes[i].checked) return false;
+			if(isDefault(!$scope.searchTypes[i].value) && $scope.searchTypes[i].checked) return false;
 		}
 		return true;
 	};
 
-	$scope.setDefault = function(isDefault){
+	$scope.setDefault = function(isChecked){
 		for(var i=0; i<$scope.searchTypes.length; i++){
-			if(isDefault) {
-				switch($scope.searchTypes[i].value) {
-					case 'title':
-					case 'keyword':
-					case 'category':
-					case 'author':
-					case 'description':
-						$scope.searchTypes[i].checked = true;
-						break;
-
-					case 'orphan':
-					case 'sterile':
-					case 'create_date':
-					case 'modify_date':
-					case 'file_size':
-					case 'reference_date':
-					case 'insert_date':
-						$scope.searchTypes[i].checked = false;
-				}				
+			if(isChecked) {
+				$scope.searchTypes[i].checked = isDefault($scope.searchTypes[i].value);			
 			}
 		}
 	}
 
 	$scope.search = function(){
-		var params = {'q':$scope.query };
+		var params = {'q':$scope.data.query };
 		if(!$scope.data.checkbox) {
-			console.log('hey');
 			var filter = '';
-			for(var i=1; i<$scope.searchTypes.length; i++){
+			for(var i=0; i<$scope.searchTypes.length; i++){
 				if($scope.searchTypes[i].checked) {
 					filter += $scope.searchTypes[i].value + ',';
 
@@ -141,16 +119,28 @@ angular.module("mmda")
 			params['minSize'] = undefined;
 			params['maxSize'] = undefined;
 		}
-		console.log(params);
 		$state.go('search', params);
 	};
 
 	$scope.clearSearch = function(){
-		$scope.searchInput = '';
+		$scope.data.query = '';
+		$scope.search();
 	};
 
 	$rootScope.$on('$stateChangeSuccess', function () {
-		if($stateParams.q) $scope.query = $stateParams.q;
+		//Set the search params based on the url
+
+		if($stateParams.q) $scope.data.query = $stateParams.q;	
+		if($stateParams.minDate) $scope.minDate = new Date(parseInt($stateParams.minDate));
+		if($stateParams.maxDate) $scope.minDate = new Date(parseInt($stateParams.maxDate));
+		if($stateParams.minSize) $scope.minSize = parseInt($stateParams.minSize);
+		if($stateParams.maxSize) $scope.maxSize = parseInt($stateParams.maxSize);
+		if($stateParams.filter) {
+			var filters = $stateParams.filter.split(",");
+			angular.forEach($scope.searchTypes, function(type){
+				type.checked = filters.indexOf(type.value) > -1;
+			});
+		}
 		angular.element(document.getElementById('search-bar')).focus();
 	});
 

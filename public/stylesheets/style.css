@@ -138,6 +138,8 @@ md-dialog {
         margin-top: 0; }
       md-dialog.media-dialog .media-meta li .mini-chips > li {
         background: #448AFF; }
+      md-dialog.media-dialog .media-meta ul.mini-chips {
+        max-height: 90px; }
 
 md-autocomplete .md-show-clear-button button {
   position: absolute;
@@ -189,7 +191,7 @@ ul.mini-chips {
   margin: 0;
   padding: 0;
   margin-top: 0px;
-  height: 30px;
+  max-height: 30px;
   max-width: 100%;
   overflow: hidden; }
   ul.mini-chips li {
@@ -264,7 +266,32 @@ md-menu-content {
       font-size: 15px;
       margin-left: 25px; }
   .filter-menu .md-button:hover {
-    background: #bbb; }
+    background: #ccc; }
+  .filter-menu .drop-down.md-button {
+    height: 48px; }
+    .filter-menu .drop-down.md-button md-icon {
+      margin: auto 16px auto 0; }
+  .filter-menu md-menu-content .md-menu.md-open > .md-button {
+    background: #ccc; }
+  .filter-menu .drop-down.md-button:hover {
+    background: #ccc; }
+
+.inner-menu {
+  padding-left: 0;
+  padding-right: 0; }
+
+md-menu-item > .md-menu > .md-button {
+  text-align: left;
+  display: inline-block;
+  border-radius: 0;
+  margin: auto 0;
+  font-size: 15px;
+  text-transform: none;
+  font-weight: 400;
+  height: 100%;
+  padding-left: 16px;
+  padding-right: 16px;
+  width: 100%; }
 
 .wrapper {
   position: relative; }
