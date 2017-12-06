@@ -1,3 +1,4 @@
+var amd = require('audio-metadata');
 var fs = require('fs');
 var fsm = require('fs-meta');
 var hashFiles = require('hash-files');
@@ -57,7 +58,20 @@ function metaToSQL(meta, dagrID) {
 
 			//TO DO Defaults to the current logged in user, but ideally it should use meta.uid
 			//TO DO write function get author that will look for author based on file type
-			if(meta.uid) {
+			switch(meta.extension) {
+				case 'mp3':
+				case 'wav':
+					meta.author = amd.id3v2(fs.readFileSync(meta.path)).artist;
+					break;
+
+				default:
+					meta.author = '';
+			}
+
+			if (meta.author) {
+				columns += ",AUTHOR";
+				values += ",'" + meta.author + "'";
+			} else if(meta.uid) {
 				columns += ",AUTHOR";
 				values += ",'" + os.userInfo().username + "'";
 			}
