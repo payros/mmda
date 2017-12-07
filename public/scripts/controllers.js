@@ -376,8 +376,15 @@ angular.module("mmda")
 		}
 	}
 
-	function addMetadata(media) {
+	function sanitizePath(path) {
+		path = path.replace(/^https:\/\/www\./g, "");
+		path = path.replace(/^http:\/\/www\./g, "");
+		path = path.replace(/^www\./g, "");
+		return path;
+	}
 
+	function addMetadata(media) {
+		media.uri = sanitizePath(media.uri);
 		return $http.get(Proxy + 'http://' + media.uri).then(function(resp){
 
 			//If the page was loaded successfully, get the metadata
