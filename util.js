@@ -58,19 +58,10 @@ function metaToSQL(meta, dagrID) {
 
 			//TO DO Defaults to the current logged in user, but ideally it should use meta.uid
 			//TO DO write function get author that will look for author based on file type
-			switch(meta.extension) {
-				case 'mp3':
-				case 'wav':
-					meta.author = amd.id3v2(fs.readFileSync(meta.path)).artist;
-					break;
-
-				default:
-					meta.author = '';
-			}
-
-			if (meta.author) {
+			var metaAuthor = util.getMetaAuthor;
+			if (metaAuthor) {
 				columns += ",AUTHOR";
-				values += ",'" + meta.author + "'";
+				values += ",'" + metaAuthor + "'";
 			} else if(meta.uid) {
 				columns += ",AUTHOR";
 				values += ",'" + os.userInfo().username + "'";
@@ -101,6 +92,9 @@ function toTimestamp(dateString) {
 	return "(timestamp'1970-01-01 00:00:00' + numtodsinterval(" + secs + ",'SECOND'))";
 }
 
+util.sanitize = function(input) {
+	return input.replace(/'/g, "''");;
+}
 
 util.getName = function(media) {
 	switch(media.type) {
@@ -163,6 +157,18 @@ util.getType = function(extension) {
 	}
 }
 
+util.getMetaAuthor = function(media) {
+	switch(media.extension) {
+		case 'mp3':
+		case 'wav':
+			media.author = amd.id3v2(fs.readFileSync(media.path)).artist;
+			break;
+
+		default:
+			media.author = '';
+	}
+}
+
 util.generateLinkSQL = function(media, dagrID){
 	
 	//Check for duplicates
@@ -174,10 +180,13 @@ util.generateLinkSQL = function(media, dagrID){
 
 			//INSERT INTO MEDIA TABLE
 			var columns = "GUID,TYPE,URI,NAME";
+			if(media.title) {
+				media.title = util.sanitize(media.title);
+			}
 			var values = "'" + media.guid + "','" + media.type + "','http://" + media.uri + "','" + (media.title || media.uri) + "'";
 
 			if(media.author) {
-				media.author = media.author.replace(/'/g, "''");
+				media.author = util.sanitize(media.author);
 				columns += ",AUTHOR";
 				values += ",'" + media.author + "'";
 			}
@@ -186,11 +195,11 @@ util.generateLinkSQL = function(media, dagrID){
 
 			//INSERT INTO LINK_METADATA TABLE
 			if(media.description) {
-				media.description = media.description.replace(/'/g, "''");
+				media.description = util.sanitize(media.description);
 
 				query += "INTO LINK_METADATA (MEDIA_GUID,DESCRIPTION) VALUES ('" + media.guid + "','" + media.description + "')\n"			
 			}
-
+			
 			//INSERT INTO MEDIA_KEYWORDS TABLE
 			if(media.keywords) {
 
@@ -199,7 +208,7 @@ util.generateLinkSQL = function(media, dagrID){
 				});
 				
 				for(var i=0; i<uniqueKeywords.length; i++) {
-					uniqueKeywords[i] = uniqueKeywords[i].replace(/'/g, "''");
+					uniqueKeywords[i] = util.sanitize(uniqueKeywords[i]);
 					query += "INTO MEDIA_KEYWORD (MEDIA_GUID,KEYWORD) VALUES ('" + media.guid + "','" + uniqueKeywords[i] + "')\n"		
 				}			
 			}
