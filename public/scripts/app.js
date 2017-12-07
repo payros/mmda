@@ -1,6 +1,7 @@
 angular.module('mmda', ['ngSanitize', 'ngAnimate', 'ngMaterial', 'ui.router', 'ngFilesizeFilter'])
 
 .constant('Proxy', 'https://unlimited-cors.herokuapp.com/')
+.constant('Source', 'remote') //Takes local or remote
 
 //Global angular variables
 .value('loader', {
@@ -19,9 +20,12 @@ angular.module('mmda', ['ngSanitize', 'ngAnimate', 'ngMaterial', 'ui.router', 'n
     .warnPalette('red');
     
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-  $httpProvider.interceptors.push(function ($q, loader) {
+  $httpProvider.interceptors.push(function ($q, loader, Source) {
       return {
           'request': function (request) {
+              if(Source === 'local' && request.url.match(/^\/search/g)) {
+                request.url = "/data/sample-data.json";
+              }
               loader.loading++;
               return request;
           },

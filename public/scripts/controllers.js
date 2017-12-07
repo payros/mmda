@@ -195,6 +195,7 @@ angular.module("mmda")
 	}
 
 	function renderDagr(dagr){
+		angular.element(document).find("md-grid-tile").addClass('animate');
 		$scope.dagr = dagr.info;
 		$scope.parents = dagr.parents;
 		$scope.children = dagr.children;
@@ -203,6 +204,7 @@ angular.module("mmda")
 	}
 
 	function renderMedia(media){
+		angular.element(document).find("md-grid-tile").addClass('animate');
 		$scope.media = media;
 		$scope.types = [];
 		angular.forEach($scope.media, function(m){
@@ -224,6 +226,7 @@ angular.module("mmda")
 
 	//When a new URL is loaded, get new data based on the URL
 	$rootScope.$on('$stateChangeSuccess', function () {
+		angular.element(document).find("md-grid-tile").removeClass('animate');
 		$scope.state = $state.current.name;
 		$scope.activeID = $stateParams.id;
 

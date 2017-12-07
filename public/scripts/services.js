@@ -48,30 +48,30 @@ angular.module('mmda')
   };
 })
 
-.service('Search', function($http, User) {
+.service('Search', function($http, User, Source) {
 
   var all = function(params){
     params.user = User.getUser();
     return $http.get('/search', {'params':params} ).then(function(response){
-      return response.data;
+      return response.data ;
     });
   };
 
   var allDagrs = function(){
     return $http.get('/search/all_dagrs', {'params':{'user':User.getUser()}} ).then(function(response){
-      return response.data;
+      return Source === 'local' ? response.data.dagrs : response.data ;
     });
   };
 
   var getDagr = function(id){
     return $http.get('/search/get_dagr', {'params':{'id':id}} ).then(function(response){
-      return response.data;
+      return Source === 'local' ? getByValue(response.data.dagrs, 'GUID', id) : response.data ;
     });
   };
 
   var allMedia = function(){
     return $http.get('/search/all_media', {'params':{'user':User.getUser()}} ).then(function(response){
-      return response.data;
+      return Source === 'local' ? response.data.media : response.data ;
     });
   };
 

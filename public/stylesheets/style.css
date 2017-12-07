@@ -1,4 +1,12 @@
 /****** GENERAL USE VARIABLES ******/
+@keyframes tilein {
+  from {
+    transform: translateY(75%);
+    opacity: 0; }
+  to {
+    transform: translateY(0);
+    opacity: 1; } }
+
 /*** WHITEFRAMES ***/
 /****** ANGULAR MATERIAL COMPONENTS ******/
 /*** GENERAL ***/
@@ -321,6 +329,8 @@ md-menu-item > .md-menu > .md-button {
 
 .wrapper {
   position: relative; }
+  .wrapper .results {
+    overflow-x: hidden; }
   .wrapper h1 {
     color: #666;
     font-size: 36px; }
@@ -392,11 +402,19 @@ ul.dagr-info em {
     box-shadow: 0px 1px 8px 0px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 3px 3px -2px rgba(0, 0, 0, 0.12);
     border-radius: 5px;
     transition: box-shadow .4s;
-    cursor: pointer; }
+    cursor: pointer;
+    opacity: 0; }
+    .dagr-category md-grid-tile.animate, .media-category md-grid-tile.animate {
+      animation-name: tilein;
+      animation-duration: 0.8s;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-out; }
     .dagr-category md-grid-tile:hover, .media-category md-grid-tile:hover {
       box-shadow: 0px 6px 6px -3px rgba(0, 0, 0, 0.2), 0px 10px 14px 1px rgba(0, 0, 0, 0.14), 0px 4px 18px 3px rgba(0, 0, 0, 0.12); }
     .dagr-category md-grid-tile figure, .media-category md-grid-tile figure {
       display: block; }
+    .dagr-category md-grid-tile .ng-leave, .media-category md-grid-tile .ng-leave {
+      opacity: 0; }
     .dagr-category md-grid-tile h3.tile-title, .media-category md-grid-tile h3.tile-title {
       margin: 0;
       font-size: 16px; }
@@ -453,7 +471,8 @@ ul.dagr-info em {
 .media-category md-grid-tile {
   color: #448AFF;
   background-color: #91baff;
-  background-color: #77aaff; }
+  background-color: #77aaff;
+  opacity: 0; }
   .media-category md-grid-tile .mini-chips > li {
     background: #448AFF; }
   .media-category md-grid-tile.add-media {

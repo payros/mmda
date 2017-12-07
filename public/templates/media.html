@@ -1,5 +1,4 @@
 <h1><md-icon class="md" style="line-height: 30px;">perm_media</md-icon>  <span ng-if="!activeID">All</span> Media</h1>
-<!-- <h2 ng-if="state === 'dagr'">Media</h2> -->
 <div class="media-category" ng-if="!types.length && activeID">
 	<md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-lg="3" md-cols-xl="5" md-gutter="1em" md-row-height="5:2">
 		<md-grid-tile  class="add-media" ng-click="editDagr('add')">
@@ -14,7 +13,7 @@
 		<md-grid-tile ng-if="$first && state === 'dagr'" class="add-media" ng-click="editDagr('add')">
 			<h3>ADD MEDIA</h3>
 		</md-grid-tile>
-	  	<md-grid-tile ng-repeat="m in media | filter : {'TYPE':type}" class="md-whiteframe-2dp" ng-init="videoPaused = true" ng-click="showMedia($event, m)" style="transition-delay: {{$index * 500}}ms">
+	  	<md-grid-tile class="animate" ng-show="media.length" ng-repeat="m in media | filter : {'TYPE':type}" class="md-whiteframe-2dp" ng-init="videoPaused = true" ng-click="showMedia($event, m)" style="animation-delay: {{$index * 250}}ms">
 	  		<div class="tile-content" layout="row">
 		  		<div class="tile-thumb" flex="30">
 		  			<md-icon class="md">{{m.TYPE | catIcon}}</md-icon>

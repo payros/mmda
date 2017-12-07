@@ -7,7 +7,7 @@
 	<md-divider ng-if="cat !== '!'"></md-divider><br>
 
 	<md-grid-list md-cols="1" md-gutter="20px" md-row-height="105px">
-	  	<md-grid-tile ui-sref="dagr({ id: d.GUID })" ng-class="activeID === d.GUID ? 'active' : ''" ng-repeat="d in dagrs | filter : {'CATEGORY':cat} | orderBy: 'CREATE_DATE' : true">
+	  	<md-grid-tile class="animate" ui-sref="dagr({ id: d.GUID })" ng-class="activeID === d.GUID ? 'active' : ''" ng-repeat="d in dagrs | filter : {'CATEGORY':cat} | orderBy: 'CREATE_DATE' : true" style="animation-delay: {{$index * 250}}ms">
 	  		<div layout="row">
 	  			<h3 class="tile-title truncate" flex="60">{{d.NAME}}</h3>
 	  			<em class="tile-date" flex>{{d.CREATE_DATE | date}}</em>
