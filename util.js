@@ -58,7 +58,8 @@ function metaToSQL(meta, dagrID) {
 
 			//TO DO Defaults to the current logged in user, but ideally it should use meta.uid
 			//TO DO write function get author that will look for author based on file type
-			var metaAuthor = util.getMetaAuthor;
+			// console.log(meta);
+			var metaAuthor = util.getMetaAuthor(meta);
 			if (metaAuthor) {
 				columns += ",AUTHOR";
 				values += ",'" + metaAuthor + "'";
@@ -66,14 +67,15 @@ function metaToSQL(meta, dagrID) {
 				columns += ",AUTHOR";
 				values += ",'" + os.userInfo().username + "'";
 			}
+			console.log(metaAuthor);
 
-			SQL += "INTO MEDIA (" + columns + ") VALUES (" + values + ")\n"
-
+			SQL += "INTO MEDIA (" + columns + ") VALUES (" + values + ")\n";
+			console.log(SQL);
 			//INSERT INTO FILE_METADATA TABLE
 			SQL += "INTO FILE_METADATA (MEDIA_GUID,HASH,\"SIZE\",CREATE_DATE,MODIFY_DATE) VALUES ('" + meta.guid + "','" + meta.hash + "'," + meta.size + "," + birthTimestamp  + "," + mTimestamp + ")\n"
 
 			//INSERT INTO DAGR_MEDIA TABLE
-			SQL += "INTO DAGR_MEDIA (DAGR_GUID,MEDIA_GUID) VALUES ('" + dagrID + "','" + meta.guid + "')\n"	
+			SQL += "INTO DAGR_MEDIA (DAGR_GUID,MEDIA_GUID) VALUES ('" + dagrID + "','" + meta.guid + "')\n"	;
 		} else if (duplicate === 'exists') {
 			console.log("INFO: " + meta.path + " already referenced in this DAGR. Duplicates are not allowed");
 		} else {
@@ -158,14 +160,17 @@ util.getType = function(extension) {
 }
 
 util.getMetaAuthor = function(media) {
+	//Returning false for now so we can keep working on this
+	return false;
 	switch(media.extension) {
 		case 'mp3':
 		case 'wav':
-			media.author = amd.id3v2(fs.readFileSync(media.path)).artist;
+			//This functuin is hanging with some of my files. We need to figure out how to catch it or time it out.
+			return amd.id3v2(fs.readFileSync(media.path)).artist;
 			break;
 
 		default:
-			media.author = '';
+			return false;
 	}
 }
 
