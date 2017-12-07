@@ -35,14 +35,14 @@ angular.module("mmda")
 	if(User.getUser() === '') $scope.newUser();
 })
 
-.controller("searchCtrl", function($scope, $rootScope, $state, $stateParams) {
+.controller("searchCtrl", function($scope, $rootScope, $mdDialog, $state, $stateParams) {
 	
 	$scope.$state = $state;
 	$scope.data = {};
-	$scope.minDate = new Date(0);
-	$scope.maxDate = new Date();
-	$scope.minSize = 0;
-	$scope.maxSize = 1000000000; //1 GB
+	$scope.minDate = localStorage.minDate ? new Date(parseInt(localStorage.minDate)) : new Date(parseInt(0));
+	$scope.maxDate = localStorage.maxDate ? new Date(parseInt(localStorage.maxDate)) : new Date();
+	$scope.minSize = localStorage.minSize ? parseInt(localStorage.minSize) : 0;
+	$scope.maxSize = localStorage.maxSize ? parseInt(localStorage.maxSize) : 1000000000; //1 GB
 	$scope.searchTypes = [
 		{'label': 'Title', 'value':'title', 'checked':isDefault('title'), 'type':'all' },
 		{'label': 'Tag', 'value':'keyword', 'checked':isDefault('keyword'), 'type':'all' },
@@ -127,12 +127,40 @@ angular.module("mmda")
 		$scope.search();
 	};
 
+	$scope.showSettings = function() {
+		var settings = {
+			'minDate': $scope.minDate,
+			'maxDate': $scope.maxDate,
+			'minSize': $scope.minSize,
+			'maxSize': $scope.maxSize
+		};
+
+	    $mdDialog.show({
+	    	locals: { Settings: settings },
+	      	controller: 'filterSettingsCtrl',
+	      	templateUrl: 'templates/filter-settings-dialog.html',
+	      	clickOutsideToClose:true
+	    }).then(function(newSettings){
+	    	if(newSettings) {
+	    		localStorage.minDate = newSettings.minDate.getTime();
+	    		localStorage.maxDate = newSettings.maxDate.getTime();
+	    		localStorage.minSize = newSettings.minSize;
+	    		localStorage.maxSize - newSettings.maxSize;
+	    		$scope.minDate = newSettings.minDate;
+				$scope.maxDate = newSettings.maxDate;
+				$scope.minSize = newSettings.minSize;
+				$scope.maxSize = newSettings.maxSize;
+				if($stateParams.filter) $scope.search();
+	    	}
+	    });
+	};
+
 	$rootScope.$on('$stateChangeSuccess', function () {
 		//Set the search params based on the url
 
 		if($stateParams.q) $scope.data.query = $stateParams.q;	
 		if($stateParams.minDate) $scope.minDate = new Date(parseInt($stateParams.minDate));
-		if($stateParams.maxDate) $scope.minDate = new Date(parseInt($stateParams.maxDate));
+		if($stateParams.maxDate) $scope.maxDate = new Date(parseInt($stateParams.maxDate));
 		if($stateParams.minSize) $scope.minSize = parseInt($stateParams.minSize);
 		if($stateParams.maxSize) $scope.maxSize = parseInt($stateParams.maxSize);
 		if($stateParams.filter) {
@@ -503,6 +531,19 @@ angular.module("mmda")
 	  };
 })
 
+.controller("filterSettingsCtrl", function($scope, $mdDialog, Settings){
+	$scope.close = $mdDialog.hide;
+	$scope.settings = Settings;
+	$scope.invalidInfo = function(){
+		var invalid = false;
+		invalid = invalid || !$scope.settings.minDate || typeof $scope.settings.minDate.getMonth !== 'function';
+		invalid = invalid || !$scope.settings.maxDate || typeof $scope.settings.maxDate.getMonth !== 'function';
+		invalid = invalid || isNaN($scope.settings.minSize);
+		invalid = invalid || isNaN($scope.settings.maxSize);
+
+		return invalid;
+	};
+})
 
 .controller("mediaDetailsCtrl", function($rootScope, $scope, $stateParams, $mdDialog, Delete, Media){
 	$scope.media = Media;

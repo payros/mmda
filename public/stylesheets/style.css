@@ -64,6 +64,7 @@ md-dialog {
     font-size: 16px; }
   md-dialog input[type="text"],
   md-dialog input[type="search"],
+  md-dialog .md-datepicker-input,
   md-dialog md-select {
     box-sizing: border-box;
     background: #fff;
@@ -71,15 +72,34 @@ md-dialog {
     padding: 0 10px;
     box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12);
     transition: all .3s;
-    border: none; }
+    border: none;
+    font-size: 16px; }
     md-dialog input[type="text"] md-select-value,
     md-dialog input[type="search"] md-select-value,
+    md-dialog .md-datepicker-input md-select-value,
     md-dialog md-select md-select-value {
       border: none !important; }
     md-dialog input[type="text"]:focus,
     md-dialog input[type="search"]:focus,
+    md-dialog .md-datepicker-input:focus,
     md-dialog md-select:focus {
       box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12); }
+  md-dialog .md-datepicker-input {
+    padding-left: 50px;
+    margin-left: -40px;
+    padding-right: 0;
+    box-sizing: content-box;
+    position: relative; }
+  md-dialog ._md-datepicker-floating-label > md-datepicker .md-datepicker-button {
+    margin-right: 0;
+    border-radius: 0;
+    margin-top: -10px;
+    height: 42px;
+    z-index: 1; }
+  md-dialog .md-icon-button + .md-datepicker-input-container {
+    margin-left: 0; }
+  md-dialog .md-datepicker-triangle-button {
+    bottom: 2px; }
   md-dialog md-input-container,
   md-dialog md-select {
     margin: 5px; }
@@ -140,6 +160,12 @@ md-dialog {
         background: #448AFF; }
       md-dialog.media-dialog .media-meta ul.mini-chips {
         max-height: 90px; }
+
+.md-datepicker-input-mask {
+  display: none; }
+
+.md-datepicker-calendar-pane {
+  margin-top: 20px; }
 
 md-autocomplete .md-show-clear-button button {
   position: absolute;
