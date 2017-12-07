@@ -175,7 +175,7 @@ angular.module("mmda")
 	$scope.$on("$mdMenuClose", $scope.search);
 })
 
-.controller("resultsCtrl", function($rootScope, $scope, $window, $state, $stateParams, $mdDialog, Create, Search, Delete, Proxy, loader){
+.controller("resultsCtrl", function($rootScope, $scope, $window, $state, $stateParams, $timeout, $mdDialog, Create, Search, Delete, Proxy, loader){
 	$scope.$state = $state;
 	$scope.proxy = Proxy;
 	$scope.loader = loader;
@@ -195,16 +195,15 @@ angular.module("mmda")
 	}
 
 	function renderDagr(dagr){
-		angular.element(document).find("md-grid-tile").addClass('animate');
 		$scope.dagr = dagr.info;
 		$scope.parents = dagr.parents;
 		$scope.children = dagr.children;
 		$scope.keywords = dagr.keywords;
+		angular.element(document).find("md-grid-tile").removeClass('animate');
 		renderMedia(dagr.media);
 	}
 
 	function renderMedia(media){
-		angular.element(document).find("md-grid-tile").addClass('animate');
 		$scope.media = media;
 		$scope.types = [];
 		angular.forEach($scope.media, function(m){
@@ -223,19 +222,28 @@ angular.module("mmda")
 		renderMedia(results.media);
 	}
 
+	$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+		if(toState.name === 'dagr') {
+			// angular.element(document).find("md-grid-tile").addClass('no-animate');
+		}
+	});
+
 
 	//When a new URL is loaded, get new data based on the URL
 	$rootScope.$on('$stateChangeSuccess', function () {
 		angular.element(document).find("md-grid-tile").removeClass('animate');
+		angular.element(document).find("md-sidenav").removeClass('no-animate');
 		$scope.state = $state.current.name;
 		$scope.activeID = $stateParams.id;
 
 		if($scope.state === 'dagr') {
+			angular.element(document).find("md-sidenav").addClass('no-animate');
 			//Load all DAGRS on sidenav
 			Search.allDagrs().then(renderDagrs);
 			//Load single DAGR on content div
 			Search.getDagr($stateParams.id).then(renderDagr);
 		} else if ($scope.state === 'search') {
+			
 			Search.all($stateParams).then(renderResults);
 		} else {
 			//Load all DAGRS on sidenav

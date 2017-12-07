@@ -579,6 +579,15 @@ md-sidenav {
 	padding:0 10px;
 	width:260px;
 	background:transparent;
+
+	&.no-animate {
+
+		md-grid-tile {
+			opacity:1;
+			animation:none !important;
+		}
+
+	}
 }
 
 .edit-dagr-menu {
@@ -786,7 +795,8 @@ ul.dagr-info  {
 			background-color: transparent;
 		    box-shadow: none;
 		    border: 5px dashed lighten($accent, 15);
-		    transition:all .3s;
+		    transition:box-shadow .3s;
+		    opacity:1;
 
 		    h3 {
 		    	font-size:26px;

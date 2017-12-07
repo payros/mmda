@@ -354,6 +354,9 @@ md-sidenav {
   padding: 0 10px;
   width: 260px;
   background: transparent; }
+  md-sidenav.no-animate md-grid-tile {
+    opacity: 1;
+    animation: none !important; }
 
 .edit-dagr-menu {
   float: right;
@@ -479,7 +482,8 @@ ul.dagr-info em {
     background-color: transparent;
     box-shadow: none;
     border: 5px dashed #91baff;
-    transition: all .3s; }
+    transition: box-shadow .3s;
+    opacity: 1; }
     .media-category md-grid-tile.add-media h3 {
       font-size: 26px;
       color: #91baff;
