@@ -416,6 +416,20 @@ ul.dagr-info em {
 .hierarchy-section {
   min-height: 185px;
   margin-bottom: 20px; }
+  .hierarchy-section .hierarchy-header .md-button {
+    width: 36px; }
+  .hierarchy-section .hierarchy-header .md-button, .hierarchy-section .hierarchy-header h2 {
+    color: #666;
+    height: 36px;
+    min-width: 0;
+    margin: 26px 10px;
+    padding: 0;
+    text-align: center; }
+  .hierarchy-section .hierarchy-header h2 {
+    line-height: 36px;
+    margin: 26px 8px; }
+  .hierarchy-section .hierarchy-header em {
+    color: #666; }
 
 .tree-wrapper {
   width: 100%; }

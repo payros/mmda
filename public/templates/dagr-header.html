@@ -114,6 +114,15 @@
 </ul>
 <br>
 <div ng-show="showHierarchy" class="hierarchy-section">
-<h1><md-icon class="md">share</md-icon> Hierarchy</h1>
-<ng-tree dagr="dagr"></ng-tree>
+<div class="hierarchy-header" layout="row">
+	<h1><md-icon class="md">share</md-icon> Hierarchy</h1 flex>
+	<span flex></span>
+	<md-button flex="none" style="margin-right:0;" ng-click="incrementUp()"><md-icon class="md">add</md-button>
+	<h2 flex="none">{{up}} <em>up</em></h2>
+	<md-button flex="none" style="margin-left:0; margin-right:30px;" ng-click="up = decrementUp()"><md-icon class="md">remove</md-button>
+	<md-button flex="none" style="margin-right:0;" ng-click="incrementDown()"><md-icon class="md">add</md-button>
+	<h2 flex="none">{{down}} <em>down</em></h2>
+	<md-button flex="none" style="margin-left:0;" ng-click="decrementDown()"><md-icon class="md">remove</md-button>
+</div>
+<ng-tree dagr="dagr" up="up" down="down" ></ng-tree>
 </div>

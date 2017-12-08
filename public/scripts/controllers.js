@@ -180,6 +180,8 @@ angular.module("mmda")
 	$scope.getChildren = Search.getPossibleChildren;
 	$scope.getKeywords = Search.getPossibleKeywords;
 	$scope.showHierarchy = localStorage.showHierarchy || false;
+	$scope.up = localStorage.up || 1;
+	$scope.down = localStorage.down || 1;
 	
 
 	function renderDagrs(dagrs){
@@ -285,6 +287,24 @@ angular.module("mmda")
 		localStorage.showHierarchy = $scope.showHierarchy;
 		$rootScope.$broadcast('$stateChangeSuccess');
 		
+	};
+
+	$scope.incrementUp = function(){
+		localStorage.up = ++$scope.up;
+	};
+
+	$scope.incrementDown = function(){
+		localStorage.down = ++$scope.down;
+	};
+
+	$scope.decrementUp = function(n){
+		$scope.up === 0 ? 0 : $scope.up-- ;
+		localStorage.up = $scope.up;
+	};
+
+	$scope.decrementDown = function(n){
+		$scope.down === 0 ? 0 : $scope.down-- ;
+		localStorage.down = $scope.down;
 	};
 
 	$scope.deleteDagr = function(){
@@ -527,7 +547,7 @@ angular.module("mmda")
 
 	function redrawTree(){
 		if($state.current.name === 'dagr') {
-			Search.getReach(2, 2,  $stateParams.id).then(function(nodes){
+			Search.getReach($scope.up, $scope.down,  $stateParams.id).then(function(nodes){
 				//Make sure you're not rendering old requests
 				if($stateParams.id === nodes.parents.id) {
 					var parentTree = {
@@ -573,6 +593,9 @@ angular.module("mmda")
 
 	//Call it for the first time
 	redrawTree();
+
+	$scope.$watch('up', redrawTree);
+	$scope.$watch('down', redrawTree);
 
 	$rootScope.$on('$stateChangeSuccess', redrawTree);
 })

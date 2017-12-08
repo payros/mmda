@@ -20,6 +20,8 @@ return {
 	template: '<div class="tree-wrapper"><div id="parent-tree" class="dagr-tree"></div><div id="child-tree" class="dagr-tree"></div></div>',
 	controller: 'treeCtrl',
     scope: {
-        dagr: '=dagr'
+        dagr: '=dagr',
+        up: '=up',
+        down: '=down',
     }
 }});;
