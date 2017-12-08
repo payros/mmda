@@ -57,7 +57,7 @@
               md-selected-item="m.selectedDagr"
               md-search-text="m.uri"
               md-item-text="m.selectedDagr.NAME"
-              md-items="item in getDagrs(m.uri)"
+              md-items="item in getDagrs(m.uri, activeID)"
               md-min-length="0"
               placeholder="DAGR Title"
               ng-model-options="{debounce: 500}">

@@ -67,7 +67,6 @@ angular.module("mmda")
 	}
 
 	$scope.isChecked = function(){
-		console.log('go');
 		for(var i=0; i<$scope.searchTypes.length; i++){
 			if(isDefault($scope.searchTypes[i].value) && !$scope.searchTypes[i].checked) return false;
 			if(!isDefault($scope.searchTypes[i].value) && $scope.searchTypes[i].checked) return false;
@@ -180,7 +179,7 @@ angular.module("mmda")
 	$scope.getParents = Search.getPossibleParents;
 	$scope.getChildren = Search.getPossibleChildren;
 	$scope.getKeywords = Search.getPossibleKeywords;
-	$scope.showHierarchy = false;
+	$scope.showHierarchy = localStorage.showHierarchy || false;
 	
 
 	function renderDagrs(dagrs){
@@ -282,8 +281,10 @@ angular.module("mmda")
 	};
 
 	$scope.toggleHierarchy = function(){
-		$rootScope.$broadcast('$stateChangeSuccess');
 		$scope.showHierarchy = !$scope.showHierarchy;
+		localStorage.showHierarchy = $scope.showHierarchy;
+		$rootScope.$broadcast('$stateChangeSuccess');
+		
 	};
 
 	$scope.deleteDagr = function(){
@@ -364,6 +365,10 @@ angular.module("mmda")
 	if(formType === 'edit' && currentDagr) {
 		$scope.newTitle = currentDagr.NAME;
 		$scope.newCategory = currentDagr.CATEGORY;
+	}
+
+	if(formType === 'add' && currentDagr) {
+		$scope.activeID = currentDagr.GUID;
 	}
 
 	function closePopup(dagrID){
@@ -508,7 +513,7 @@ angular.module("mmda")
 	};
 })
 
-.controller("treeCtrl", function($rootScope, $scope, $stateParams, $timeout, Search){
+.controller("treeCtrl", function($rootScope, $scope, $state, $stateParams, $timeout, Search){
 	var parentTreeChart, childTreeChart;
 
 	function adjustTree(el){
@@ -521,46 +526,49 @@ angular.module("mmda")
 	}
 
 	function redrawTree(){
-		Search.getReach(2, 2,  $stateParams.id).then(function(nodes){
-			var parentTree = {
-			    chart: {
-			        container: "#parent-tree",
-			        drawLineThrough:true,
-			        // hideRootNode:true,
-			        connectors: {
-			        	type:'step'
-			        },
-			        rootOrientation:"SOUTH"
-			    },
-			    
-			    nodeStructure: nodes.parents
-			};
+		if($state.current.name === 'dagr') {
+			Search.getReach(2, 2,  $stateParams.id).then(function(nodes){
+				//Make sure you're not rendering old requests
+				if($stateParams.id === nodes.parents.id) {
+					var parentTree = {
+					    chart: {
+					        container: "#parent-tree",
+					        drawLineThrough:true,
+					        // hideRootNode:true,
+					        connectors: {
+					        	type:'step'
+					        },
+					        rootOrientation:"SOUTH"
+					    },
+					    nodeStructure: nodes.parents
+					};
 
-			var childTree = {
-			    chart: {
-			        container: "#child-tree",
-			        drawLineThrough:true,
-			        connectors: {
-			        	type:'step'
-			        },
-			        rootOrientation:"NORTH"
-			    },
-			    
-			    nodeStructure: nodes.children
-			};
+					var childTree = {
+					    chart: {
+					        container: "#child-tree",
+					        drawLineThrough:true,
+					        connectors: {
+					        	type:'step'
+					        },
+					        rootOrientation:"NORTH"
+					    },
+					    nodeStructure: nodes.children
+					};
 
-			$timeout(function(){
-				if(parentTreeChart) parentTreeChart.destroy();
-				parentTree.nodeStructure.text = {name:$scope.dagr.NAME, title:$scope.dagr.CATEGORY};
-				console.log(parentTree.nodeStructure);
-				parentTreeChart = new Treant(parentTree, adjustTree);
+					$timeout(function(){
+						if(parentTreeChart) parentTreeChart.destroy();
+						parentTree.nodeStructure.text = {name:$scope.dagr.NAME, title:$scope.dagr.CATEGORY};
+						parentTreeChart = new Treant(parentTree, adjustTree);
 
-				if(childTreeChart) childTreeChart.destroy();
-				childTree.nodeStructure.text = {name:$scope.dagr.NAME, title:$scope.dagr.CATEGORY};
-				console.log(childTree.nodeStructure);
-				childTreeChart = new Treant(childTree, adjustTree);
-			});
-		});	
+						if(childTreeChart) childTreeChart.destroy();
+						childTree.nodeStructure.text = {name:$scope.dagr.NAME, title:$scope.dagr.CATEGORY};
+						childTreeChart = new Treant(childTree, adjustTree);
+					});					
+				}
+
+			});				
+		}
+
 	}
 
 	//Call it for the first time

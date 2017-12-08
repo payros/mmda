@@ -413,6 +413,10 @@ ul.dagr-info em {
     .add-dagr:hover h3, .add-media:hover h3 {
       color: #795548; }
 
+.hierarchy-section {
+  min-height: 185px;
+  margin-bottom: 20px; }
+
 .tree-wrapper {
   width: 100%; }
 

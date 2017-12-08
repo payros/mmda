@@ -26,15 +26,15 @@ angular.module('mmda', ['ngSanitize', 'ngAnimate', 'ngMaterial', 'ui.router', 'n
               if(Source === 'local' && request.url.match(/^\/search/g)) {
                 request.url = "/data/sample-data.json";
               }
-              loader.loading++;
+              if(!request.headers.noloading) loader.loading++;
               return request;
           },
           'response': function (response) {
-              loader.loading--;
+              if(!response.config.headers.noloading) loader.loading--;
               return response;
           },
           'responseError': function (errorResponse) {
-              loader.loading--;
+              if(!errorResponse.config.headers.noloading) loader.loading--;
               loader.error = true;
               return $q.reject(errorResponse);
           }

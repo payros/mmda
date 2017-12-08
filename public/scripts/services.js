@@ -76,31 +76,32 @@ angular.module('mmda')
   };
 
   var getCategories = function(){
-    return $http.get('/search/get_categories', {'params':{'user':User.getUser()}} ).then(function(response){
+    return $http.get('/search/get_categories', {'params':{'user':User.getUser()}, 'headers':{'noloading':true}} ).then(function(response){
       return response.data;
     });
   };
 
-  var getPossibleDagrs = function(searchTerm){
-    return $http.get('/search/get_possible_dagrs', {'params':{'term':searchTerm, 'user':User.getUser()}} ).then(function(response){
-      return response.data;
+  var getPossibleDagrs = function(searchTerm, dagrID){
+    console.log(dagrID);
+    return $http.get('/search/get_possible_dagrs', {'params':{'term':searchTerm, 'user':User.getUser(), 'id':dagrID}, 'headers':{'noloading':true}},  ).then(function(response){
+      return response.data.filter(d => d.FILES > 0);
     });
   };
 
   var getPossibleParents = function(searchTerm, dagrID){
-    return $http.get('/search/get_possible_parents', {'params':{'term':searchTerm,'id':dagrID, 'user':User.getUser()}} ).then(function(response){
+    return $http.get('/search/get_possible_parents', {'params':{'term':searchTerm,'id':dagrID, 'user':User.getUser()}, 'headers':{'noloading':true}} ).then(function(response){
       return response.data;
     });
   };
 
   var getPossibleChildren = function(searchTerm, dagrID){
-    return $http.get('/search/get_possible_children', {'params':{'term':searchTerm,'id':dagrID, 'user':User.getUser()}} ).then(function(response){
+    return $http.get('/search/get_possible_children', {'params':{'term':searchTerm,'id':dagrID, 'user':User.getUser()}, 'headers':{'noloading':true}} ).then(function(response){
       return response.data;
     });
   };
 
   var getPossibleKeywords = function(searchTerm, dagrID){
-    return $http.get('/search/get_possible_keywords', {'params':{'term':searchTerm,'id':dagrID, 'user':User.getUser()}} ).then(function(response){
+    return $http.get('/search/get_possible_keywords', {'params':{'term':searchTerm,'id':dagrID, 'user':User.getUser()}, 'headers':{'noloading':true}} ).then(function(response){
       return response.data;
     });
   };

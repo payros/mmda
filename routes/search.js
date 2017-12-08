@@ -297,6 +297,7 @@ router.get('/get_categories', function(req, res, next) {
 router.get('/get_possible_dagrs', function(req, res, next) {
   db.doConnect().then(function(connection){
     var term = req.query.term || '';
+    var params = [('%' + term.toLowerCase() + '%'), req.query.user];
     var sqlQuery =  "WITH FILES\n"  + 
                    "AS (SELECT DAGR_GUID, COUNT(MEDIA_GUID) AS MEDIA\n"  + 
                    "FROM DAGR_MEDIA\n"  + 
@@ -306,10 +307,15 @@ router.get('/get_possible_dagrs', function(req, res, next) {
                    "LEFT JOIN FILES f\n"  + 
                    "ON d.GUID = f.DAGR_GUID\n"  + 
                    "WHERE LOWER(d.NAME) LIKE :term\n"  + 
-                   "AND d.AUTHOR = :author" ; 
+                   "AND d.AUTHOR = :author\n"; 
+
+    if(req.query.id) {
+      sqlQuery += "AND d.GUID != :id\n";
+      params.push(req.query.id);
+    }
 
     // console.log("QUERY: ", sqlQuery);
-    db.doExecute(connection, sqlQuery, [('%' + term.toLowerCase() + '%'), req.query.user]).then(function(result) {
+    db.doExecute(connection, sqlQuery, params).then(function(result) {
       db.doRelease(connection);
       res.send(result.rows);
     });

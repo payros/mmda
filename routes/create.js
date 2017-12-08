@@ -91,6 +91,10 @@ router.post('/add_media', function(req, res, next) {
                   db.doRelease(connection);
                 });
             }
+          }).catch(function(err){
+            db.doRelease(connection);
+            console.log('QUERY ERROR: ', err);
+            res.send('QUERY ERROR:' + err);
           });
         });  
     } else {
