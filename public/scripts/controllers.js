@@ -298,12 +298,12 @@ angular.module("mmda")
 	};
 
 	$scope.decrementUp = function(n){
-		$scope.up === 0 ? 0 : $scope.up-- ;
+		$scope.up <= 1 ? 1 : $scope.up-- ;
 		localStorage.up = $scope.up;
 	};
 
 	$scope.decrementDown = function(n){
-		$scope.down === 0 ? 0 : $scope.down-- ;
+		$scope.down <= 1 ? 1 : $scope.down-- ;
 		localStorage.down = $scope.down;
 	};
 
