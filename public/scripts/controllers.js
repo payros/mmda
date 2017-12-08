@@ -67,12 +67,11 @@ angular.module("mmda")
 		return defaultFilters.indexOf(filter) > -1;
 	}
 
-	//BIG TO DO Add Reach Queries somewhere
-
 	$scope.isChecked = function(){
+		console.log('go');
 		for(var i=0; i<$scope.searchTypes.length; i++){
 			if(isDefault($scope.searchTypes[i].value) && !$scope.searchTypes[i].checked) return false;
-			if(isDefault(!$scope.searchTypes[i].value) && $scope.searchTypes[i].checked) return false;
+			if(!isDefault($scope.searchTypes[i].value) && $scope.searchTypes[i].checked) return false;
 		}
 		return true;
 	};
