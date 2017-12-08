@@ -105,6 +105,12 @@ angular.module('mmda')
     });
   };
 
+  var getReach = function(up, down, dagrID) {
+    return $http.get('/search/reach', {'params':{'up':up,'id':dagrID, 'down':down}} ).then(function(response){
+      return response.data;
+    });
+  }
+
   return {
     all:all,
     allDagrs: allDagrs,
@@ -114,7 +120,8 @@ angular.module('mmda')
     getPossibleParents: getPossibleParents,
     getPossibleChildren: getPossibleChildren,
     getPossibleKeywords: getPossibleKeywords,
-    getPossibleDagrs: getPossibleDagrs
+    getPossibleDagrs: getPossibleDagrs,
+    getReach
   };
 })
 

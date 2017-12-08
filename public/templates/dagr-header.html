@@ -5,16 +5,22 @@
   </md-button>
   <md-menu-content width="2">
     <md-menu-item>
-      <md-button ng-click="editDagr('edit')">
-        <md-icon md-menu-align-target>person</md-icon>
-        Edit DAGR
-      </md-button>
+	    <md-button ng-click="toggleHierarchy()">
+	        <md-icon md-menu-align-target>share</md-icon>
+	        {{showHirerarchy ? 'Hide' : 'Show'}} Hierarchy
+	    </md-button>
     </md-menu-item>
     <md-menu-item>
-      <md-button ng-click="deleteDagr()">
-        <md-icon>close</md-icon>
-        Delete DAGR
-      </md-button>
+	    <md-button ng-click="editDagr('edit')">
+	        <md-icon md-menu-align-target>person</md-icon>
+	        Edit DAGR
+	    </md-button>
+    </md-menu-item>
+    <md-menu-item>
+      	<md-button ng-click="deleteDagr()">
+        	<md-icon md-menu-align-target>close</md-icon>
+        	Delete DAGR
+     	 </md-button>
     </md-menu-item>
   </md-menu-content>
 </md-menu>
@@ -106,3 +112,8 @@
 	    </md-chips>
 	</li>
 </ul>
+<br>
+<div ng-show="showHierarchy" style="margin-bottom:20px;">
+<h1><md-icon class="md">share</md-icon> Hierarchy</h1>
+<ng-tree dagr="dagr"></ng-tree>
+</div>

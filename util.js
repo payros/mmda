@@ -8,6 +8,9 @@ var db   = require('./db');
 var $q = require('q');
 var util = {};
 
+var HASHES = [];
+var LINKS = [];
+
 //TO DO file hashing is yielding a different hash for identical files in different directories. Figure out why...
 function isDuplicate(val, dagrID) {	
     return db.doConnect().then(function(connection){
@@ -39,6 +42,37 @@ function isDuplicate(val, dagrID) {
         });
     });
 }
+
+function getByValue(arr, prop, value) {
+  for (var i=0; i<arr.length; i++) {
+    if (arr[i][prop] == value) return arr[i];
+  }
+  return false;
+}
+
+function arrayToObject(arr){
+	// console.log(arr);
+	var finalNode;
+
+	arr.forEach(function(level, i){
+		level.forEach(function(node, j){
+			if(node.parent) {
+				var parent = getByValue(arr[i+1], 'id', node.parent);
+				if(parent) {
+					delete node.parent;
+					if (parent.hasOwnProperty('children')) {
+						parent.children.push(node);
+					} else {
+						parent.children = [node];
+					}
+				}
+			} else {
+				finalNode = node;
+			}
+		});
+	});
+	return finalNode;
+};
 
 function metaToSQL(meta, dagrID) {
 	//Check for duplicates
@@ -94,8 +128,27 @@ function toTimestamp(dateString) {
 	return "(timestamp'1970-01-01 00:00:00' + numtodsinterval(" + secs + ",'SECOND'))";
 }
 
+//TO DO call this once instead of opening a new connection to the DB each time we check for a duplicate
+util.syncRecords = function() {
+    return db.doConnect().then(function(connection){
+        return db.doExecute(connection, "SELECT media_guid,hash FROM file_metadata", {}).then(function(result) {
+        	HASHES = result.rows;
+        	db.doRelease(connection);
+        });
+    });
+
+    return db.doConnect().then(function(connection){
+        return db.doExecute(connection, "SELECT guid,uri FROM media WHERE type = 'link'", {}).then(function(result) {
+        	LINKS = result.rows;
+        	db.doRelease(connection);
+        });
+    });
+};
+
 util.sanitize = function(input) {
-	return input.replace(/'/g, "''");;
+	var escaped = input.replace(/'/g, "''");
+	var shortened = escaped.length > 999 ? escaped.substring(0,999) : escaped; 
+	return shortened;
 }
 
 util.getName = function(media) {
@@ -207,9 +260,9 @@ util.generateLinkSQL = function(media, dagrID){
 			
 			//INSERT INTO MEDIA_KEYWORDS TABLE
 			if(media.keywords) {
-
+				//Sanitize keywords by removing empty strings and duplicates
 				var uniqueKeywords = media.keywords.filter(function(item, pos) {
-					    return media.keywords.indexOf(item) == pos;
+					    return item !== '' && media.keywords.indexOf(item) == pos;
 				});
 				
 				for(var i=0; i<uniqueKeywords.length; i++) {
@@ -290,7 +343,6 @@ util.generateDagrSQL = function(media, dagrID){
 	    });
 	});
 };
-
 
 util.generateDagrSearchSQL = function(params){
     var dagrQuery = "WITH files\n"  + 
@@ -405,7 +457,6 @@ util.generateMediaSearchSQL = function(params){
 
 
     var whereClause = "WHERE (m.GUID LIKE :q\n";
-; 
 
 	if(params.filter) {
 		var filters = params.filter.split(',');
@@ -490,6 +541,49 @@ util.generateMediaSearchSQL = function(params){
 	}
 
     return mediaQuery;
+};
+
+util.getRelatives = function(descendents, conn, level, desc){
+
+	if(level === 0) return arrayToObject(desc.reverse());
+	var queries = [];
+	var curr = desc[desc.length-1];
+	var ids = [].concat.apply([], desc).map(a => a.id);
+	var query = "SELECT d.GUID, d.NAME, d.CATEGORY\n" +
+				"FROM DAGR_PARENT dp\n" +
+				"LEFT JOIN DAGR d\n" +
+				"ON dp." + (descendents ? 'CHILD' : 'PARENT') + "_GUID = d.GUID\n" +
+				"WHERE dp." + (descendents ? 'PARENT' : 'CHILD') + "_GUID = :id";
+
+	var newChildren = [];
+	//Loop over the most recent descendents
+	curr.forEach(function(d){
+		queries.push(db.doExecute(conn, query, [d.id]).then(function(result) {
+			console.log(result);
+			//Loop over the child of this descendent
+			for(var j=0; j<result.rows.length; j++) {
+				//Only add if there is no duplication
+				if(ids.indexOf(result.rows[j].GUID) === -1) {
+					newChildren.push({
+						parent:d.id,
+						id: result.rows[j].GUID,
+						text: {
+							name: result.rows[j].NAME,
+							title: result.rows[j].CATEGORY,
+						},
+						link: {
+							href:'#!/dagr/' + result.rows[j].GUID
+						}
+					});
+				}
+			}
+        }));
+	});
+
+	return $q.all(queries).then(function(){
+		if(newChildren.length) desc.push(newChildren);
+		return util.getRelatives(descendents, conn, --level, desc);
+	});
 };
 
 util.connectionError = function(err){

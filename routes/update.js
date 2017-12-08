@@ -23,15 +23,19 @@ router.post('/dagr', function(req, res, next) {
       params.push(req.body.name);
     }
 
-    if(req.body.category) {
-      sqlQuery += ",CATEGORY = :category "
-      params.push(req.body.category);
+    if(req.body.hasOwnProperty('category')) {
+      if(req.body.category === '') {
+        sqlQuery += ",CATEGORY = NULL "
+      } else {
+        sqlQuery += ",CATEGORY = :category "
+        params.push(req.body.category);
+      }
     }
 
     sqlQuery += "\nWHERE GUID = :guid";
     params.push(req.body.id);
 
-    console.log("QUERY: ", sqlQuery);
+    console.log("UPDATE: ", sqlQuery);
     db.doExecute(connection, sqlQuery, params).then(function(result) {
       db.doCommit(connection).then(function(connection) {
           res.send('Success');

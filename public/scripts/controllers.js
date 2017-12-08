@@ -175,13 +175,14 @@ angular.module("mmda")
 	$scope.$on("$mdMenuClose", $scope.search);
 })
 
-.controller("resultsCtrl", function($rootScope, $scope, $window, $state, $stateParams, $timeout, $mdDialog, Create, Search, Delete, Proxy, loader){
+.controller("resultsCtrl", function($rootScope, $scope, $window, $state, $stateParams, $mdDialog, Create, Search, Delete, Proxy, loader){
 	$scope.$state = $state;
 	$scope.proxy = Proxy;
 	$scope.loader = loader;
 	$scope.getParents = Search.getPossibleParents;
 	$scope.getChildren = Search.getPossibleChildren;
 	$scope.getKeywords = Search.getPossibleKeywords;
+	$scope.showHierarchy = false;
 	
 
 	function renderDagrs(dagrs){
@@ -221,12 +222,6 @@ angular.module("mmda")
 		renderDagrs(results.dagrs);
 		renderMedia(results.media);
 	}
-
-	$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-		if(toState.name === 'dagr') {
-			// angular.element(document).find("md-grid-tile").addClass('no-animate');
-		}
-	});
 
 
 	//When a new URL is loaded, get new data based on the URL
@@ -286,6 +281,11 @@ angular.module("mmda")
 
 	$scope.removeKeyword = function(chip){
 		Delete.removeKeyword(chip.KEYWORD, $stateParams.id);
+	};
+
+	$scope.toggleHierarchy = function(){
+		$rootScope.$broadcast('$stateChangeSuccess');
+		$scope.showHierarchy = !$scope.showHierarchy;
 	};
 
 	$scope.deleteDagr = function(){
@@ -369,6 +369,7 @@ angular.module("mmda")
 	}
 
 	function closePopup(dagrID){
+		$mdDialog.hide();
 		if(isNew) {
 			$state.go('dagr', {'id':dagrID});
 		} else {
@@ -407,6 +408,10 @@ angular.module("mmda")
 
 		      //All metadata has been gathered
 		      $q.all(p).then(function(){
+		      	console.log('done');
+		      	Create.addMedia($scope.media, dagrInfo).then(closePopup);
+		      }).catch(function(){
+		      	console.log('error');
 		      	Create.addMedia($scope.media, dagrInfo).then(closePopup);
 		      });
 		    });
@@ -497,12 +502,73 @@ angular.module("mmda")
 	$scope.save = function(){
 		var params = {'id':currentDagr.GUID};
 		if($scope.newTitle && $scope.newTitle !== currentDagr.NAME) params.name = $scope.newTitle;
-		if($scope.categoryInput && $scope.categoryInput !== currentDagr.CATEGORY) params.category = $scope.categoryInput;
+		if($scope.newCategory !== currentDagr.CATEGORY) params.category = $scope.categoryInput;
 		Update.dagrInfo(params).then(function(){
 			$mdDialog.hide();
 			$rootScope.$broadcast('$stateChangeSuccess');
 		});
 	};
+})
+
+.controller("treeCtrl", function($rootScope, $scope, $stateParams, $timeout, Search){
+	var parentTreeChart, childTreeChart;
+
+	function adjustTree(el){
+		var tree = document.querySelector(el.CONFIG.container);
+		var treeWidth = document.querySelector('.tree-wrapper').offsetWidth;
+		var rootNode = document.querySelector(el.CONFIG.container + ' .node:last-child');
+		var nodeCenter = parseInt(rootNode.style.left) + (rootNode.offsetWidth/2);
+		var treeOffset = treeWidth/2 - nodeCenter;
+		tree.style.left = treeOffset + "px";
+	}
+
+	function redrawTree(){
+		Search.getReach(2, 2,  $stateParams.id).then(function(nodes){
+			var parentTree = {
+			    chart: {
+			        container: "#parent-tree",
+			        drawLineThrough:true,
+			        // hideRootNode:true,
+			        connectors: {
+			        	type:'step'
+			        },
+			        rootOrientation:"SOUTH"
+			    },
+			    
+			    nodeStructure: nodes.parents
+			};
+
+			var childTree = {
+			    chart: {
+			        container: "#child-tree",
+			        drawLineThrough:true,
+			        connectors: {
+			        	type:'step'
+			        },
+			        rootOrientation:"NORTH"
+			    },
+			    
+			    nodeStructure: nodes.children
+			};
+
+			$timeout(function(){
+				if(parentTreeChart) parentTreeChart.destroy();
+				parentTree.nodeStructure.text = {name:$scope.dagr.NAME, title:$scope.dagr.CATEGORY};
+				console.log(parentTree.nodeStructure);
+				parentTreeChart = new Treant(parentTree, adjustTree);
+
+				if(childTreeChart) childTreeChart.destroy();
+				childTree.nodeStructure.text = {name:$scope.dagr.NAME, title:$scope.dagr.CATEGORY};
+				console.log(childTree.nodeStructure);
+				childTreeChart = new Treant(childTree, adjustTree);
+			});
+		});	
+	}
+
+	//Call it for the first time
+	redrawTree();
+
+	$rootScope.$on('$stateChangeSuccess', redrawTree);
 })
 
 .controller("addLinksCtrl", function($scope, $mdDialog, Links){
@@ -584,3 +650,4 @@ angular.module("mmda")
 		});
 	};
 });
+

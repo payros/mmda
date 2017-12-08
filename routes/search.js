@@ -78,6 +78,36 @@ router.get('/', function(req, res, next) {
   });
 });
 
+router.get('/reach', function(req, res, next) {
+  db.doConnect().then(function(connection){
+    var resp = {};
+    var promises = [];
+    var up = parseInt(req.query.up) || 1;
+    var down = parseInt(req.query.down) || 1; 
+
+    promises.push(util.getRelatives(true, connection, down, [[{id:req.query.id}]]).then(function(desc){
+      return desc;
+    }));
+
+    promises.push(util.getRelatives(false, connection, up, [[{id:req.query.id}]]).then(function(ances){
+      return ances;
+    }));
+
+    //After both parents and children queries are done, return
+    $q.all(promises).then(function(results){
+      res.send({'children': results[0], 'parents': results[1]});
+      db.doRelease(connection);
+    }).catch(function(err){
+      db.doRelease(connection);
+      console.log('QUERY ERROR: ', err);
+      res.send('QUERY ERROR:' + err);
+    });
+
+  }).catch(function(err){
+    res.send(err);
+  });
+});
+
 router.get('/all_dagrs', function(req, res, next) {
   db.doConnect().then(function(connection){
     var resp = [];
@@ -311,7 +341,6 @@ router.get('/get_possible_parents', function(req, res, next) {
     });
   });
 });
-
 
 router.get('/get_possible_children', function(req, res, next) {
   db.doConnect().then(function(connection){

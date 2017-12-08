@@ -7,10 +7,13 @@
 
  		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
  		<link rel="stylesheet" href="/scripts/lib/angular-material/angular-material.min.css">
+ 		<link rel="stylesheet" href="/scripts/lib/Treant.css" type="text/css"/>
  		<link rel="stylesheet" href="/stylesheets/style.css">
 
 		<!-- Third Party Scripts -->
 		<script src="/scripts/lib/spark-md5.min.js"></script>
+		<script src="/scripts/lib/vendor/raphael.js"></script>
+    	<script src="/scripts/lib/Treant.js"></script>
 
 		<!-- Angular Scripts -->
 		<script src="/scripts/lib/angular/angular.min.js"></script>
@@ -30,7 +33,7 @@
 		<script src="/scripts/filters.js"></script>
 		<script src="/scripts/routes.js"></script>
 		<script src="/scripts/controllers.js"></script>
-		<!-- <script src="/scripts/directives.js"></script> -->
+		<script src="/scripts/directives.js"></script>
 	</head>
 	<body ng-app="mmda" ng-controller="mainCtrl" layout="column">
 		<md-toolbar class="header" ng-controller="headerCtrl" layout="row">
@@ -56,6 +59,5 @@
 				<md-progress-circular md-mode="indeterminate" class="md-hue-2" md-diameter="60"></md-progress-circular>
 			</div>
 		</div>
-
 	</body>
 </html>
