@@ -36,7 +36,6 @@ angular.module("mmda")
 })
 
 .controller("searchCtrl", function($scope, $rootScope, $mdDialog, $state, $stateParams) {
-	
 	$scope.$state = $state;
 	$scope.data = {};
 	$scope.minDate = localStorage.minDate ? new Date(parseInt(localStorage.minDate)) : new Date(parseInt(0));
@@ -82,7 +81,7 @@ angular.module("mmda")
 				$scope.searchTypes[i].checked = isDefault($scope.searchTypes[i].value);			
 			}
 		}
-	}
+	};
 
 	$scope.search = function(){
 		var params = {'q':$scope.data.query };
@@ -618,6 +617,13 @@ angular.module("mmda")
 		invalid = invalid || isNaN($scope.settings.maxSize);
 
 		return invalid;
+	};
+
+	$scope.defaultSettings = function(){
+		$scope.settings.minDate = new Date(parseInt(0));
+		$scope.settings.maxDate = new Date();
+		$scope.settings.minSize = 0;
+		$scope.settings.maxSize = 1000000000; //1 GB
 	};
 })
 

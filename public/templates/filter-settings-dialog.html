@@ -22,7 +22,7 @@
             <md-datepicker ng-model="settings.maxDate" md-min-date="settings.minDate" md-placeholder="Enter date"></md-datepicker>
           </md-input-container>
           <md-input-container md-no-float flex="40">
-            <h3>Minimum File Size<em>in bytes</em></h3>
+            <h3>Minimum File Size <em>in bytes</em></h3>
             <input ng-model="settings.minSize" type="text" placeholder="in Bytes" style="width:50%; margin-left:6px;"/>
             <p style="margin-left:20px;display: inline-block;margin-bottom: 0;">{{settings.minSize | filesize}}</p>
           </md-input-container>
@@ -31,11 +31,14 @@
             <input ng-model="settings.maxSize" type="text" placeholder="in Bytes" style="width:50%; margin-left:6px;"/>
             <p style="margin-left:20px;display: inline-block;margin-bottom: 0;">{{settings.maxSize | filesize}}</p>
           </md-input-container>
+
         </div>
         <br>
     </md-dialog-content>
 
     <md-dialog-actions layout="row">
+      <md-button ng-click="defaultSettings()">Default</md-button>
+      <span flex></span>
       <md-button ng-click="close()" class="md-raised">Cancel</md-button>
       <md-button ng-click="close(settings)" ng-disabled="invalidInfo()" class="md-raised md-primary">Done</md-button>
     </md-dialog-actions>
