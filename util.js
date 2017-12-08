@@ -512,15 +512,15 @@ util.generateMediaSearchSQL = function(params){
 
 				case 'reference_date':
 					if(params.minDate || params.maxDate) {
-						withClause += "references\n" + 
+						withClause += ",references\n" + 
 	                      "  AS (SELECT MEDIA_GUID\n" + 
 	                      "  FROM DAGR_MEDIA\n";
-						if(params.minDate) withClause += "WHERE m.reference_date >= " + toTimestamp(params.minDate) + "\n";
-						if(params.maxDate) withClause += (params.minDate ? "AND" : "WHERE") + " m.reference_date <= " + toTimestamp(params.maxDate) + "\n";
+						if(params.minDate) withClause += "WHERE reference_date >= " + toTimestamp(params.minDate) + "\n";
+						if(params.maxDate) withClause += (params.minDate ? "AND" : "WHERE") + " reference_date <= " + toTimestamp(params.maxDate) + "\n";
 				        withClause += "GROUP BY MEDIA_GUID)\n";
 						joinClause += "LEFT JOIN REFERENCES r\n" + 
                        			      "ON r.MEDIA_GUID = m.GUID\n" 
-				        andFilters += "OR r.MEDIA_GUID IS NOT NULL\n"; 						
+				        andFilters += "AND r.MEDIA_GUID IS NOT NULL\n"; 						
 					}
 					break;
 			}
